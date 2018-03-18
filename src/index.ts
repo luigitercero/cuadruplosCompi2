@@ -4,4 +4,4 @@ import router from './router/router';
  const server = Server.init(8080);
 
  server.app.use(router);
- server.start(()=>console.log("server starter 1 jsjs"));
+ server.start(()=>console.log("server starter"));
