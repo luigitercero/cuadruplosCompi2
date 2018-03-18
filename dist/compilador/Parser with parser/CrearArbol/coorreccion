@@ -1,0 +1,4 @@
+
+For
+    : FOR '('Variables   e ';' Asignacion ')' Cuerpo
+    ;

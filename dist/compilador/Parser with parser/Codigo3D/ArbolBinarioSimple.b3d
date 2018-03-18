@@ -1,0 +1,71 @@
+
+element : Nodo { 
+    num valor : 0;
+    num id : -1;
+    Nodo izq : 4;
+    Nodo der : 4;
+}
+
+%% Variables globales
+num gb1 : 20;
+num gb2 : 30;
+num ids : 0;
+
+%% Programa
+void : InsertarNodo (Nodo n, Nodo nuevo) {
+	if (nuevo.val < n.val) then {
+		if (n.izq == NULL) then {
+			n.izq = nuevo;
+		} else {
+			InsertarNodo(n.izq, nuevo);
+		}
+		return;
+	}
+	if (nuevo.val > n.val) then {
+		if (n.der == NULL) then {
+			n.der = nuevo;
+		} else {
+			InsertarNodo(n.der, nuevo);
+		}
+		return;
+	}
+	show("El nodo con valor " + nuevo.val + " está repetido, no se ha insertado!!!");
+}
+
+Nodo : CrearNodo(num val) {
+	Nodo nuevo : create(Nodo);
+	nuevo.id = ids;
+	nuevo.valor = val;
+	ids = ids + 1;
+	return nuevo;
+}
+
+void : InsertarNuevoNodo(Nodo raiz, num val) {
+	Nodo nuevo : CrearNodo(val);
+	InsertarNodo(raiz, nuevo);
+}
+
+str : GetRecorrido(Nodo pivote) {
+ 	if (pivote == null) then {
+		return "";
+    }
+    return pivote.val + "{" + GetRecorrido(pivote.izq) + "," + GetRecorrido(pivote.der) + "}";
+}
+
+str : GetId(Nodo nodo) {
+	return "nodo" + nodo.id;
+}
+
+Principal() {
+	Nodo raiz : CrearNodo(gb2-gb1); %% 10
+	InsertarNuevoNodo(raiz, raiz.val + 3); %% 13
+	Nodo inutil : create(Nodo);
+	InsertarNuevoNodo(raiz, raiz.val - 9); %% 1
+	InsertarNuevoNodo(raiz, raiz.val + 5); %% 15
+	InsertarNuevoNodo(raiz, raiz.val - 4); %% 6
+	InsertarNuevoNodo(raiz, raiz.val + 2); %% 12
+	InsertarNuevoNodo(raiz, 9);
+	InsertarNuevoNodo(raiz, 3);
+	outStr(GetRecorrido(raiz));
+}
+

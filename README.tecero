@@ -1,0 +1,22 @@
+Este es un proyecto realizado en visual studio code
+este proyecto esta realizado con typescript
+para iniciar typescript
+npm init para configurar los paquetes de npm
+se instala npm luego de isntalar npm intalar type script luego express
+instaar nodemon
+nom install -g nodemon 
+npm install -g tsc
+npm install -g express
+tsc --init
+tsc <archivo.ts> hace la transcompilacion
+
+para debuguear use una libreria de mizilla
+creo una trar ctl + shift + p, para abrir una consola creando la tarea en modo 
+watch y poder hacer que se trascriba en tiempo real 
+
+se crea el archivo luego otravez con ctrl + shift + p 
+se ejecuta la tarea ya creada
+
+luego instalo los tipos de typescript
+
+npm install @types/express
