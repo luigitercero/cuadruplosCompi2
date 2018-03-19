@@ -166,5 +166,8 @@ export default class FormatoItermedio{
     public newError(descripcion:string,linea:string, columna:string){
         console.log(descripcion + " linea: " + linea+ " columna: "+ columna);
     }
+    public logPorCompletar(mensaje:string){
+        console.log("es necesario completar: " + mensaje);
+    }
 
 }
