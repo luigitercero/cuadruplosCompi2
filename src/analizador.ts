@@ -286,7 +286,7 @@ export default class Analizador extends Inter {
                 return true;
             case "Metodo":
                 this.log("crear metodo a metodo: " +
-                this.metodo(nodo.childNode[1],"pivate"));
+                this.metodo(nodo.childNode[0],"pivate"));
                 return true;
         }
         return false;

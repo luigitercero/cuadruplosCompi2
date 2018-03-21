@@ -1,11 +1,18 @@
+import Location from "./location";
+
 /**
  * esta clase lleva el control del formato intermido
  */
 export default class FormatoItermedio{
-
+    private codigoIntermedio:string;
     private temporal:number;
     private etiqueta:number;
+    public agregarCodigo(codigo:string,posicion:Location){
+        this.codigoIntermedio  = this.codigoIntermedio; + codigo;
+    }
+
     constructor(){
+        this.codigoIntermedio = "";
         this.temporal = 0;
         this.etiqueta = 0;
     }
@@ -168,6 +175,10 @@ export default class FormatoItermedio{
     }
     public logPorCompletar(mensaje:string){
         console.log("es necesario completar: " + mensaje);
+    }
+    public logError(mensaje:string){
+        console.log("error en: " + mensaje);
+        throw new Error(mensaje);
     }
 
 }

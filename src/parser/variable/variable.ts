@@ -30,28 +30,77 @@ export default class Variable extends Operador {
     }
 
     /**
-     * resulto un Cambio Esto tiene que ser ID en vez de var
+     
      * Declaracion
-     *: Tipo ID AsignarValor 
-     *| ID ID AsignarValor 
+     *: Tipo Var AsignarValor 
+     *| ID Var AsignarValor 
      * @param nodo 
      * @param Visibilidad 
      */
     declarar(nodo:Nodo, Visibilidad:string):boolean{
         let nombre:string = nodo.childNode[0].term;
         let tipo = "";
-        let ID = nodo.childNode[0].token;
+        
         switch(nombre){
             case "Tipo":
                 tipo = nodo.childNode[0].childNode[0].token;
-
+                this.var(nodo.childNode[1],tipo,Visibilidad);
+                this.asignarValor(nodo.childNode[2],"ID");
                 this.analizador.logPorCompletar("agregando variable a tabla de simbolos");
             return true;
             case "ID":
                 tipo = nodo.childNode[0].token;
-                
+                this.var(nodo.childNode[1],tipo,"Privada");
+                this.asignarValor(nodo.childNode[2],"ID");
+                return true;
         }
         return false;
     }
+    /**
+     * var  
+     *: ID
+     *| var '[' e ']' 
+     *| ESTE '.'  ID
+     *;
+     * @param nodo 
+     * @param tipo 
+     * @param visibilidad 
+     */
+    var(nodo:Nodo,tipo:string,visibilidad:string):boolean{
+        this.analizador.logPorCompletar("agrega variable a tabla de simbolos")
+        return false;
+    }
+    /**
+     * * AsignarValor
+     *:';'
+     *|'=' e ';'
+     *|'=' Nuevo ';'
+     *|'=' Lista ';' esta lista quiere decir los arreglos 0
+     *;
+     * 
+     */
+    asignarValor(nodo:Nodo,id:string){
+       
+        let nombre:string = nodo.childNode[0].term;
+        this.analizador.log("agregando valor"); 
+        if(nombre == "';'"){
 
+        }else{
+            this.evaluarAsignacion(nodo.childNode[1]);
+
+        }
+    }
+
+    evaluarAsignacion(nodo:Nodo){
+        let nombre = nodo.term;
+        this.analizador.logPorCompletar("falta agregar nuevas asignaciones")
+        switch(nombre){
+            case "e":
+            this.analizador.exp.analizar(nodo.childNode[0]);
+            return true;
+            case "nuevo":
+            return true;
+        }
+
+    }
 }
