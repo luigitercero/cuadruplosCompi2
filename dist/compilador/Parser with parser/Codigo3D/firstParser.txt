@@ -155,6 +155,7 @@ inicio
 Encabezado
     : Import
     | CrearClase
+    | Estruct
     | Encabezado CrearClase
     | Encabezado Estruct
     ;

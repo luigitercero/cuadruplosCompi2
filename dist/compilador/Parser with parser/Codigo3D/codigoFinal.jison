@@ -163,6 +163,10 @@ Encabezado:Import
      {nodo1= new Nodo ("Import", @1,$1, [] ); 
       nodo = new Nodo("Encabezado",null,null,[$1]);  
       $$ = nodo; }
+  | Estruct
+     {nodo1= new Nodo ("Estruct", @1,$1, [] );
+      nodo = new Nodo("Encabezado",null,null,[$1]); 
+      $$ = nodo; }
   | CrearClase
      {nodo1= new Nodo ("CrearClase", @1,$1, [] );
       nodo = new Nodo("Encabezado",null,null,[$1]); 

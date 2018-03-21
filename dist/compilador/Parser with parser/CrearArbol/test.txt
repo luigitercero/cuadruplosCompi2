@@ -1,4 +1,4 @@
-inicio
+/*inicio
     : Encabezado EOF
     ;
 Encabezado
@@ -281,4 +281,10 @@ Identi
     |Identi '->' getMetodo
     |Identi '.' var
     |Identi '.' getMetodo
-    ;   
+    ;  
+    */ 
+
+    Declaracion
+    : Tipo ID AsignarValor 
+    | ID ID AsignarValor 
+    ;
