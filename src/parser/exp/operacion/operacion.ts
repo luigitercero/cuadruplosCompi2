@@ -2,51 +2,136 @@ import Analizador from '../../../analizador';
 import Nodo from '../../nodo';
 import NodoOperacion from './nodoOperacion'
 import nodoOperacion from './nodoOperacion';
+import Suma from './suma';
+import Comparacion from './comparacion';
+import Or from './or';
 export default class Operacion{
-    operarMayorIgual(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarMayorIgual(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        let a1= this.analizar(arg1);
+        let op:Comparacion = new Comparacion(a0, a1,this.analizador,">=");
+        return op.evaluar();;
     }
-    operarMenorIgual(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarMenorIgual(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        let a1= this.analizar(arg1);
+        let op:Comparacion = new Comparacion(a0, a1,this.analizador,"<=");
+        return op.evaluar();
     }
-    operarMayorQue(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarMayorQue(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        let a1= this.analizar(arg1);
+        let op:Comparacion = new Comparacion(a0, a1,this.analizador,">");
+        return op.evaluar();
     }
-    operarMenorQue(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarMenorQue(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        let a1= this.analizar(arg1);
+        let op:Comparacion = new Comparacion(a0, a1,this.analizador,"<");
+        return op.evaluar();
     }
-    operarNoIgual(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarNoIgual(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        let a1= this.analizar(arg1);
+        let op:Comparacion = new Comparacion(a0, a1,this.analizador,"!=");
+        return op.evaluar();
     }
-    operarIgual(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarIgual(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        let a1= this.analizar(arg1);
+        let op:Comparacion = new Comparacion(a0, a1,this.analizador,"==");
+        return op.evaluar();
     }
-    operarXor(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarXor(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        if (a0.tipo == 0)
+        this.analizador.agregarCodigo(a0.etiquetaF+":",a0.column,a0.fila);//agregnaod etiqueta falsa
+        else this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
+        let a1= this.analizar(arg1);
+        if(a1.tipo == 0 ){
+            this.analizador.agregarCodigo(a0.etiquetaV+":",a0.column,a0.fila);//agregnaod etiqueta verdadera
+            let l5 = this.analizador.newEtiqueta();
+            let l6 = this.analizador.newEtiqueta();
+            this.analizador.agregarCodigo(a1.valor+","+ l5,a1.column,a1.fila);
+            //this.analizador.agregarCodigo(a0.etiquetaV+","+ l6 +":",a0.column,a0.fila);//agregnaod etiqueta verdadera
+            
+            let res:nodoOperacion = new  nodoOperacion ("",0,a0.column,a0.fila);
+            res.addEtiquetaV(a1.etiquetaV);
+            res.addEtiquetaV(l6);
+            res.addEtiquetaF(a1.etiquetaF);
+            res.addEtiquetaF(l5);
+            return res;
+        }
+        else 
+         throw this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
     }
-    operarAnd(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarAnd(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        if (a0.tipo == 0)
+        this.analizador.agregarCodigo(a0.etiquetaV+":",a0.column,a0.fila);//agregnaod etiqueta verdadera
+        else this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
+        let a1= this.analizar(arg1);
+        if(a1.tipo == 0 ){
+            let res:nodoOperacion = new  nodoOperacion ("",0,a0.column,a0.fila);
+            res.addEtiquetaV(a1.etiquetaV);
+            res.addEtiquetaF(a0.etiquetaF);
+            res.addEtiquetaF(a1.etiquetaF);
+            return res;
+        }
+        else 
+         throw this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
     }
-    operarOr(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarOr(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        if (a0.tipo == 0)
+        this.analizador.agregarCodigo(a0.etiquetaF+":",a0.column,a0.fila);//agregnaod etiqueta verdadera
+        else this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
+        let a1= this.analizar(arg1);
+        if(a1.tipo == 0 ){
+            let res:nodoOperacion = new  nodoOperacion ("",0,a0.column,a0.fila);
+            res.addEtiquetaV(a0.etiquetaV);
+            res.addEtiquetaV(a1.etiquetaV);
+            res.addEtiquetaF(a1.etiquetaF);
+            return res;
+        }
+        else 
+         throw this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
     }
-    operarEleva(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarEleva(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        let a1= this.analizar(arg1);
+        let op:Suma = new Suma(a0, a1,this.analizador,"^");
+        return op.evaluar();
     }
-    operarModulo(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarModulo(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        let a1= this.analizar(arg1);
+        let op:Suma = new Suma(a0, a1,this.analizador,"%");
+        return op.evaluar();
     }
-    operarDivicion(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarDivicion(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        let a1= this.analizar(arg1);
+        let op:Suma = new Suma(a0, a1,this.analizador,"/");
+        return op.evaluar();
     }
-    operarMultiplicaion(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarMultiplicaion(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        let a1= this.analizar(arg1);
+        let op:Suma = new Suma(a0, a1,this.analizador,"*");
+        return op.evaluar();
     }
-    operarResta(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarResta(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        let a1= this.analizar(arg1);
+        let op:Suma = new Suma(a0, a1,this.analizador,"-");
+        return op.evaluar();
     }
-    operarSuma(arg0: Nodo, arg1: Nodo): Nodo {
-        throw new Error("Method not implemented.");
+    operarSuma(arg0: Nodo, arg1: Nodo): nodoOperacion {
+        let a0= this.analizar(arg0);
+        let a1= this.analizar(arg1);
+        let op:Suma = new Suma(a0, a1,this.analizador,"+");
+        return op.evaluar();
     }
 
     public  analizador: Analizador;
@@ -54,20 +139,19 @@ export default class Operacion{
         this.analizador = anlaizador;
     }
 
-    analizar(nodo:Nodo){
+    analizar(nodo:Nodo):nodoOperacion{
        let cantidad:number = nodo.childNode.length
        
         switch(cantidad){
             case 3:
-            this.operacion(nodo);
-            break;
+            return this.operacion(nodo);
             case 2:
-            this.operacion2(nodo);
-            break;
+            return this.operacion2(nodo);
             case 1:
             return this.datos(nodo.childNode[0]);
-            
         }
+        throw new Error("error en analizar");
+       
     }
     operacion(nodo:Nodo):nodoOperacion{
         let operacion:string =nodo.childNode[1].term;
@@ -105,25 +189,45 @@ export default class Operacion{
         }
         
         this.analizador.logError("un error en el archivo Operacion.ts en el metodo operasicion no encotro un simbolo");
-        return new nodoOperacion("nada",35124492);
+        throw new Error("error en analizar");
     }
 
-    operacion2(nodo:Nodo){
-        switch(nodo.childNode[0].term){
-            case "'-'":
-            case "'!'":
-        }
-    }
-
-    datos(nodo:Nodo):NodoOperacion{
+    operacion2(nodo:Nodo):NodoOperacion{
         let term = nodo.childNode[0].term
         switch(term){
-            case "NULL":
-            return new nodoOperacion("nada",35124492);
-            case "Datos":
-            return this.resolverDatos(nodo.childNode[0]);
+            case "'-'":
+            return this.invertirDato(this.analizar(nodo.childNode[1]));
+            case "'!'":
+            return this.negar(this.analizar(nodo.childNode[1]));
+            
         }
-        return new nodoOperacion("nada",35124492);
+        throw new Error("error en analizar");
+    }
+    negar(arg0:NodoOperacion){
+        let v:string = arg0.etiquetaV;
+        let f:string =arg0.etiquetaF;
+        arg0.etiquetaV = f;
+        arg0.etiquetaF = v;
+        return arg0;
+    }
+
+    invertirDato(arg0:NodoOperacion){
+        let t0 = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(this.analizador.asignar("-1",t0),arg0.column,arg0.fila);
+        //let t1 = this.analizador.newTemporal();
+        let t2 = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(this.analizador.genOperacion("*",t0,arg0.valor,t2),arg0.column,arg0.fila);
+        return new NodoOperacion(t2,arg0.tipo,arg0.column,arg0.fila);
+    }
+    datos(nodo:Nodo):NodoOperacion{
+        let term = nodo.term
+        switch(term){
+            case "NULL":
+            return new nodoOperacion("nada",35124492,nodo.location.columna,nodo.location.fila);
+            case "Datos":
+            return this.resolverDatos(nodo);
+        }
+        throw new Error("error en analizar");
     }
     /**
      * Datos 
@@ -137,20 +241,37 @@ export default class Operacion{
      */
     resolverDatos(nodo:Nodo):NodoOperacion{
         let term = nodo.childNode[0].term;
-        switch(nodo.term){
+        let col = -1;
+        let fil = -1;
+        switch(term){
+
+            case "NUMBERLIST2":
+            col = nodo.childNode[0].location.columna;
+            fil = nodo.childNode[0].location.fila;
+            return new NodoOperacion(nodo.childNode[0].token,2,col,fil);
             case "NUMBERLIST":
-            return new NodoOperacion(nodo.childNode[0].token,1);
+            return new NodoOperacion(nodo.childNode[0].token,1,col,fil);
+            case "CARACTER":
+            return new NodoOperacion(nodo.childNode[0].token.charAt(0),3,col,fil);
             case "STRINGLIST":
-            return new NodoOperacion(nodo.childNode[0].token,2);
+            return new NodoOperacion(nodo.childNode[0].token,4,col,fil);
             case "TRUE":
-            return new NodoOperacion(nodo.childNode[0].token,0);
+            let arg0 = new NodoOperacion("1",0,col,fil);
+            let arg1 = new NodoOperacion("1",0,col,fil);
+            let t:Comparacion = new Comparacion(arg0,arg1,this.analizador,"==");    
+            return t.evaluar();
             case "FALSE":
-            return new NodoOperacion(nodo.childNode[0].token,0);
+            let arg00 = new NodoOperacion("0",0,col,fil);
+            let arg10 = new NodoOperacion("1",0,col,fil);
+            let t0:Comparacion = new Comparacion(arg00,arg10,this.analizador,"==");    
+            return t0.evaluar();
             case "Identi":
             this.analizador.logPorCompletar("falta obterner datos de la tabla de simbolos");
-            return new NodoOperacion(nodo.childNode[0].token,35174492);
+           
+        return new nodoOperacion("35174492",35174492,col,fil)
         }
-       return new nodoOperacion("nada",35124492);
+      
+        throw new Error("error en analizar");
     }
 
 

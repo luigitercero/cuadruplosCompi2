@@ -2,9 +2,6 @@
 
 /* lexical grammar */
 
-
-
-
 %lex
 %options case-insensitive
 digit                       [0-9]
@@ -24,8 +21,7 @@ frac                        (?:\.[0-9]+)
 \s+                   /* skip whitespace */
 
 \/\/[^\n]*                                                   /* skip comment */
-\%\%[^\n]*
-                                                     /* skip comment */
+"/*"[^"*/"]*"*/"                                           /*ignore */
 "->"                                                        return '->'
 "*"                                                         return '*'
 "/"                                                         return '/'
@@ -44,7 +40,7 @@ frac                        (?:\.[0-9]+)
 "<"                                                         return '<'
 ">"                                                         return '>'
 "??"                                                        return '??'     
-"."                                                         return '.'
+
 
 "&&"                                                        return '&&'
 "||"                                                        return '||'
@@ -78,7 +74,7 @@ frac                        (?:\.[0-9]+)
 "es_igual_a"                return 'CASE'
 "romper"                    return 'BREAK'
 "continuar"                 return 'CONTINUE'
-"retornar"                  return 'RETURN'
+"retorno"                   return 'RETURN'
 "hacer"                     return 'DO'
 "repetir"                   return 'REAPEATE'
 "repetir_contando"          return 'FOR'
@@ -120,10 +116,12 @@ frac                        (?:\.[0-9]+)
 
                                                      
 \"(?:{esc}["bfnrt/{esc}]|{esc}"u"[a-fA-F0-9]{4}|[^"{esc}])*\"  yytext = yytext.substr(1,yyleng-2); return 'STRINGLIST';
-
-{int}{frac}?{exp}?\b                                         return 'NUMBERLIST';
+{int}{frac}{exp}?\b                                         return 'NUMBERLIST2';
+{int}{exp}?\b                                              return 'NUMBERLIST';
 [A-Za-z_0-9_]+                                               return 'ID';
-
+['][^\n][']                                                 return 'CARACTER'
+['][\\][0][']                                               return 'NULO'
+"."                                                         return '.'
 "="                                                          return '='
 \/(?:[^\/]|"\\/")*\/                                         return 'REGEX'
 <<EOF>>                                                      return 'EOF'
@@ -263,7 +261,7 @@ Declaracion:Tipo var AsignarValor
      {nodo1= new Nodo ("ID", @1,$1, [] ); nodo2= new Nodo ("var", @2,$2, [] ); nodo3= new Nodo ("AsignarValor", @3,$3, [] );
       nodo = new Nodo("Declaracion",null,null,[nodo1,$2,$3]); 
       $$ = nodo; }
-  ; 
+  ; 0
 var:ID
      {nodo1= new Nodo ("ID", @1,$1, [] ); 
       nodo = new Nodo("var",null,null,[nodo1]);  
@@ -862,9 +860,18 @@ DefList:e
      {nodo1= new Nodo ("Lista", @1,$1, [] );
       nodo = new Nodo("DefList",null,null,[$1]); 
       $$ = nodo; }
+  | Nuevo
+     {nodo1= new Nodo ("Nuevo", @1,$1, [] );
+      nodo = new Nodo("DefList",null,null,[$1]); 
+      $$ = nodo; }
   ; 
+  
 Datos:NUMBERLIST
      {nodo1= new Nodo ("NUMBERLIST", @1,$1, [] ); 
+      nodo = new Nodo("Datos",null,null,[nodo1]);  
+      $$ = nodo; }
+ | NUMBERLIST2
+     {nodo1= new Nodo ("NUMBERLIST2", @1,$1, [] ); 
       nodo = new Nodo("Datos",null,null,[nodo1]);  
       $$ = nodo; }
   | Identi
@@ -881,6 +888,10 @@ Datos:NUMBERLIST
       $$ = nodo; }
   | FALSE
      {nodo1= new Nodo ("FALSE", @1,$1, [] );
+      nodo = new Nodo("Datos",null,null,[nodo1]); 
+      $$ = nodo; }
+| CARACTER
+    {nodo1= new Nodo ("CARACTER", @1,$1, [] );
       nodo = new Nodo("Datos",null,null,[nodo1]); 
       $$ = nodo; }
   ; 

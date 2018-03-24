@@ -78,7 +78,7 @@ frac                        (?:\.[0-9]+)
 "es_igual_a"                return 'CASE'
 "romper"                    return 'BREAK'
 "continuar"                 return 'CONTINUE'
-"retornar"                  return 'RETURN'
+"retorno"                  return 'RETURN'
 "hacer"                     return 'DO'
 "repetir"                   return 'REAPEATE'
 "repetir_contando"          return 'FOR'
@@ -423,6 +423,7 @@ List
 DefList
     : e
     | Lista
+    |Nuevo
     ;
 
 Datos 

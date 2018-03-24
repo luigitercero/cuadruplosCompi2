@@ -7,8 +7,11 @@ export default class FormatoItermedio{
     private codigoIntermedio:string;
     private temporal:number;
     private etiqueta:number;
-    public agregarCodigo(codigo:string,posicion:Location){
-        this.codigoIntermedio  = this.codigoIntermedio; + codigo;
+    public get3D(){
+        return this.codigoIntermedio;
+    }
+    public agregarCodigo(codigo:string,column:number|-1,line:number|-1){
+        this.codigoIntermedio  = this.codigoIntermedio + codigo+"\n";
     }
 
     constructor(){
@@ -62,6 +65,12 @@ export default class FormatoItermedio{
      * @param resultado es temporal en donde se guarda el resultado 
      */
     public genOperacion(operador:string,argumeto1:string,argumeto2:string,resultado:string):string{
+        operador = this.opBool(operador);
+        return  this.genCuadruplo(operador,argumeto1,argumeto2,resultado);
+    }
+
+    public opBool(operador:string)
+    {
         switch (operador){
             case "==":
             operador = "je";
@@ -82,7 +91,8 @@ export default class FormatoItermedio{
             operador = "jle";
             break;
         }
-        return  this.genCuadruplo(operador,argumeto1,argumeto2,resultado);
+        return operador;
+
     }
     /**
      *  es el formato que necesita para hacer un salto
@@ -170,15 +180,16 @@ export default class FormatoItermedio{
     /**
      * agreagar un nuevo error
      */
-    public newError(descripcion:string,linea:string, columna:string){
+    public newError(descripcion:string,linea:number, columna:number){
         console.log(descripcion + " linea: " + linea+ " columna: "+ columna);
+        return new Error(descripcion);
     }
     public logPorCompletar(mensaje:string){
         console.log("es necesario completar: " + mensaje);
     }
     public logError(mensaje:string){
         console.log("error en: " + mensaje);
-        throw new Error(mensaje);
+       return new Error(mensaje);
     }
 
 }

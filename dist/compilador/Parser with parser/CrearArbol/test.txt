@@ -252,6 +252,7 @@ Datos
     | STRINGLIST  
     | TRUE
     | FALSE
+    | CARACTER
     ;
 Identi
     :var
@@ -303,4 +304,10 @@ Repetir
     ;
 
 Doble_Condicion: DOBLECONDICION '(' e ',' e ')'Cuerpo
+    ;
+
+    DefList
+    : e
+    | Lista
+    |Nuevo
     ;

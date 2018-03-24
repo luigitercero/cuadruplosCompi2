@@ -10,6 +10,7 @@ export default class Init{
         let nodo = new Nodo (p.parser.treeparser.raiz);
         let analizador = new Analizador();
         analizador.inicio(nodo);
-
+        console.log(
+        analizador.get3D()+"esto es 3D");
     }
 }

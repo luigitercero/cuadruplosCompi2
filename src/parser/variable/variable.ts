@@ -96,11 +96,13 @@ export default class Variable extends Operador {
         this.analizador.logPorCompletar("falta agregar nuevas asignaciones")
         switch(nombre){
             case "e":
-            this.analizador.exp.analizar(nodo.childNode[0]);
+            //nodo.recorrer;
+            this.analizador.exp.analizar(nodo);
             return true;
             case "nuevo":
             return true;
         }
+        return false;
 
     }
 }

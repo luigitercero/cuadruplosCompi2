@@ -10,6 +10,6 @@ export default class Location{
             this.columna = 0;
         }
     }
-
+    
 
 }
