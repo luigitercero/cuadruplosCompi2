@@ -91,7 +91,7 @@ var Operacion = /** @class */ (function () {
     Operacion.prototype.operarOr = function (arg0, arg1) {
         var a0 = this.analizar(arg0);
         if (a0.tipo == 0)
-            this.analizador.agregarCodigo(thit.analizador.escribirEtiqueta(a0.etiquetaF), a0.column, a0.fila); //agregnaod etiqueta verdadera
+            this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaF), a0.column, a0.fila); //agregnaod etiqueta verdadera
         else
             this.analizador.newError("no es un operrador boleano", a0.column, a0.fila);
         var a1 = this.analizar(arg1);
@@ -219,7 +219,8 @@ var Operacion = /** @class */ (function () {
         var term = nodo.term;
         switch (term) {
             case "NULL":
-                return new nodoOperacion_2.default("nada", 35124492, nodo.location.columna, nodo.location.fila);
+                return new nodoOperacion_2.default("nada", 35124492, nodo.last_column, nodo.location.first_line);
+                ;
             case "Datos":
                 return this.resolverDatos(nodo);
         }
@@ -241,26 +242,38 @@ var Operacion = /** @class */ (function () {
         var fil = -1;
         switch (term) {
             case "NUMBERLIST2":
-                col = nodo.childNode[0].location.columna;
-                fil = nodo.childNode[0].location.fila;
+                col = nodo.childNode[0].location.first_line;
+                fil = nodo.childNode[0].location.last_column;
                 return new nodoOperacion_1.default(nodo.childNode[0].token, 2, col, fil);
             case "NUMBERLIST":
+                col = nodo.childNode[0].location.first_line;
+                fil = nodo.childNode[0].location.last_column;
                 return new nodoOperacion_1.default(nodo.childNode[0].token, 1, col, fil);
             case "CARACTER":
+                col = nodo.childNode[1].location.first_line;
+                fil = nodo.childNode[1].location.last_column;
                 return new nodoOperacion_1.default(nodo.childNode[0].token.charAt(0), 3, col, fil);
             case "STRINGLIST":
+                col = nodo.childNode[0].location.first_line;
+                fil = nodo.childNode[0].location.last_column;
                 return new nodoOperacion_1.default(nodo.childNode[0].token, 4, col, fil);
             case "TRUE":
-                var arg0 = new nodoOperacion_1.default("1", 0, col, fil);
-                var arg1 = new nodoOperacion_1.default("1", 0, col, fil);
+                col = nodo.childNode[0].location.first_line;
+                fil = nodo.childNode[0].location.last_column;
+                var arg0 = new nodoOperacion_1.default("1", 1, col, fil);
+                var arg1 = new nodoOperacion_1.default("1", 1, col, fil);
                 var t = new comparacion_1.default(arg0, arg1, this.analizador, "==");
                 return t.evaluar();
             case "FALSE":
-                var arg00 = new nodoOperacion_1.default("0", 0, col, fil);
-                var arg10 = new nodoOperacion_1.default("1", 0, col, fil);
+                col = nodo.childNode[0].location.first_line;
+                fil = nodo.childNode[0].location.last_column;
+                var arg00 = new nodoOperacion_1.default("0", 1, col, fil);
+                var arg10 = new nodoOperacion_1.default("1", 1, col, fil);
                 var t0 = new comparacion_1.default(arg00, arg10, this.analizador, "==");
                 return t0.evaluar();
             case "Identi":
+                col = nodo.childNode[0].location.first_line;
+                fil = nodo.childNode[0].location.last_column;
                 this.analizador.logPorCompletar("falta obterner datos de la tabla de simbolos");
                 return new nodoOperacion_2.default("35174492", 35174492, col, fil);
         }

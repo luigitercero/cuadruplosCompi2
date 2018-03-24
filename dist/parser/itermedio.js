@@ -178,7 +178,7 @@ var FormatoItermedio = /** @class */ (function () {
      */
     FormatoItermedio.prototype.newError = function (descripcion, linea, columna) {
         console.log(descripcion + " linea: " + linea + " columna: " + columna);
-        return new Error(descripcion);
+        return new Error(descripcion + " linea: " + linea + " columna: " + columna);
     };
     FormatoItermedio.prototype.logPorCompletar = function (mensaje) {
         console.log("es necesario completar: " + mensaje);

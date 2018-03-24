@@ -51,29 +51,37 @@ export default class Casteo{
         
     }
     stringString():nodoOperacion{
-        throw new Error("errro de caseteo" )
+        throw this.analizador.newError("errro de caseteo" , this.arg0.column,this.arg0.fila);
+        
 
     }
     caracterCaracter():nodoOperacion{
-        throw new Error("errro de caseteo" )
+        throw this.analizador.newError("errro de caseteo" , this.arg0.column,this.arg0.fila);
+        
     }
     numberNumber():nodoOperacion{      
-        throw new Error("errro de caseteo" )
+        throw this.analizador.newError("errro de caseteo" , this.arg0.column,this.arg0.fila);
+        
     }
     booleaBolean():nodoOperacion{
-        throw new Error("errro de caseteo" )
+        throw this.analizador.newError("errro de caseteo" , this.arg0.column,this.arg0.fila);
+        
     }
     numberBolean():nodoOperacion{
-        throw new Error("errro de caseteo" )
+        throw this.analizador.newError("errro de caseteo" , this.arg0.column,this.arg0.fila);
+        
     }
     boleanNumber():nodoOperacion {
-        throw new Error("errro de caseteo" )
+        throw this.analizador.newError("errro de caseteo" , this.arg0.column,this.arg0.fila);
+        
     }
     boleanCaracter():nodoOperacion {
-        throw new Error("errro de caseteo" )
+        throw this.analizador.newError("errro de caseteo" , this.arg0.column,this.arg0.fila);
+        
     }
     caracterBolean():nodoOperacion  {
-        throw new Error("errro de caseteo" )
+        throw this.analizador.newError("errro de caseteo" , this.arg0.column,this.arg0.fila);
+        
     }
 
 

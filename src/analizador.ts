@@ -8,7 +8,7 @@ export default class Analizador extends Inter {
     public variable:Variable;
 
     constructor(){
-        super();
+        super();    
         this.exp = new Exp(this);
         this.variable = new Variable(this);
     }

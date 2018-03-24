@@ -84,7 +84,7 @@ export default class Operacion{
     operarOr(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         if (a0.tipo == 0)
-        this.analizador.agregarCodigo(thit.analizador.escribirEtiqueta(a0.etiquetaF),a0.column,a0.fila);//agregnaod etiqueta verdadera
+        this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaF),a0.column,a0.fila);//agregnaod etiqueta verdadera
         else this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
         let a1= this.analizar(arg1);
         if(a1.tipo == 0 ){
@@ -223,7 +223,7 @@ export default class Operacion{
         let term = nodo.term
         switch(term){
             case "NULL":
-            return new nodoOperacion("nada",35124492,nodo.location.columna,nodo.location.fila);
+            return new nodoOperacion("nada",35124492,nodo.last_column,nodo.location.first_line;);
             case "Datos":
             return this.resolverDatos(nodo);
         }
@@ -246,26 +246,38 @@ export default class Operacion{
         switch(term){
 
             case "NUMBERLIST2":
-            col = nodo.childNode[0].location.columna;
-            fil = nodo.childNode[0].location.fila;
+            col = nodo.childNode[0].location.first_line;
+            fil = nodo.childNode[0].location.last_column;
             return new NodoOperacion(nodo.childNode[0].token,2,col,fil);
             case "NUMBERLIST":
+            col = nodo.childNode[0].location.first_line;
+            fil = nodo.childNode[0].location.last_column;
             return new NodoOperacion(nodo.childNode[0].token,1,col,fil);
             case "CARACTER":
+            col = nodo.childNode[1].location.first_line;
+            fil = nodo.childNode[1].location.last_column;
             return new NodoOperacion(nodo.childNode[0].token.charAt(0),3,col,fil);
             case "STRINGLIST":
+            col = nodo.childNode[0].location.first_line;
+            fil = nodo.childNode[0].location.last_column;
             return new NodoOperacion(nodo.childNode[0].token,4,col,fil);
             case "TRUE":
-            let arg0 = new NodoOperacion("1",0,col,fil);
-            let arg1 = new NodoOperacion("1",0,col,fil);
+            col = nodo.childNode[0].location.first_line;
+            fil = nodo.childNode[0].location.last_column;
+            let arg0 = new NodoOperacion("1",1,col,fil);
+            let arg1 = new NodoOperacion("1",1,col,fil);
             let t:Comparacion = new Comparacion(arg0,arg1,this.analizador,"==");    
             return t.evaluar();
             case "FALSE":
-            let arg00 = new NodoOperacion("0",0,col,fil);
-            let arg10 = new NodoOperacion("1",0,col,fil);
+            col = nodo.childNode[0].location.first_line;
+            fil = nodo.childNode[0].location.last_column;
+            let arg00 = new NodoOperacion("0",1,col,fil);
+            let arg10 = new NodoOperacion("1",1,col,fil);
             let t0:Comparacion = new Comparacion(arg00,arg10,this.analizador,"==");    
             return t0.evaluar();
             case "Identi":
+            col = nodo.childNode[0].location.first_line;
+            fil = nodo.childNode[0].location.last_column;
             this.analizador.logPorCompletar("falta obterner datos de la tabla de simbolos");
            
         return new nodoOperacion("35174492",35174492,col,fil)

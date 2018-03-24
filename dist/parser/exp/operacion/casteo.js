@@ -54,28 +54,28 @@ var Casteo = /** @class */ (function () {
         }
     };
     Casteo.prototype.stringString = function () {
-        throw new Error("errro de caseteo");
+        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.caracterCaracter = function () {
-        throw new Error("errro de caseteo");
+        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.numberNumber = function () {
-        throw new Error("errro de caseteo");
+        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.booleaBolean = function () {
-        throw new Error("errro de caseteo");
+        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.numberBolean = function () {
-        throw new Error("errro de caseteo");
+        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.boleanNumber = function () {
-        throw new Error("errro de caseteo");
+        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.boleanCaracter = function () {
-        throw new Error("errro de caseteo");
+        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.caracterBolean = function () {
-        throw new Error("errro de caseteo");
+        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
     };
     return Casteo;
 }());
