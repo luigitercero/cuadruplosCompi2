@@ -5,9 +5,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 var FormatoItermedio = /** @class */ (function () {
     function FormatoItermedio() {
+        this.codigoIntermedio = "";
         this.temporal = 0;
         this.etiqueta = 0;
     }
+    FormatoItermedio.prototype.get3D = function () {
+        return this.codigoIntermedio;
+    };
+    FormatoItermedio.prototype.agregarCodigo = function (codigo, column, line) {
+        this.codigoIntermedio = this.codigoIntermedio + codigo + "\n";
+    };
     FormatoItermedio.prototype.pila = function (n) {
         return "Pila [ " + n + " ]";
     };
@@ -54,6 +61,10 @@ var FormatoItermedio = /** @class */ (function () {
      * @param resultado es temporal en donde se guarda el resultado
      */
     FormatoItermedio.prototype.genOperacion = function (operador, argumeto1, argumeto2, resultado) {
+        operador = this.opBool(operador);
+        return this.genCuadruplo(operador, argumeto1, argumeto2, resultado);
+    };
+    FormatoItermedio.prototype.opBool = function (operador) {
         switch (operador) {
             case "==":
                 operador = "je";
@@ -74,7 +85,7 @@ var FormatoItermedio = /** @class */ (function () {
                 operador = "jle";
                 break;
         }
-        return this.genCuadruplo(operador, argumeto1, argumeto2, resultado);
+        return operador;
     };
     /**
      *  es el formato que necesita para hacer un salto
@@ -82,6 +93,9 @@ var FormatoItermedio = /** @class */ (function () {
      */
     FormatoItermedio.prototype.genSalto = function (etiqueta) {
         return this.genCuadruplo("jmp", "", "", etiqueta);
+    };
+    FormatoItermedio.prototype.escribirEtiqueta = function (etiqueta) {
+        return (etiqueta + ":");
     };
     /**
      * asignar valor a variable
@@ -164,7 +178,16 @@ var FormatoItermedio = /** @class */ (function () {
      */
     FormatoItermedio.prototype.newError = function (descripcion, linea, columna) {
         console.log(descripcion + " linea: " + linea + " columna: " + columna);
+        return new Error(descripcion);
+    };
+    FormatoItermedio.prototype.logPorCompletar = function (mensaje) {
+        console.log("es necesario completar: " + mensaje);
+    };
+    FormatoItermedio.prototype.logError = function (mensaje) {
+        console.log("error en: " + mensaje);
+        return new Error(mensaje);
     };
     return FormatoItermedio;
 }());
 exports.default = FormatoItermedio;
+//# sourceMappingURL=itermedio.js.map

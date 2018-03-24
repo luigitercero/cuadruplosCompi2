@@ -45,11 +45,11 @@ export default class Operacion{
     operarXor(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         if (a0.tipo == 0)
-        this.analizador.agregarCodigo(a0.etiquetaF+":",a0.column,a0.fila);//agregnaod etiqueta falsa
+        this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaF),a0.column,a0.fila);//agregnaod etiqueta falsa
         else this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
         let a1= this.analizar(arg1);
         if(a1.tipo == 0 ){
-            this.analizador.agregarCodigo(a0.etiquetaV+":",a0.column,a0.fila);//agregnaod etiqueta verdadera
+            this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaV),a0.column,a0.fila);//agregnaod etiqueta verdadera
             let l5 = this.analizador.newEtiqueta();
             let l6 = this.analizador.newEtiqueta();
             this.analizador.agregarCodigo(a1.valor+","+ l5,a1.column,a1.fila);
@@ -68,7 +68,7 @@ export default class Operacion{
     operarAnd(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         if (a0.tipo == 0)
-        this.analizador.agregarCodigo(a0.etiquetaV+":",a0.column,a0.fila);//agregnaod etiqueta verdadera
+        this.analizador.agregarCodigo(this.analizador.escribirEtiqueta( a0.etiquetaV),a0.column,a0.fila);//agregnaod etiqueta verdadera
         else this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
         let a1= this.analizar(arg1);
         if(a1.tipo == 0 ){
@@ -84,7 +84,7 @@ export default class Operacion{
     operarOr(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         if (a0.tipo == 0)
-        this.analizador.agregarCodigo(a0.etiquetaF+":",a0.column,a0.fila);//agregnaod etiqueta verdadera
+        this.analizador.agregarCodigo(thit.analizador.escribirEtiqueta(a0.etiquetaF),a0.column,a0.fila);//agregnaod etiqueta verdadera
         else this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
         let a1= this.analizar(arg1);
         if(a1.tipo == 0 ){

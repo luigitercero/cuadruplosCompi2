@@ -101,6 +101,9 @@ export default class FormatoItermedio{
     public genSalto(etiqueta:string):string{
         return  this.genCuadruplo("jmp","","",etiqueta);
      }
+     public escribirEtiqueta(etiqueta:string):string{
+         return (etiqueta + ":");
+     }
      /**
       * asignar valor a variable
       * @param val es el valor que va a tener la variable

@@ -24,15 +24,11 @@ export default class Suma extends Casteo {
         return new nodoOperacion(t,1,c,f);
     }
     booleaBolean():nodoOperacion{
-        let t = this.analizador.newTemporal();
-        let c =this.arg0.column;
-        let f = this.arg0.fila;
-        this.analizador.agregarCodigo(this.analizador.genOperacion(this.op,this.arg0.valor,this.arg1.valor,t),c,f);
-        return new nodoOperacion(t,1,c,f);
+        this.arg1 = this.castearBoleano(this.arg1);
+        this.arg0 = this.castearBoleano(this.arg0);
+        return this.numberNumber();
     }
    
-
-
     numberBolean():nodoOperacion{
         this.arg1 = this.castearBoleano(this.arg1);
         return this.numberNumber();
@@ -53,11 +49,11 @@ export default class Suma extends Casteo {
     let t0 = this.analizador.newTemporal();
     let es = this.analizador.newEtiqueta();
     /*para etiqueta verdadera */
-    this.analizador.agregarCodigo(arg0.etiquetaV,arg0.column,arg0.fila)
+    this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(arg0.etiquetaV),arg0.column,arg0.fila)
     this.analizador.agregarCodigo(this.analizador.asignar("1",t0),arg0.column,arg0.fila)
     this.analizador.agregarCodigo(this.analizador.genSalto(es),this.arg0.column,this.arg0.fila)
     /*para etiqueta falsa */
-    this.analizador.agregarCodigo(arg0.etiquetaF,arg0.column,arg0.fila)
+    this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(arg0.etiquetaF),arg0.column,arg0.fila)
     this.analizador.agregarCodigo(this.analizador.asignar("0",t0),arg0.column,arg0.fila);
     return new nodoOperacion(t0,1,arg0.column,arg0.fila);
 

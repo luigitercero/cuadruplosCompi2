@@ -6,7 +6,12 @@ var Location = /** @class */ (function () {
             this.columna = location.last_column;
             this.fila = location.first_line;
         }
+        else {
+            this.fila = 0;
+            this.columna = 0;
+        }
     }
     return Location;
 }());
 exports.default = Location;
+//# sourceMappingURL=location.js.map
