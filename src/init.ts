@@ -11,6 +11,10 @@ export default class Init{
         let analizador = new Analizador();
         analizador.inicio(nodo);
         console.log(
-        analizador.get3D()+"esto es 3D");
+        "esto es 3D");
+        let result = analizador.get3D().C4D;
+        for(let k in result) {
+            console.log(result[k].poss, result[k].codigo);
+         }
     }
 }

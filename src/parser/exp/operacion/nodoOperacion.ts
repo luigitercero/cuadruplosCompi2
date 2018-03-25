@@ -4,28 +4,33 @@ export default class nodoOperacion {
     public valor:string;
     public column:number;
     public fila:number;
-    public etiquetaV:string;
-    public etiquetaF:string;
+    public etiquetaV:string[];
+    public etiquetaF:string[];
     constructor (valor:string, tipo:number,column:number|-1,fila:number|-1) {
         this.valor = valor;
         this.tipo = tipo;
         this.column = column;
         this.fila = fila;
+        this. etiquetaV=[];
+        this. etiquetaF=[];
+      
     }
     addEtiquetaV(etiqueta:string){
-        if (this.etiquetaV === "" || this.etiquetaV == null ){
-            this.etiquetaV =etiqueta
-        }else{
-
-            this.etiquetaV = this.etiquetaV + ", " +etiqueta
-        }  
+        this.etiquetaV.push(etiqueta)
     }
     addEtiquetaF(etiqueta:string){
-        if (this.etiquetaF === "" || this.etiquetaF == null ){
-            this.etiquetaF =etiqueta
-        }else{
-            this.etiquetaF = this.etiquetaF + ", " +etiqueta
-        }
+      this.etiquetaF.push(etiqueta);
+    }  
+
+    addEtiquetaVV(etiqueta:string[]){
+        etiqueta.forEach(element => {
+            this.etiquetaV.push(element);
+        });
+    }
+    addEtiquetaFV(etiqueta:string[]){
+        etiqueta.forEach(element => {
+            this.etiquetaF.push(element);
+        });
     }  
   
 

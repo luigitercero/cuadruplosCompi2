@@ -6,22 +6,26 @@ var nodoOperacion = /** @class */ (function () {
         this.tipo = tipo;
         this.column = column;
         this.fila = fila;
+        this.etiquetaV = [];
+        this.etiquetaF = [];
     }
     nodoOperacion.prototype.addEtiquetaV = function (etiqueta) {
-        if (this.etiquetaV === "" || this.etiquetaV == null) {
-            this.etiquetaV = etiqueta;
-        }
-        else {
-            this.etiquetaV = this.etiquetaV + ", " + etiqueta;
-        }
+        this.etiquetaV.push(etiqueta);
     };
     nodoOperacion.prototype.addEtiquetaF = function (etiqueta) {
-        if (this.etiquetaF === "" || this.etiquetaF == null) {
-            this.etiquetaF = etiqueta;
-        }
-        else {
-            this.etiquetaF = this.etiquetaF + ", " + etiqueta;
-        }
+        this.etiquetaF.push(etiqueta);
+    };
+    nodoOperacion.prototype.addEtiquetaVV = function (etiqueta) {
+        var _this = this;
+        etiqueta.forEach(function (element) {
+            _this.etiquetaV.push(element);
+        });
+    };
+    nodoOperacion.prototype.addEtiquetaFV = function (etiqueta) {
+        var _this = this;
+        etiqueta.forEach(function (element) {
+            _this.etiquetaF.push(element);
+        });
     };
     nodoOperacion.prototype.getTipoObjeto = function () {
         switch (this.tipo) {

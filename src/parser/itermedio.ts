@@ -7,17 +7,27 @@ export default class FormatoItermedio{
     private codigoIntermedio:string;
     private temporal:number;
     private etiqueta:number;
+    private poss:number;
+    public codigo4D = {
+        'C4D':[{'poss':-1,'codigo':"",'columna':-1,'linea':-1,}],
+        'state':true,
+        'etiqueta':[{'etiqueta':"",'poss':-1}],
+        'metodo' :[{'metodo':"",'poss':-1}]
+    };
     public get3D(){
-        return this.codigoIntermedio;
+        return this.codigo4D;
     }
     public agregarCodigo(codigo:string,column:number|-1,line:number|-1){
         this.codigoIntermedio  = this.codigoIntermedio + codigo+"\n";
+        this.codigo4D.C4D.push({'poss':this.poss,'codigo':codigo,'columna':column,'linea':line});
+        this.poss ++;
     }
 
     constructor(){
         this.codigoIntermedio = "";
         this.temporal = 0;
         this.etiqueta = 0;
+        this.poss = 0;
     }
     private pila (n:number):string{
      return "Pila [ " + n + " ]";
@@ -101,8 +111,13 @@ export default class FormatoItermedio{
     public genSalto(etiqueta:string):string{
         return  this.genCuadruplo("jmp","","",etiqueta);
      }
-     public escribirEtiqueta(etiqueta:string):string{
-         return (etiqueta + ":");
+     public escribirEtiqueta(etiqueta:string[]):string{
+        let salida = "";
+        etiqueta.forEach(element => {
+            if (salida == "") {salida = element; this.codigo4D.etiqueta.push({'etiqueta': element,'poss':this.poss});}
+            else {salida = salida + "," +element;this.codigo4D.etiqueta.push({'etiqueta': element,'poss':this.poss});} 
+        }); 
+        return (salida + ":");
      }
      /**
       * asignar valor a variable

@@ -62,9 +62,9 @@ var Operacion = /** @class */ (function () {
             this.analizador.agregarCodigo(a1.valor + "," + l5, a1.column, a1.fila);
             //this.analizador.agregarCodigo(a0.etiquetaV+","+ l6 +":",a0.column,a0.fila);//agregnaod etiqueta verdadera
             var res = new nodoOperacion_2.default("", 0, a0.column, a0.fila);
-            res.addEtiquetaV(a1.etiquetaV);
+            res.addEtiquetaVV(a1.etiquetaV);
             res.addEtiquetaV(l6);
-            res.addEtiquetaF(a1.etiquetaF);
+            res.addEtiquetaFV(a1.etiquetaF);
             res.addEtiquetaF(l5);
             return res;
         }
@@ -80,9 +80,9 @@ var Operacion = /** @class */ (function () {
         var a1 = this.analizar(arg1);
         if (a1.tipo == 0) {
             var res = new nodoOperacion_2.default("", 0, a0.column, a0.fila);
-            res.addEtiquetaV(a1.etiquetaV);
-            res.addEtiquetaF(a0.etiquetaF);
-            res.addEtiquetaF(a1.etiquetaF);
+            res.addEtiquetaVV(a1.etiquetaV);
+            res.addEtiquetaFV(a0.etiquetaF);
+            res.addEtiquetaFV(a1.etiquetaF);
             return res;
         }
         else
@@ -97,9 +97,9 @@ var Operacion = /** @class */ (function () {
         var a1 = this.analizar(arg1);
         if (a1.tipo == 0) {
             var res = new nodoOperacion_2.default("", 0, a0.column, a0.fila);
-            res.addEtiquetaV(a0.etiquetaV);
-            res.addEtiquetaV(a1.etiquetaV);
-            res.addEtiquetaF(a1.etiquetaF);
+            res.addEtiquetaVV(a0.etiquetaV);
+            res.addEtiquetaVV(a1.etiquetaV);
+            res.addEtiquetaFV(a1.etiquetaF);
             return res;
         }
         else
@@ -250,9 +250,9 @@ var Operacion = /** @class */ (function () {
                 fil = nodo.childNode[0].location.last_column;
                 return new nodoOperacion_1.default(nodo.childNode[0].token, 1, col, fil);
             case "CARACTER":
-                col = nodo.childNode[1].location.first_line;
-                fil = nodo.childNode[1].location.last_column;
-                return new nodoOperacion_1.default(nodo.childNode[0].token.charAt(0), 3, col, fil);
+                col = nodo.childNode[0].location.first_line;
+                fil = nodo.childNode[0].location.last_column;
+                return new nodoOperacion_1.default(nodo.childNode[0].token.charAt(1), 3, col, fil);
             case "STRINGLIST":
                 col = nodo.childNode[0].location.first_line;
                 fil = nodo.childNode[0].location.last_column;

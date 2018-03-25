@@ -5,15 +5,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 var FormatoItermedio = /** @class */ (function () {
     function FormatoItermedio() {
+        this.codigo4D = {
+            'C4D': [{ 'poss': -1, 'codigo': "", 'columna': -1, 'linea': -1, }],
+            'state': true,
+            'etiqueta': [{ 'etiqueta': "", 'poss': -1 }],
+            'metodo': [{ 'metodo': "", 'poss': -1 }]
+        };
         this.codigoIntermedio = "";
         this.temporal = 0;
         this.etiqueta = 0;
+        this.poss = 0;
     }
     FormatoItermedio.prototype.get3D = function () {
-        return this.codigoIntermedio;
+        return this.codigo4D;
     };
     FormatoItermedio.prototype.agregarCodigo = function (codigo, column, line) {
         this.codigoIntermedio = this.codigoIntermedio + codigo + "\n";
+        this.codigo4D.C4D.push({ 'poss': this.poss, 'codigo': codigo, 'columna': column, 'linea': line });
+        this.poss++;
     };
     FormatoItermedio.prototype.pila = function (n) {
         return "Pila [ " + n + " ]";
@@ -95,7 +104,19 @@ var FormatoItermedio = /** @class */ (function () {
         return this.genCuadruplo("jmp", "", "", etiqueta);
     };
     FormatoItermedio.prototype.escribirEtiqueta = function (etiqueta) {
-        return (etiqueta + ":");
+        var _this = this;
+        var salida = "";
+        etiqueta.forEach(function (element) {
+            if (salida == "") {
+                salida = element;
+                _this.codigo4D.etiqueta.push({ 'etiqueta': element, 'poss': _this.poss });
+            }
+            else {
+                salida = salida + "," + element;
+                _this.codigo4D.etiqueta.push({ 'etiqueta': element, 'poss': _this.poss });
+            }
+        });
+        return (salida + ":");
     };
     /**
      * asignar valor a variable

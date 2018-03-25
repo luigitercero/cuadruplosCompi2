@@ -14,7 +14,11 @@ var Init = /** @class */ (function () {
         var nodo = new nodo_1.default(p.parser.treeparser.raiz);
         var analizador = new analizador_1.default();
         analizador.inicio(nodo);
-        console.log(analizador.get3D() + "esto es 3D");
+        console.log("esto es 3D");
+        var result = analizador.get3D().C4D;
+        for (var k in result) {
+            console.log(result[k].poss, result[k].codigo);
+        }
     }
     return Init;
 }());
