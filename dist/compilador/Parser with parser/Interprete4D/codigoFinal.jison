@@ -94,29 +94,19 @@ Op4D
     |Lectura
     |Etiqueta ':'
     ;
-/*
-{nodo1= new Nodo ("Identi", @1,$1, [] );
-      nodo = new Nodo("Datos",null,null,[$1]); 
-      $$ = nodo; }
 
-          console.log("fin");     
-    nodo1= new Nodo ("Encabezado", @1,$1, [] ); nodo2= new Nodo ("EOF", @2,$2, [] ); 
-      nodo = new Nodo("inicio",null,null,[$1,nodo2]);  
-      parser.treeparser.raiz = nodo;  
-      $$ = nodo; 
-*/
 Op
-    :'+' ',' Dato ',' Dato ',' TEMPORAL{parser.struct.op.sumar()}
-    |'-' ',' Dato ',' Dato ',' TEMPORAL
-    |'*' ',' Dato ',' Dato ',' TEMPORAL
-    |'/' ',' Dato ',' Dato ',' TEMPORAL
+    :'+' ',' Dato ',' Dato ',' TEMPORAL{parser.struct.op.sumar($3,$5,$7);}
+    |'-' ',' Dato ',' Dato ',' TEMPORAL{parser.struct.op.restar($3,$5,$7);}
+    |'*' ',' Dato ',' Dato ',' TEMPORAL{parser.struct.op.multiplicar($3,$5,$7);}
+    |'/' ',' Dato ',' Dato ',' TEMPORAL{parser.struct.op.dividir($3,$5,$7);}
     ;
 
 Asignacion
-    : '=' ',' Dato ',' ',' TEMPORAL
+    : '=' ',' Dato ',' ',' TEMPORAL{parser.struct.op.setValTemp($6,$3); console.log("Asignacion");}
     ;
 Salto
-    : JMP ',' ',' ',' ETIQUETA    
+    : JMP ',' ',' ',' ETIQUETA {parser.indice.valor = arser.struct.op.eitqueta($5);}
     ;
 SaltoP
     : JE  ',' Dato ',' Dato ',' ETIQUETA
@@ -154,8 +144,8 @@ Lectura
     ;
 
 Dato
-    : TEMPORAL 
-    | NUMBERLIST
+    : TEMPORAL {$$ = parser.struct.op.getValtemp($1);}
+    | NUMBERLIST{$$ = parser.struct.op.convertiNumero($1);}
     | STRINGLIST
     ;
 Etiqueta
@@ -182,8 +172,11 @@ parser.struct = {
     pth:0,
     op:null,
     leer:null
-}
+};
 
+parser.indice = {
+    valor:0,
+};
  parser.treeparser  = {
  raiz : null
 };

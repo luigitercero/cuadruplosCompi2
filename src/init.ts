@@ -15,14 +15,25 @@ export default class Init{
         "esto es 3D");
         let result = analizador.get3D();
 
-        for(let k in result.temporal) {
-            console.log(result.temporal[k].tempora);
-         }
+       
 
          let inter4D = new Interprete(result);
          let t10 = "t10";
          let key:number =  +t10.replace("t","");
-         console.log(result.temporal[key].tempora+ " esto estoy probando " + key);
-         //inter4D.leer4D(1);
+        // console.log(result.temporal[key].tempora+ " esto estoy probando " + key);
+         inter4D.leer4D(1);
+         
+         for(let k in result.temporal) {
+            console.log(result.temporal[k].tempora,result.temporal[k].valor);
+         }
+
+         for(let k in result.etiqueta) {
+            console.log(result.etiqueta[k].poss,result.etiqueta[k].etiqueta);
+         }
+         for(let k in result.C4D) {
+            console.log(result.C4D[k].poss,result.C4D[k].codigo);
+         }
+
+
     }
 }

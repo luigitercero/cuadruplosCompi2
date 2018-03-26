@@ -15,7 +15,7 @@ var FormatoItermedio = /** @class */ (function () {
         this.codigoIntermedio = "";
         this.temporal = 1;
         this.etiqueta = 1;
-        this.poss = 0;
+        this.poss = 1;
     }
     FormatoItermedio.prototype.get3D = function () {
         return this.codigo4D;

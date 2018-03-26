@@ -28,7 +28,7 @@ export default class FormatoItermedio{
         this.codigoIntermedio = "";
         this.temporal = 1;
         this.etiqueta = 1;
-        this.poss = 0;
+        this.poss = 1;
     }
     private pila (n:number):string{
      return "Pila [ " + n + " ]";

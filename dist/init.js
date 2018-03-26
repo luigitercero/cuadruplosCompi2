@@ -17,14 +17,20 @@ var Init = /** @class */ (function () {
         analizador.inicio(nodo);
         console.log("esto es 3D");
         var result = analizador.get3D();
-        for (var k in result.temporal) {
-            console.log(result.temporal[k].tempora);
-        }
         var inter4D = new interprete_1.default(result);
         var t10 = "t10";
         var key = +t10.replace("t", "");
-        console.log(result.temporal[key].tempora + " esto estoy probando " + key);
-        //inter4D.leer4D(1);
+        // console.log(result.temporal[key].tempora+ " esto estoy probando " + key);
+        inter4D.leer4D(1);
+        for (var k in result.temporal) {
+            console.log(result.temporal[k].tempora, result.temporal[k].valor);
+        }
+        for (var k in result.etiqueta) {
+            console.log(result.etiqueta[k].poss, result.etiqueta[k].etiqueta);
+        }
+        for (var k in result.C4D) {
+            console.log(result.C4D[k].poss, result.C4D[k].codigo);
+        }
     }
     return Init;
 }());
