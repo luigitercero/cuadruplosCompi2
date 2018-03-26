@@ -311,3 +311,13 @@ Doble_Condicion: DOBLECONDICION '(' e ',' e ')'Cuerpo
     | Lista
     |Nuevo
     ;
+
+
+    ParametroM 
+    : ParametroM ',' e
+    | ParametroM ',' Tipo
+    | ParametroM ',' Nuevo
+    | e
+    | Tipo
+    | Nuevo
+    ;

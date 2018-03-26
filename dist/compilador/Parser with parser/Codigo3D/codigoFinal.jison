@@ -711,6 +711,10 @@ ParametroM:ParametroM ',' e
      {nodo1= new Nodo ("ParametroM", @1,$1, [] ); nodo2= new Nodo ("','", @2,$2, [] ); nodo3= new Nodo ("Tipo", @3,$3, [] );
       nodo = new Nodo("ParametroM",null,null,[$1,nodo2,$3]); 
       $$ = nodo; }
+  | ParametroM ',' Nuevo
+     {nodo1= new Nodo ("ParametroM", @1,$1, [] ); nodo2= new Nodo ("','", @2,$2, [] ); nodo3= new Nodo ("Nuevo", @3,$3, [] );
+      nodo = new Nodo("ParametroM",null,null,[$1,nodo2,$3]); 
+      $$ = nodo; }
   | e
      {nodo1= new Nodo ("e", @1,$1, [] );
       nodo = new Nodo("ParametroM",null,null,[$1]); 
@@ -719,7 +723,12 @@ ParametroM:ParametroM ',' e
      {nodo1= new Nodo ("Tipo", @1,$1, [] );
       nodo = new Nodo("ParametroM",null,null,[$1]); 
       $$ = nodo; }
+  | Nuevo
+     {nodo1= new Nodo ("Nuevo", @1,$1, [] );
+      nodo = new Nodo("ParametroM",null,null,[$1]); 
+      $$ = nodo; }
   ; 
+
 Primitivas:IMPRIMIR
      {nodo1= new Nodo ("IMPRIMIR", @1,$1, [] ); 
       nodo = new Nodo("Primitivas",null,null,[nodo1]);  

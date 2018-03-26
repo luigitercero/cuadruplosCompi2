@@ -100,13 +100,13 @@ export default class Operacion{
     operarEleva(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         let a1= this.analizar(arg1);
-        let op:Suma = new Suma(a0, a1,this.analizador,"^");
+        let op:Suma = new Suma(a0, a1,this.analizador,"*");
         return op.evaluar();
     }
     operarModulo(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         let a1= this.analizar(arg1);
-        let op:Suma = new Suma(a0, a1,this.analizador,"%");
+        let op:Suma = new Suma(a0, a1,this.analizador,"+");
         return op.evaluar();
     }
     operarDivicion(arg0: Nodo, arg1: Nodo): nodoOperacion {
@@ -256,7 +256,7 @@ export default class Operacion{
             case "CARACTER":
             col = nodo.childNode[0].location.first_line;
             fil = nodo.childNode[0].location.last_column;
-            return new NodoOperacion(nodo.childNode[0].token.charAt(1),3,col,fil);
+            return new NodoOperacion(nodo.childNode[0].token.charCodeAt(1),3,col,fil);
             case "STRINGLIST":
             col = nodo.childNode[0].location.first_line;
             fil = nodo.childNode[0].location.last_column;

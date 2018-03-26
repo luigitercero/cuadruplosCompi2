@@ -377,8 +377,10 @@ getParametro
 ParametroM 
     : ParametroM ',' e
     | ParametroM ',' Tipo
+    | ParametroM ',' Nuevo
     | e
     | Tipo
+    | Nuevo
     ;
 Primitivas
     :IMPRIMIR

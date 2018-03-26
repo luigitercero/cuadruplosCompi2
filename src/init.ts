@@ -1,5 +1,6 @@
 import Nodo from './parser/nodo'
 import Analizador from './analizador'
+import Interprete from './compilador/Parser with parser/Interprete4D/interprete'
 export default class Init{
 
     constructor(){
@@ -12,9 +13,16 @@ export default class Init{
         analizador.inicio(nodo);
         console.log(
         "esto es 3D");
-        let result = analizador.get3D().C4D;
-        for(let k in result) {
-            console.log(result[k].poss, result[k].codigo);
+        let result = analizador.get3D();
+
+        for(let k in result.temporal) {
+            console.log(result.temporal[k].tempora);
          }
+
+         let inter4D = new Interprete(result);
+         let t10 = "t10";
+         let key:number =  +t10.replace("t","");
+         console.log(result.temporal[key].tempora+ " esto estoy probando " + key);
+         //inter4D.leer4D(1);
     }
 }

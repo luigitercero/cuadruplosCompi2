@@ -9,11 +9,12 @@ var FormatoItermedio = /** @class */ (function () {
             'C4D': [{ 'poss': -1, 'codigo': "", 'columna': -1, 'linea': -1, }],
             'state': true,
             'etiqueta': [{ 'etiqueta': "", 'poss': -1 }],
-            'metodo': [{ 'metodo': "", 'poss': -1 }]
+            'metodo': [{ 'metodo': "", 'poss': -1 }],
+            'temporal': [{ "tempora": "retorno", "valor": 35174492 }]
         };
         this.codigoIntermedio = "";
-        this.temporal = 0;
-        this.etiqueta = 0;
+        this.temporal = 1;
+        this.etiqueta = 1;
         this.poss = 0;
     }
     FormatoItermedio.prototype.get3D = function () {
@@ -192,6 +193,7 @@ var FormatoItermedio = /** @class */ (function () {
     FormatoItermedio.prototype.newTemporal = function () {
         var t = "T" + this.temporal;
         this.temporal = this.temporal + 1;
+        this.codigo4D.temporal.push({ 'tempora': t, 'valor': 35174492 });
         return t;
     };
     /**

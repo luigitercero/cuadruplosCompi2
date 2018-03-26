@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var nodo_1 = __importDefault(require("./parser/nodo"));
 var analizador_1 = __importDefault(require("./analizador"));
+var interprete_1 = __importDefault(require("./compilador/Parser with parser/Interprete4D/interprete"));
 var Init = /** @class */ (function () {
     function Init() {
         var p = require('./compilador/Parser with parser/Codigo3D/codigoFinal');
@@ -15,10 +16,15 @@ var Init = /** @class */ (function () {
         var analizador = new analizador_1.default();
         analizador.inicio(nodo);
         console.log("esto es 3D");
-        var result = analizador.get3D().C4D;
-        for (var k in result) {
-            console.log(result[k].poss, result[k].codigo);
+        var result = analizador.get3D();
+        for (var k in result.temporal) {
+            console.log(result.temporal[k].tempora);
         }
+        var inter4D = new interprete_1.default(result);
+        var t10 = "t10";
+        var key = +t10.replace("t", "");
+        console.log(result.temporal[key].tempora + " esto estoy probando " + key);
+        //inter4D.leer4D(1);
     }
     return Init;
 }());

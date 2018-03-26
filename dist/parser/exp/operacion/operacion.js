@@ -108,13 +108,13 @@ var Operacion = /** @class */ (function () {
     Operacion.prototype.operarEleva = function (arg0, arg1) {
         var a0 = this.analizar(arg0);
         var a1 = this.analizar(arg1);
-        var op = new suma_1.default(a0, a1, this.analizador, "^");
+        var op = new suma_1.default(a0, a1, this.analizador, "*");
         return op.evaluar();
     };
     Operacion.prototype.operarModulo = function (arg0, arg1) {
         var a0 = this.analizar(arg0);
         var a1 = this.analizar(arg1);
-        var op = new suma_1.default(a0, a1, this.analizador, "%");
+        var op = new suma_1.default(a0, a1, this.analizador, "+");
         return op.evaluar();
     };
     Operacion.prototype.operarDivicion = function (arg0, arg1) {
@@ -252,7 +252,7 @@ var Operacion = /** @class */ (function () {
             case "CARACTER":
                 col = nodo.childNode[0].location.first_line;
                 fil = nodo.childNode[0].location.last_column;
-                return new nodoOperacion_1.default(nodo.childNode[0].token.charAt(1), 3, col, fil);
+                return new nodoOperacion_1.default(nodo.childNode[0].token.charCodeAt(1), 3, col, fil);
             case "STRINGLIST":
                 col = nodo.childNode[0].location.first_line;
                 fil = nodo.childNode[0].location.last_column;

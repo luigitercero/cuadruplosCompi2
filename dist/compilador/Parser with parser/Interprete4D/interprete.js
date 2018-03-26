@@ -1,18 +1,16 @@
-import Operacion from "./operacion";
-
-export default class Interprete{
-
-    public p;
-  
-    constructor(inteprete){
-        
-        
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+var operacion_1 = __importDefault(require("./operacion"));
+var Interprete = /** @class */ (function () {
+    function Interprete(inteprete) {
         this.p = require('./codigoFinal');
-      
         this.p.parser.struct.codigo = inteprete.C4D;
         this.p.parser.struct.etiqueta = inteprete.etiqueta;
         this.p.parser.struct.metodo = inteprete.metodo;
-        this.p.parser.struct.op = new Operacion();
+        this.p.parser.struct.op = new operacion_1.default();
         this.p.parser.struct.leer = this;
         this.p.parser.struct.temporal = inteprete.temporal;
         /*
@@ -39,14 +37,14 @@ export default class Interprete{
             console.log(result[k].poss, result[k].codigo);
         }*/
     }
-
-    leer4D(iniciaEn:number){
-       if (this.p.parser.struct.codigo !=null){
-            for (let index = iniciaEn; index < this.p.parser.struct.codigo.length; index++) {
-               this.p.parse(this.p.parser.struct.codigo[index].codigo);
-                
+    Interprete.prototype.leer4D = function (iniciaEn) {
+        if (this.p.parser.struct.codigo != null) {
+            for (var index = iniciaEn; index < this.p.parser.struct.codigo.length; index++) {
+                this.p.parse(this.p.parser.struct.codigo[index].codigo);
             }
-       }
-
-    }
-}
+        }
+    };
+    return Interprete;
+}());
+exports.default = Interprete;
+//# sourceMappingURL=interprete.js.map
