@@ -1,6 +1,7 @@
 import Analizador from '../../analizador';
 import Nodo from '../nodo';
 import Operador from '../exp/operacion/operacion'
+import Simbolo from '../tablaSimbolos/simbolo'
 export default class Variable extends Operador {
       
 
@@ -67,7 +68,7 @@ export default class Variable extends Operador {
      * @param visibilidad 
      */
     var(nodo:Nodo,tipo:string,visibilidad:string):boolean{
-        this.analizador.logPorCompletar("agrega variable a tabla de simbolos")
+        
         return false;
     }
     /**

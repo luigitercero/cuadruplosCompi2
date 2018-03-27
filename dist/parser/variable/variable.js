@@ -77,7 +77,6 @@ var Variable = /** @class */ (function (_super) {
      * @param visibilidad
      */
     Variable.prototype.var = function (nodo, tipo, visibilidad) {
-        this.analizador.logPorCompletar("agrega variable a tabla de simbolos");
         return false;
     };
     /**

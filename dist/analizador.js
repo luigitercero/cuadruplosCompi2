@@ -201,7 +201,7 @@ var Analizador = /** @class */ (function (_super) {
     Analizador.prototype.cuerpoClase = function (nodo) {
         var nombre = nodo.childNode[0].term;
         switch (nombre) {
-            case "DeclaracionClase":
+            case "DeclaracionClase"://declaracion de una variable en una clase
                 this.variable.declaracion(nodo.childNode[0]);
                 return true;
             case "SobreEscribir":

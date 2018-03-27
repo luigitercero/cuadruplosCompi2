@@ -3,6 +3,7 @@ import Nodo from './parser/nodo'
 import Inter from './parser/itermedio'
 import Exp from './parser/exp/operacion/Exp'
 import Variable from './parser/variable/variable'
+import Tabla from './parser/tablaSimbolos/tabla'
 export default class Analizador extends Inter {
     public exp:Exp;
     public variable:Variable;
@@ -199,7 +200,7 @@ export default class Analizador extends Inter {
 
         let nombre:string = nodo.childNode[0].term;
         switch(nombre){
-            case "DeclaracionClase":
+            case "DeclaracionClase"://declaracion de una variable en una clase
                 this.variable.declaracion(nodo.childNode[0]);
                 return true;
             case "SobreEscribir":
