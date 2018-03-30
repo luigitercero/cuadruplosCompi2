@@ -1,4 +1,3 @@
-import Location from "./location";
 
 /**
  * esta clase lleva el control del formato intermido
@@ -41,7 +40,7 @@ export default class FormatoItermedio{
      * @param pos es la posicion donde de que se desea acceder del staack
      * @param valor es valor que se va a guardar 
      */
-    public guardarEnPila(pos:string,valor:string):string{
+    public saveEnPila(pos:string,valor:string):string{
         return this.genCuadruplo("<=",pos,valor,"stack")
     }
     /**
@@ -49,7 +48,7 @@ export default class FormatoItermedio{
      * @param pos es la posicion donde se vaa acceder
      * @param valor es el valor que que se obtiene al acceder la posicion del arreglo
      */
-    public obtenerEnPila(pos:string,valor:string):string{
+    public getEnPila(pos:string,valor:string):string{
         return this.genCuadruplo("=>",pos,valor,"stack")
     }
     /**
@@ -57,7 +56,7 @@ export default class FormatoItermedio{
      * @param pos es la posicion donde va a acceder al heap
      * @param valor  es el valor que se guarda en la posicion del heap
      */
-    public guardarEnHeap(pos:string,valor:string):string{
+    public saveEnHeap(pos:string,valor:string):string{
         return this.genCuadruplo("<=",pos,valor,"heap")
     }
     /**
@@ -65,7 +64,7 @@ export default class FormatoItermedio{
      * @param pos es la posicion donde se va guardar en el heap
      * @param valor es el valor que se guarda en la posicion del heap
      */
-    public obtenerEnHeap(pos:string,valor:string):string{
+    public getEnHeap(pos:string,valor:string):string{
         return this.genCuadruplo("=>",pos,valor,"heap")
     }
     /**
@@ -202,14 +201,11 @@ export default class FormatoItermedio{
      */
     public newError(descripcion:string,linea:number, columna:number){
         console.log(descripcion + " linea: " + linea+ " columna: "+ columna);
-        return new Error(descripcion + " linea: " + linea+ " columna: "+ columna);
+        throw new Error(descripcion + " linea: " + linea+ " columna: "+ columna);
     }
     public logPorCompletar(mensaje:string){
         console.log("es necesario completar: " + mensaje);
     }
-    public logError(mensaje:string){
-        console.log("error en: " + mensaje);
-       return new Error(mensaje);
-    }
+   
 
 }

@@ -1,15 +1,11 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-}
 Object.defineProperty(exports, "__esModule", { value: true });
-var location_1 = __importDefault(require("../parser/location"));
 var Nodo = /** @class */ (function () {
     function Nodo(nodo) {
         this.term = nodo.term;
-        this.location = new location_1.default(nodo.location);
         this.token = nodo.token;
         this.childNode = nodo.childNode;
+        this.location = nodo.location;
     }
     Nodo.prototype.recorrer = function (nodo, espacio) {
         var _this = this;
@@ -21,4 +17,13 @@ var Nodo = /** @class */ (function () {
     return Nodo;
 }());
 exports.default = Nodo;
+var location = /** @class */ (function () {
+    function location() {
+        this.first_column = -1;
+        this.first_line = -1;
+        this.last_column = -1;
+        this.last_line = -1;
+    }
+    return location;
+}());
 //# sourceMappingURL=nodo.js.map

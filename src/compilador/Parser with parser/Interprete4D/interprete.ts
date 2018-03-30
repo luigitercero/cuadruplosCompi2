@@ -2,9 +2,9 @@ import Operacion from "./operacion";
 
 export default class Interprete{
 
-    public p;
+    public p:any;
   
-    constructor(inteprete){
+    constructor(inteprete:any){
         
         
         this.p = require('./codigoFinal');

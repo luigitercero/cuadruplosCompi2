@@ -16,8 +16,13 @@ export default class Comparacion extends Casteo {
     numberNumber():nodoOperacion{   
        return  this.agregaretiqueta();
     }
-
-
+    doubleDouble(){
+        return  this.agregaretiqueta();
+    }
+  
+    /**
+     * funciona para las operaciones xor que se deba subir un atributo
+     */
     agregaretiqueta():nodoOperacion{
         let lv = this.analizador.newEtiqueta();
         let lf = this.analizador.newEtiqueta()
@@ -26,7 +31,7 @@ export default class Comparacion extends Casteo {
         this.analizador.agregarCodigo(this.analizador.genOperacion(this.op,this.arg0.valor,this.arg1.valor,lv),c,f);
         this.analizador.agregarCodigo(this.analizador.genSalto(lf),c,f);
         let xor = this.analizador.opBool(this.op)+", "+ this.arg0.valor+", "+this.arg1.valor
-        let n = new nodoOperacion(xor,0,c,f);
+        let n = new nodoOperacion(xor,"boolean",c,f);
         n.addEtiquetaV(lv);
         n.addEtiquetaF(lf);
         return n;

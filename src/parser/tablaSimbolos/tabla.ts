@@ -4,14 +4,22 @@ export default class Tabla{
 
     public Lista:Ambito[];
     public esto:Ambito;
-
-    constructor() {}
+    
+    constructor() {
+        this.esto = new Ambito();
+        this.Lista = new Array();
+    }
     aumetarAbmito() {}
     disminuirAmbito() {}
     buscarVariable(nombre:string) {}
-    agregarVariable(nombre:string,tipo:number) {}
+    /*
+    agregarVariable(nombre:string,visibilidad:string,tipo:string) {
+      
+    }*/
     getActual() {}
+    existVarAmbitoActual(nombre:string) { 
 
+    }
 
 
 }

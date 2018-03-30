@@ -1,12 +1,12 @@
-import Location from '../../../parser/location'
+
 export default class nodoOperacion {
-    public tipo:number;
+    public tipo:string;
     public valor:string;
     public column:number;
     public fila:number;
     public etiquetaV:string[];
     public etiquetaF:string[];
-    constructor (valor:string, tipo:number,column:number|-1,fila:number|-1) {
+    constructor (valor:string, tipo:string,column:number|-1,fila:number|-1) {
         this.valor = valor;
         this.tipo = tipo;
         this.column = column;
@@ -31,23 +31,10 @@ export default class nodoOperacion {
         etiqueta.forEach(element => {
             this.etiquetaF.push(element);
         });
-    }  
+    }
+      
   
 
-    getTipoObjeto() {
-        switch(this.tipo) {
-            case 0:
-            return "boolenano"
-            case 1:
-            return "numero"
-            case 2:
-            return "caracter"
-            case 3:
-        
-            return "tengo que buscar el objeto en la tabla de simbolos"
-            case 4:
-            return "cadena"
-        }
-    }
+
 
 }

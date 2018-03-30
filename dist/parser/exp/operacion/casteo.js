@@ -6,47 +6,53 @@ var Casteo = /** @class */ (function () {
         this.arg1 = arg1;
         this.analizador = analizador;
     }
+    Casteo.prototype.setArg0 = function (nodoOperacion) {
+        throw this.analizador.newError("no se ha implementado el metodo set arg0", this.arg0.column, this.arg0.fila);
+    };
+    Casteo.prototype.setArg1 = function (nodoOperacion) {
+        throw this.analizador.newError("no se ha implementado el metodo set arg1", this.arg0.column, this.arg0.fila);
+    };
     Casteo.prototype.evaluar = function () {
-        if (this.arg0.tipo == 35174492 || this.arg1.tipo == 35174492) {
+        if (this.arg0.tipo == 35174492 + "" || this.arg1.tipo == 35174492 + "") {
             throw new Error("errro de nulo no es posible operar");
         }
-        else if (this.arg0.tipo == 0 && this.arg1.tipo == 1) {
+        else if (this.arg0.tipo == "boolean" && this.arg1.tipo == "int") {
             return this.boleanNumber();
         }
-        else if (this.arg0.tipo == 0 && this.arg1.tipo == 2) {
-            return this.boleanNumber();
+        else if (this.arg0.tipo == "boolean" && this.arg1.tipo == "double") {
+            return this.booleanDouble();
         }
-        else if (this.arg0.tipo == 0 && this.arg1.tipo == 3) {
+        else if (this.arg0.tipo == "boolean" && this.arg1.tipo == "caracter") {
             return this.boleanCaracter();
         }
-        else if (this.arg1.tipo == 0 && this.arg0.tipo == 1) {
+        else if (this.arg1.tipo == "boolean" && this.arg0.tipo == "int") {
             return this.numberBolean();
         }
-        else if (this.arg1.tipo == 0 && this.arg0.tipo == 2) {
-            return this.numberBolean();
+        else if (this.arg1.tipo == "boolean" && this.arg0.tipo == "double") {
+            return this.doubleBoolean();
         }
-        else if (this.arg1.tipo == 0 && this.arg0.tipo == 3) {
+        else if (this.arg1.tipo == "boolean" && this.arg0.tipo == "caracter") {
             return this.caracterBolean();
         }
-        else if (this.arg0.tipo == 4 || this.arg1.tipo == 4) {
+        else if (this.arg0.tipo == "string" || this.arg1.tipo == "string") {
             return this.stringString();
         }
-        else if (this.arg0.tipo == 0 && this.arg1.tipo == 0) {
+        else if (this.arg0.tipo == "boolean" && this.arg1.tipo == "boolean") {
             return this.booleaBolean();
         }
-        else if (this.arg0.tipo == 1 && this.arg1.tipo == 1) {
+        else if (this.arg0.tipo == "int" && this.arg1.tipo == "int") {
             return this.numberNumber();
         }
-        else if (this.arg0.tipo == 2 && this.arg1.tipo == 2) {
-            return this.numberNumber();
+        else if (this.arg0.tipo == "double" && this.arg1.tipo == "double") {
+            return this.doubleDouble();
         }
-        else if (this.arg0.tipo == 3 && this.arg1.tipo == 3) {
+        else if (this.arg0.tipo == "caracter" && this.arg1.tipo == "caracter") {
             return this.caracterCaracter();
         }
-        else if (this.arg0.tipo == 2 || this.arg1.tipo == 2) {
-            return this.numberNumber();
+        else if (this.arg0.tipo == "double" || this.arg1.tipo == "double") {
+            return this.doubleDouble();
         }
-        else if (this.arg0.tipo == 3 || this.arg1.tipo == 3) {
+        else if (this.arg0.tipo == "caracter" || this.arg1.tipo == "caracter") {
             return this.caracterCaracter();
         }
         else {
@@ -75,6 +81,15 @@ var Casteo = /** @class */ (function () {
         throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.caracterBolean = function () {
+        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+    };
+    Casteo.prototype.doubleDouble = function () {
+        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+    };
+    Casteo.prototype.booleanDouble = function () {
+        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+    };
+    Casteo.prototype.doubleBoolean = function () {
         throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
     };
     return Casteo;

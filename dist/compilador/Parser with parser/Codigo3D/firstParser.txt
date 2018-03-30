@@ -195,8 +195,8 @@ Cuerpo_Estruct
     | Cuerpo_Estruct Declaracion
     ;
 Declaracion
-    : Tipo ID AsignarValor 
-    | ID ID AsignarValor 
+    : Tipo var AsignarValor 
+    | ID var AsignarValor 
     ;
 var  
     : ID

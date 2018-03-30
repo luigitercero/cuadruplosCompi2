@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 var operacion_1 = __importDefault(require("../exp/operacion/operacion"));
+var simbolo_1 = __importDefault(require("../tablaSimbolos/simbolo"));
 var Variable = /** @class */ (function (_super) {
     __extends(Variable, _super);
     function Variable(analizdor) {
@@ -43,25 +44,38 @@ var Variable = /** @class */ (function (_super) {
     /**
      
      * Declaracion
-     *: Tipo Var AsignarValor
-     *| ID Var AsignarValor
+     * : Tipo var AsignarValor
+     * | ID var AsignarValor
+     *;
      * @param nodo
      * @param Visibilidad
      */
     Variable.prototype.declarar = function (nodo, Visibilidad) {
         var nombre = nodo.childNode[0].term;
         var tipo = "";
+        var variable;
         switch (nombre) {
             case "Tipo":
                 tipo = nodo.childNode[0].childNode[0].token;
-                this.var(nodo.childNode[1], tipo, Visibilidad);
-                this.asignarValor(nodo.childNode[2], "ID");
-                this.analizador.logPorCompletar("agregando variable a tabla de simbolos");
+                try {
+                    variable = this.var(nodo.childNode[1], tipo, Visibilidad);
+                    this.analizador.claseA.tabla.esto.agregarSimbolo(variable);
+                    this.asignarValor(nodo.childNode[2], variable);
+                }
+                catch (error) {
+                    this.analizador.newError("error al delcarar variable", nodo.childNode[0].childNode[0].location.first_line, 0);
+                }
                 return true;
             case "ID":
                 tipo = nodo.childNode[0].token;
-                this.var(nodo.childNode[1], tipo, "Privada");
-                this.asignarValor(nodo.childNode[2], "ID");
+                try {
+                    variable = this.var(nodo.childNode[1], tipo, Visibilidad);
+                    this.analizador.claseA.tabla.esto.agregarSimbolo(variable);
+                    this.asignarValor(nodo.childNode[2], variable);
+                }
+                catch (error) {
+                    this.analizador.newError("error al delcarar variable", nodo.childNode[0].childNode[0].location.first_line, 0);
+                }
                 return true;
         }
         return false;
@@ -71,13 +85,36 @@ var Variable = /** @class */ (function (_super) {
      *: ID
      *| var '[' e ']'
      *| ESTE '.'  ID
-     *;
+     * ;
      * @param nodo
      * @param tipo
      * @param visibilidad
      */
     Variable.prototype.var = function (nodo, tipo, visibilidad) {
-        return false;
+        var term = nodo.childNode[0].term;
+        var nombre;
+        switch (term) {
+            case "ID":
+                nombre = nodo.childNode[0].token;
+                if (this.analizador.claseA.tabla.esto.buscarVariable(nombre))
+                    this.analizador.newError("la variable existe", nodo.childNode[0].location.first_line, nodo.childNode[0].location.last_column);
+                else {
+                    return new simbolo_1.default(nombre, visibilidad, tipo);
+                }
+                throw this.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
+            case "var":
+                var variable = this.var(nodo.childNode[0], tipo, visibilidad);
+                var val = this.analizador.exp.analizar(nodo.childNode[2]);
+                if (val.tipo == "int") {
+                    variable.addDimension(+val.valor);
+                    return variable;
+                }
+                else {
+                    this.analizador.newError("no se pudo evaluar el tipo", nodo.childNode[1].location.first_line, nodo.childNode[1].location.last_column);
+                }
+            default:
+                throw this.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
+        }
     };
     /**
      * * AsignarValor
@@ -88,25 +125,43 @@ var Variable = /** @class */ (function (_super) {
      *;
      *
      */
-    Variable.prototype.asignarValor = function (nodo, id) {
+    Variable.prototype.asignarValor = function (nodo, simbolo) {
         var nombre = nodo.childNode[0].term;
         this.analizador.log("agregando valor");
         if (nombre == "';'") {
         }
         else {
-            this.evaluarAsignacion(nodo.childNode[1]);
+            this.evaluarAsignacion(nodo.childNode[1], simbolo, nodo.childNode[0]);
         }
     };
-    Variable.prototype.evaluarAsignacion = function (nodo) {
+    Variable.prototype.evaluarAsignacion = function (nodo, simbolo, nodo2) {
         var nombre = nodo.term;
         this.analizador.logPorCompletar("falta agregar nuevas asignaciones");
+        var temp;
+        var pos;
         switch (nombre) {
             case "e":
-                //nodo.recorrer;
-                this.analizador.exp.analizar(nodo);
+                var resultado = this.analizador.exp.analizar(nodo);
+                if (this.analizador.exp.evaluarTipo(resultado.tipo, simbolo.getTipo())) {
+                    var val = this.analizador.exp.getValor(resultado); //el temporal del resulttod
+                    this.analizador.agregarCodigo(this.analizador.genComentario("agregando valor a las variables " + simbolo.getNombre()), nodo2.location.first_line, nodo2.location.last_column); // es un comentario
+                    pos = this.analizador.newTemporal();
+                    this.analizador.agregarCodigo(this.analizador.genOperacion('+', "ptr", "1", pos), nodo2.location.first_line, nodo2.location.last_column); //buscar en pila el this
+                    temp = this.analizador.newTemporal(); //temp contiene el dato en heap
+                    this.analizador.agregarCodigo(this.analizador.getEnPila(pos, temp), nodo2.location.first_line, nodo2.location.last_column); // valor en la pila en this
+                    var temp1 = this.analizador.newTemporal();
+                    this.analizador.agregarCodigo(this.analizador.genOperacion('+', temp, simbolo.possAmbito + "", temp1), nodo2.location.first_line, nodo2.location.last_column); //moverse en heap
+                    this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp1, val), nodo2.location.first_line, nodo2.location.last_column);
+                    this.analizador.agregarCodigo(this.analizador.genComentario("aquit termina la asignacion " + simbolo.getNombre()), nodo2.location.first_line, nodo2.location.last_column);
+                    simbolo.valor = true;
+                }
+                else {
+                    throw this.analizador.newError("error por compatibilidad de tipos ", nodo2.location.first_line, nodo2.location.last_column);
+                }
+            case "Nuevo":
                 return true;
-            case "nuevo":
-                return true;
+            case "Lista":
+                return false;
         }
         return false;
     };

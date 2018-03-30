@@ -16,12 +16,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var itermedio_1 = __importDefault(require("./parser/itermedio"));
 var Exp_1 = __importDefault(require("./parser/exp/operacion/Exp"));
 var variable_1 = __importDefault(require("./parser/variable/variable"));
+var tabla_1 = __importDefault(require("./parser/tablaSimbolos/tabla"));
+var metodo_1 = __importDefault(require("./parser/metodo/metodo"));
+var clase_1 = __importDefault(require("./parser/tablaSimbolos/clase"));
 var Analizador = /** @class */ (function (_super) {
     __extends(Analizador, _super);
     function Analizador() {
         var _this = _super.call(this) || this;
         _this.exp = new Exp_1.default(_this);
         _this.variable = new variable_1.default(_this);
+        _this.tablaSimbolos = new tabla_1.default();
+        _this.metodoA = new metodo_1.default(_this);
+        _this.claseA = new clase_1.default("", 0);
         return _this;
     }
     /**
@@ -157,8 +163,7 @@ var Analizador = /** @class */ (function (_super) {
         var nombre = nodo.childNode[0].term;
         switch (nombre) {
             case "CLASE":
-                this.logPorCompletar("clase a tabla de simbolos");
-                this.log("crear clase " + nodo.childNode[1].token);
+                this.claseA = new clase_1.default(nodo.childNode[1].token, nodo.childNode[1].location.first_line);
                 this.herencia(nodo.childNode[2]);
                 return true;
             case "Clase":
@@ -206,7 +211,7 @@ var Analizador = /** @class */ (function (_super) {
                 return true;
             case "SobreEscribir":
                 this.log("cuerpoClase a sobrescribir: " +
-                    this.sobrescribir(nodo.childNode[0]));
+                    this.metodoA.sobrescribir(nodo.childNode[0]));
                 return true;
             case "Estruct":
                 this.logPorCompletar("agreagar struct a tabla de simbolos");
@@ -216,131 +221,6 @@ var Analizador = /** @class */ (function (_super) {
                     this.cuerpoClase(nodo.childNode[0]));
                 return true;
         }
-        return false;
-    };
-    /**
-     * SobreEscribir
-     *  : SOBREESCRIBIR CrearMetodo
-     *  |CrearMetodo
-     *  ;
-     * @param nodo
-     */
-    Analizador.prototype.sobrescribir = function (nodo) {
-        var nombre = nodo.childNode[0].term;
-        switch (nombre) {
-            case "SOBREESCRIBIR":
-                this.logPorCompletar("tengo que sobreEcribir");
-                this.log("sobrescribir a metodo: " +
-                    this.crearMetodo(nodo.childNode[1]));
-                return true;
-            case "CrearMetodo":
-                this.log("sobrescrbir a crear metodo: " +
-                    this.crearMetodo(nodo.childNode[0]));
-                return true;
-        }
-        return false;
-    };
-    /**
-     * Metodo
-     *   : Tipo ID '(' Parametros '{'
-     *   | ID ID '(' Parametros '{'
-     *   | Metodo  CuerpoMetodo
-     *   ;
-     * @param nodo
-     */
-    Analizador.prototype.metodo = function (nodo, visi) {
-        var nombre = nodo.childNode[0].term;
-        var tipo;
-        var nombreMetodo;
-        switch (nombre) {
-            case "Tipo":
-                tipo = nodo.childNode[0].childNode[0].token;
-                nombreMetodo = nodo.childNode[1].token;
-                this.logPorCompletar("agregar metodo a tabla de simbolos");
-                return true;
-            case "ID":
-                tipo = nodo.childNode[0].token;
-                nombreMetodo = nodo.childNode[1].token;
-                this.logPorCompletar("agregar metodo a tabla de simbolos");
-                return true;
-            case "Metodo":
-                this.metodo(nodo.childNode[0], "");
-                this.cuerpoMetodo(nodo.childNode[1]);
-                return true;
-        }
-        return false;
-    };
-    /**
-     * CrearMetodo
-     *   : Visibilidad Metodo '}'
-     *   | Metodo '}'
-     *   ;
-     * @param nodo
-     */
-    Analizador.prototype.crearMetodo = function (nodo) {
-        var nombre = nodo.childNode[0].term;
-        switch (nombre) {
-            case "Visibilidad":
-                this.log("agregar visibilidad");
-                this.log("crear metodo a metodo: " +
-                    this.metodo(nodo.childNode[1], nodo.childNode[0].childNode[0].token));
-                return true;
-            case "Metodo":
-                this.log("crear metodo a metodo: " +
-                    this.metodo(nodo.childNode[0], "pivate"));
-                return true;
-        }
-        return false;
-    };
-    /**
-     * Parametros
-     *   : Parametro ')'
-     *   |  ')'
-     *   ;
-     * @param nodo
-     */
-    Analizador.prototype.parametros = function (nodo) {
-        return false;
-    };
-    /**
-     * Parametro
-     *   : Tipo ID
-     *   | ID ID
-     *   | Parametro ',' Tipo ID
-     *   | Parametro ',' ID ID
-     *   ;
-     * @param nodo
-     */
-    Analizador.prototype.parametro = function (nodo) {
-        return false;
-    };
-    /**
-     * CuerpoMetodo
-     *   : Declaracion
-     *   | Asignacion
-     *   | getMetodoZ ';'
-     *   | Control
-     *   | Branching ';'
-     *   ;
-     * @param nodo
-     */
-    Analizador.prototype.cuerpoMetodo = function (nodo) {
-        return false;
-    };
-    /**
-     * Asignacion
-     *   : var '=' e ';'
-     *   | Navegar var '=' e ';'
-     *   |'+=' e ';'
-     *   |'*=' e ';'
-     *   |'/=' e ';'
-     *   | '++' ';'
-     *   | '--' ';'
-     *   | var '=' Nuevo ';'
-     *  ;
-     * @param nodo
-     */
-    Analizador.prototype.asignacion = function (nodo) {
         return false;
     };
     /**

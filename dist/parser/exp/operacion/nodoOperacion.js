@@ -27,20 +27,6 @@ var nodoOperacion = /** @class */ (function () {
             _this.etiquetaF.push(element);
         });
     };
-    nodoOperacion.prototype.getTipoObjeto = function () {
-        switch (this.tipo) {
-            case 0:
-                return "boolenano";
-            case 1:
-                return "numero";
-            case 2:
-                return "caracter";
-            case 3:
-                return "tengo que buscar el objeto en la tabla de simbolos";
-            case 4:
-                return "cadena";
-        }
-    };
     return nodoOperacion;
 }());
 exports.default = nodoOperacion;

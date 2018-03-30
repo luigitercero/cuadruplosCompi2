@@ -1,17 +1,25 @@
-import SymTable from './parser/symboTable'
+
 import Nodo from './parser/nodo'
 import Inter from './parser/itermedio'
 import Exp from './parser/exp/operacion/Exp'
 import Variable from './parser/variable/variable'
 import Tabla from './parser/tablaSimbolos/tabla'
+import Metodo from './parser/metodo/metodo'
+import Clase from './parser/tablaSimbolos/clase'
+
 export default class Analizador extends Inter {
     public exp:Exp;
     public variable:Variable;
-
+    public metodoA:Metodo;
+    public tablaSimbolos : Tabla;
+    public claseA:Clase;
     constructor(){
         super();    
         this.exp = new Exp(this);
         this.variable = new Variable(this);
+        this.tablaSimbolos = new Tabla();
+        this.metodoA = new Metodo(this);
+        this.claseA = new Clase("",0);
     }
     /**
      * este va elegir si creaa una estrucrura o crea una clase proviene del encabezado
@@ -154,8 +162,7 @@ export default class Analizador extends Inter {
         let nombre:string =nodo.childNode[0].term;
         switch(nombre){
             case "CLASE":
-                this.logPorCompletar("clase a tabla de simbolos");
-                this.log("crear clase " + nodo.childNode[1].token );
+                this.claseA = new Clase(nodo.childNode[1].token,nodo.childNode[1].location.first_line);
                 this.herencia(nodo.childNode[2]);
                 return true;
             case "Clase":
@@ -205,7 +212,7 @@ export default class Analizador extends Inter {
                 return true;
             case "SobreEscribir":
                 this.log("cuerpoClase a sobrescribir: "+
-                this.sobrescribir(nodo.childNode[0]));
+                this.metodoA.sobrescribir(nodo.childNode[0]));
                 return true;
             case "Estruct":
                 this.logPorCompletar("agreagar struct a tabla de simbolos");
@@ -217,134 +224,7 @@ export default class Analizador extends Inter {
         }
         return false;
     }
-    /**
-     * SobreEscribir
-     *  : SOBREESCRIBIR CrearMetodo
-     *  |CrearMetodo
-     *  ;
-     * @param nodo 
-     */
-    public sobrescribir(nodo:Nodo):boolean{
-        let nombre:string = nodo.childNode[0].term;
-        switch(nombre){
-            case "SOBREESCRIBIR":
-                this.logPorCompletar("tengo que sobreEcribir")
-                this.log("sobrescribir a metodo: " + 
-                this.crearMetodo(nodo.childNode[1]));
-                return true;
-            case "CrearMetodo":
-                this.log("sobrescrbir a crear metodo: "+ 
-                this.crearMetodo(nodo.childNode[0]));
-                return true;
-        }
-        return false;
-    }
-    /**
-     * Metodo
-     *   : Tipo ID '(' Parametros '{'
-     *   | ID ID '(' Parametros '{'
-     *   | Metodo  CuerpoMetodo
-     *   ;
-     * @param nodo 
-     */
-    public metodo (nodo:Nodo ,visi:string):boolean{
-        let nombre = nodo.childNode[0].term;
-        let tipo:string;
-        let nombreMetodo:string;
-
-        switch(nombre){
-            case "Tipo":
-                tipo = nodo.childNode[0].childNode[0].token;
-                nombreMetodo = nodo.childNode[1].token;
-                this.logPorCompletar("agregar metodo a tabla de simbolos");
-                return true;
-            case "ID":
-                tipo = nodo.childNode[0].token;
-                nombreMetodo = nodo.childNode[1].token;
-                this.logPorCompletar("agregar metodo a tabla de simbolos")
-                return true;
-            case "Metodo":
-                this.metodo(nodo.childNode[0],"");
-                this.cuerpoMetodo(nodo.childNode[1]);
-                return true;
-        }
-        return false;
-    }
-    /**
-     * CrearMetodo
-     *   : Visibilidad Metodo '}'
-     *   | Metodo '}'
-     *   ;
-     * @param nodo 
-     */
-    public crearMetodo(nodo:Nodo):boolean{
-        let nombre :string = nodo.childNode[0].term
-        switch(nombre){
-            case "Visibilidad":
-                this.log("agregar visibilidad");
-                this.log("crear metodo a metodo: " +
-                this.metodo(nodo.childNode[1],nodo.childNode[0].childNode[0].token));
-                return true;
-            case "Metodo":
-                this.log("crear metodo a metodo: " +
-                this.metodo(nodo.childNode[0],"pivate"));
-                return true;
-        }
-        return false;
-    }
-    /**
-     * Parametros
-     *   : Parametro ')' 
-     *   |  ')'
-     *   ;
-     * @param nodo 
-     */
-    public parametros(nodo:Nodo):boolean{
-        return false;
-    }
-
-    /**
-     * Parametro
-     *   : Tipo ID 
-     *   | ID ID 
-     *   | Parametro ',' Tipo ID
-     *   | Parametro ',' ID ID 
-     *   ;
-     * @param nodo 
-     */
-    public parametro(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     * CuerpoMetodo
-     *   : Declaracion
-     *   | Asignacion
-     *   | getMetodoZ ';'
-     *   | Control
-     *   | Branching ';'
-     *   ;
-     * @param nodo 
-     */
-    public cuerpoMetodo(nodo:Nodo):boolean{
-        
-        return false;
-    }
-    /**
-     * Asignacion
-     *   : var '=' e ';'
-     *   | Navegar var '=' e ';'
-     *   |'+=' e ';'
-     *   |'*=' e ';'
-     *   |'/=' e ';'
-     *   | '++' ';' 
-     *   | '--' ';'
-     *   | var '=' Nuevo ';'
-     *  ;
-     * @param nodo 
-     */
-    public asignacion(nodo:Nodo):boolean{
-        return false;
-    }
+ 
     /**
      * Navegar
      *   : var '.'

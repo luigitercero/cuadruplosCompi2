@@ -36,7 +36,7 @@ var FormatoItermedio = /** @class */ (function () {
      * @param pos es la posicion donde de que se desea acceder del staack
      * @param valor es valor que se va a guardar
      */
-    FormatoItermedio.prototype.guardarEnPila = function (pos, valor) {
+    FormatoItermedio.prototype.saveEnPila = function (pos, valor) {
         return this.genCuadruplo("<=", pos, valor, "stack");
     };
     /**
@@ -44,7 +44,7 @@ var FormatoItermedio = /** @class */ (function () {
      * @param pos es la posicion donde se vaa acceder
      * @param valor es el valor que que se obtiene al acceder la posicion del arreglo
      */
-    FormatoItermedio.prototype.obtenerEnPila = function (pos, valor) {
+    FormatoItermedio.prototype.getEnPila = function (pos, valor) {
         return this.genCuadruplo("=>", pos, valor, "stack");
     };
     /**
@@ -52,7 +52,7 @@ var FormatoItermedio = /** @class */ (function () {
      * @param pos es la posicion donde va a acceder al heap
      * @param valor  es el valor que se guarda en la posicion del heap
      */
-    FormatoItermedio.prototype.guardarEnHeap = function (pos, valor) {
+    FormatoItermedio.prototype.saveEnHeap = function (pos, valor) {
         return this.genCuadruplo("<=", pos, valor, "heap");
     };
     /**
@@ -60,7 +60,7 @@ var FormatoItermedio = /** @class */ (function () {
      * @param pos es la posicion donde se va guardar en el heap
      * @param valor es el valor que se guarda en la posicion del heap
      */
-    FormatoItermedio.prototype.obtenerEnHeap = function (pos, valor) {
+    FormatoItermedio.prototype.getEnHeap = function (pos, valor) {
         return this.genCuadruplo("=>", pos, valor, "heap");
     };
     /**
@@ -201,14 +201,10 @@ var FormatoItermedio = /** @class */ (function () {
      */
     FormatoItermedio.prototype.newError = function (descripcion, linea, columna) {
         console.log(descripcion + " linea: " + linea + " columna: " + columna);
-        return new Error(descripcion + " linea: " + linea + " columna: " + columna);
+        throw new Error(descripcion + " linea: " + linea + " columna: " + columna);
     };
     FormatoItermedio.prototype.logPorCompletar = function (mensaje) {
         console.log("es necesario completar: " + mensaje);
-    };
-    FormatoItermedio.prototype.logError = function (mensaje) {
-        console.log("error en: " + mensaje);
-        return new Error(mensaje);
     };
     return FormatoItermedio;
 }());

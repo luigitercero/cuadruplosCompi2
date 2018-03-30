@@ -253,15 +253,15 @@ Cuerpo_Estruct:ESTRUCTURA '['
       nodo = new Nodo("Cuerpo_Estruct",null,null,[$1,$2]); 
       $$ = nodo; }
   ; 
-Declaracion:Tipo ID AsignarValor
-     {nodo1= new Nodo ("Tipo", @1,$1, [] ); nodo2= new Nodo ("ID", @2,$2, [] ); nodo3= new Nodo ("AsignarValor", @3,$3, [] ); 
-      nodo = new Nodo("Declaracion",null,null,[$1,nodo2,$3]);  
+Declaracion:Tipo var AsignarValor
+     {nodo1= new Nodo ("Tipo", @1,$1, [] ); nodo2= new Nodo ("var", @2,$2, [] ); nodo3= new Nodo ("AsignarValor", @3,$3, [] ); 
+      nodo = new Nodo("Declaracion",null,null,[$1,$2,$3]);  
       $$ = nodo; }
-  | ID ID AsignarValor
-     {nodo1= new Nodo ("ID", @1,$1, [] ); nodo2= new Nodo ("ID", @2,$2, [] ); nodo3= new Nodo ("AsignarValor", @3,$3, [] );
-      nodo = new Nodo("Declaracion",null,null,[nodo1,nodo2,$3]); 
+  | ID var AsignarValor
+     {nodo1= new Nodo ("ID", @1,$1, [] ); nodo2= new Nodo ("var", @2,$2, [] ); nodo3= new Nodo ("AsignarValor", @3,$3, [] );
+      nodo = new Nodo("Declaracion",null,null,[nodo1,$2,$3]); 
       $$ = nodo; }
-  ; 
+  ;  
 var:ID
      {nodo1= new Nodo ("ID", @1,$1, [] ); 
       nodo = new Nodo("var",null,null,[nodo1]);  

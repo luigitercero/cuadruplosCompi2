@@ -6,7 +6,7 @@ export default class Operacion{
         'metodo' :[{'metodo':"",'poss':-1}],
         'temporal':[{"tempora":"retorno","valor":4}]
     };
-    constructor(lTeporales){
+    constructor(lTeporales:any){
         this.es = lTeporales;
     }
     sumar(arg0:number,arg1:number,temp:string){

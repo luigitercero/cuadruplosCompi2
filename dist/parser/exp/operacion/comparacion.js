@@ -28,6 +28,12 @@ var Comparacion = /** @class */ (function (_super) {
     Comparacion.prototype.numberNumber = function () {
         return this.agregaretiqueta();
     };
+    Comparacion.prototype.doubleDouble = function () {
+        return this.agregaretiqueta();
+    };
+    /**
+     * funciona para las operaciones xor que se deba subir un atributo
+     */
     Comparacion.prototype.agregaretiqueta = function () {
         var lv = this.analizador.newEtiqueta();
         var lf = this.analizador.newEtiqueta();
@@ -36,7 +42,7 @@ var Comparacion = /** @class */ (function (_super) {
         this.analizador.agregarCodigo(this.analizador.genOperacion(this.op, this.arg0.valor, this.arg1.valor, lv), c, f);
         this.analizador.agregarCodigo(this.analizador.genSalto(lf), c, f);
         var xor = this.analizador.opBool(this.op) + ", " + this.arg0.valor + ", " + this.arg1.valor;
-        var n = new nodoOperacion_1.default(xor, 0, c, f);
+        var n = new nodoOperacion_1.default(xor, "boolean", c, f);
         n.addEtiquetaV(lv);
         n.addEtiquetaF(lf);
         return n;
