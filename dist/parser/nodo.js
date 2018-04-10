@@ -17,13 +17,4 @@ var Nodo = /** @class */ (function () {
     return Nodo;
 }());
 exports.default = Nodo;
-var location = /** @class */ (function () {
-    function location() {
-        this.first_column = -1;
-        this.first_line = -1;
-        this.last_column = -1;
-        this.last_line = -1;
-    }
-    return location;
-}());
 //# sourceMappingURL=nodo.js.map

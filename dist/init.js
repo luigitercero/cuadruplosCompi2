@@ -4,13 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 var nodo_1 = __importDefault(require("./parser/nodo"));
-var analizador_1 = __importDefault(require("./analizador"));
+var analizador_1 = __importDefault(require("./parser/analizador"));
 var interprete_1 = __importDefault(require("./compilador/Parser with parser/Interprete4D/interprete"));
 var Init = /** @class */ (function () {
     function Init() {
         var p = require('./compilador/Parser with parser/Codigo3D/codigoFinal');
         var fs = require('fs');
-        var archivo = fs.readFileSync('/home/luigitercero/Documentos/Compi2/Archivo De entrada/test', 'utf-8');
+        var archivo = fs.readFileSync('/home/luigitercero/Documentos/Compi2/Archivo De entrada/arreglo', 'utf-8');
         var hola = p.parse(/*prueba7 + prueba8*/ archivo);
         var nodo = new nodo_1.default(p.parser.treeparser.raiz);
         var analizador = new analizador_1.default();
@@ -27,7 +27,7 @@ var Init = /** @class */ (function () {
             console.log(result.etiqueta[k].poss, result.etiqueta[k].etiqueta);
         }
         for (var k in result.C4D) {
-            console.log(result.C4D[k].poss, result.C4D[k].codigo);
+            console.log(result.C4D[k].poss, result.C4D[k].codigo, result.C4D[k].columna, result.C4D[k].linea);
         }
     }
     return Init;

@@ -21,6 +21,7 @@ export default class FormatoItermedio{
         this.codigoIntermedio  = this.codigoIntermedio + codigo+"\n";
         this.codigo4D.C4D.push({'poss':this.poss,'codigo':codigo,'columna':column,'linea':line});
         this.poss ++;
+        console.log("#"+codigo);
     }
 
     constructor(){
@@ -41,7 +42,7 @@ export default class FormatoItermedio{
      * @param valor es valor que se va a guardar 
      */
     public saveEnPila(pos:string,valor:string):string{
-        return this.genCuadruplo("<=",pos,valor,"stack")
+        return this.genCuadruplo("<=",pos,valor,"stack");
     }
     /**
      * 
@@ -61,8 +62,8 @@ export default class FormatoItermedio{
     }
     /**
      * 
-     * @param pos es la posicion donde se va guardar en el heap
-     * @param valor es el valor que se guarda en la posicion del heap
+     * @param pos es la posicion en el heap
+     * @param valor es el valor del la posicion del heap
      */
     public getEnHeap(pos:string,valor:string):string{
         return this.genCuadruplo("=>",pos,valor,"heap")
@@ -205,7 +206,16 @@ export default class FormatoItermedio{
     }
     public logPorCompletar(mensaje:string){
         console.log("es necesario completar: " + mensaje);
+        
     }
-   
-
+    
+   public INT :string = "entero";
+   public CARACTER:string ="caracter";
+   public BOOLEANO:string = "booleano";
+   public PUBLICO:string = "publico";
+   public PRIVADO:string = "privado";
+   public PROTEGIDO:string = "protegido";
+   public VACIO:string="vacio";
+   public DOUBLE:string="decimal"
+   public NULL:string="35174492"
 }

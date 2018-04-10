@@ -1,6 +1,6 @@
 import Casteo from "./casteo";
 import nodoOperacion from "./nodoOperacion"
-import Analizador from '../../../analizador';
+import Analizador from '../../analizador';
 export default class Comparacion extends Casteo {
     private op:string;
     constructor(arg0:nodoOperacion, arg1:nodoOperacion,analizador:Analizador,op:string) {
@@ -31,7 +31,7 @@ export default class Comparacion extends Casteo {
         this.analizador.agregarCodigo(this.analizador.genOperacion(this.op,this.arg0.valor,this.arg1.valor,lv),c,f);
         this.analizador.agregarCodigo(this.analizador.genSalto(lf),c,f);
         let xor = this.analizador.opBool(this.op)+", "+ this.arg0.valor+", "+this.arg1.valor
-        let n = new nodoOperacion(xor,"boolean",c,f);
+        let n = new nodoOperacion(xor,this.analizador.BOOLEANO,c,f);
         n.addEtiquetaV(lv);
         n.addEtiquetaF(lf);
         return n;

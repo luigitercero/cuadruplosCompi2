@@ -321,3 +321,40 @@ Doble_Condicion: DOBLECONDICION '(' e ',' e ')'Cuerpo
     | Tipo
     | Nuevo
     ;
+
+
+
+    Parametro
+    : Tipo var 
+    | ID var 
+    | Parametro ',' Tipo var
+    | Parametro ',' ID var 
+    ;
+
+
+    Identi
+    :var
+    |getMetodo
+    |Identi '->' var
+    |Identi '->' getMetodo
+    |Identi '.' var
+    |Identi '.' getMetodo
+    |ESTE '.'  var
+    ;   
+
+    Asignacion
+    : var Asignar ';'
+    | Navegar var Asignar ';'
+   ;
+
+   Asignar
+    :'+=' e 
+    |'*=' e 
+    |'/=' e 
+    | '++' 
+    | '--' 
+    | '=' Nuevo 
+    | '=' e 
+    ;
+
+   

@@ -1,68 +1,69 @@
-import Analizador from '../../../analizador';
+import Analizador from '../../analizador';
 import Nodo from '../../nodo';
 import NodoOperacion from './nodoOperacion'
 import nodoOperacion from './nodoOperacion';
 import Suma from './suma';
 import Comparacion from './comparacion';
+import Simbolo from '../../tablaSimbolos/simbolo';
 
 
 export default class Operacion{
     
-    public  analizador: Analizador;
+protected  analizador: Analizador;
     constructor(anlaizador:Analizador){
         this.analizador = anlaizador;
     }
     
-    operarMayorIgual(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarMayorIgual(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         let a1= this.analizar(arg1);
         let op:Comparacion = new Comparacion(a0, a1,this.analizador,">=");
         return op.evaluar();;
     }
-    operarMenorIgual(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarMenorIgual(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         let a1= this.analizar(arg1);
         let op:Comparacion = new Comparacion(a0, a1,this.analizador,"<=");
         return op.evaluar();
     }
-    operarMayorQue(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarMayorQue(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         let a1= this.analizar(arg1);
         let op:Comparacion = new Comparacion(a0, a1,this.analizador,">");
         return op.evaluar();
     }
-    operarMenorQue(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarMenorQue(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         let a1= this.analizar(arg1);
         let op:Comparacion = new Comparacion(a0, a1,this.analizador,"<");
         return op.evaluar();
     }
-    operarNoIgual(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarNoIgual(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         let a1= this.analizar(arg1);
         let op:Comparacion = new Comparacion(a0, a1,this.analizador,"!=");
         return op.evaluar();
     }
-    operarIgual(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarIgual(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         let a1= this.analizar(arg1);
         let op:Comparacion = new Comparacion(a0, a1,this.analizador,"==");
         return op.evaluar();
     }
-    operarXor(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarXor(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
-        if (a0.tipo == "boolean")
+        if (a0.tipo == this.analizador.BOOLEANO)
         this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaF),a0.column,a0.fila);//agregnaod etiqueta falsa
         else this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
         let a1= this.analizar(arg1);
-        if(a1.tipo == "boolean" ){
+        if(a1.tipo == this.analizador.BOOLEANO ){
             this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaV),a0.column,a0.fila);//agregnaod etiqueta verdadera
             let l5 = this.analizador.newEtiqueta();
             let l6 = this.analizador.newEtiqueta();
             this.analizador.agregarCodigo(a1.valor+","+ l5,a1.column,a1.fila);
             //this.analizador.agregarCodigo(a0.etiquetaV+","+ l6 +":",a0.column,a0.fila);//agregnaod etiqueta verdadera
             
-            let res:nodoOperacion = new  nodoOperacion ("","boolean",a0.column,a0.fila);
+            let res:nodoOperacion = new  nodoOperacion ("",this.analizador.BOOLEANO,a0.column,a0.fila);
             res.addEtiquetaVV(a1.etiquetaV);
             res.addEtiquetaV(l6);
             res.addEtiquetaFV(a1.etiquetaF);
@@ -72,14 +73,14 @@ export default class Operacion{
         else 
          throw this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
     }
-    operarAnd(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarAnd(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
-        if (a0.tipo == "boolean")
+        if (a0.tipo == this.analizador.BOOLEANO)
         this.analizador.agregarCodigo(this.analizador.escribirEtiqueta( a0.etiquetaV),a0.column,a0.fila);//agregnaod etiqueta verdadera
         else this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
         let a1= this.analizar(arg1);
-        if(a1.tipo == "boolean" ){
-            let res:nodoOperacion = new  nodoOperacion ("","boolean",a0.column,a0.fila);
+        if(a1.tipo == this.analizador.BOOLEANO ){
+            let res:nodoOperacion = new  nodoOperacion ("",this.analizador.BOOLEANO,a0.column,a0.fila);
             res.addEtiquetaVV(a1.etiquetaV);
             res.addEtiquetaFV(a0.etiquetaF);
             res.addEtiquetaFV(a1.etiquetaF);
@@ -88,14 +89,14 @@ export default class Operacion{
         else 
          throw this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
     }
-    operarOr(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarOr(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
-        if (a0.tipo == "boolean")
+        if (a0.tipo == this.analizador.BOOLEANO)
         this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaF),a0.column,a0.fila);//agregnaod etiqueta verdadera
         else this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
         let a1= this.analizar(arg1);
-        if(a1.tipo == "boolean" ){
-            let res:nodoOperacion = new  nodoOperacion ("","boolean",a0.column,a0.fila);
+        if(a1.tipo == this.analizador.BOOLEANO ){
+            let res:nodoOperacion = new  nodoOperacion ("",this.analizador.BOOLEANO,a0.column,a0.fila);
             res.addEtiquetaVV(a0.etiquetaV);
             res.addEtiquetaVV(a1.etiquetaV);
             res.addEtiquetaFV(a1.etiquetaF);
@@ -104,38 +105,38 @@ export default class Operacion{
         else 
          throw this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
     }
-    operarEleva(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarEleva(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let op:Suma = new Suma(this.analizador,"*");
         op.setArg0( this.analizar(arg0));
         op.setArg1( this.analizar(arg1));
         return op.evaluar();
     }
-    operarModulo(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarModulo(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let op:Suma = new Suma(this.analizador,"+");
         op.setArg0( this.analizar(arg0));
         op.setArg1( this.analizar(arg1));
         return op.evaluar();;
         
     }
-    operarDivicion(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarDivicion(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let op:Suma = new Suma(this.analizador,"/");
         op.setArg0( this.analizar(arg0));
         op.setArg1( this.analizar(arg1));
         return op.evaluar();
     }
-    operarMultiplicaion(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarMultiplicaion(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let op:Suma = new Suma(this.analizador,"*");
         op.setArg0( this.analizar(arg0));
         op.setArg1( this.analizar(arg1));
         return op.evaluar();
     }
-    operarResta(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarResta(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let op:Suma = new Suma(this.analizador,"-");
         op.setArg0( this.analizar(arg0));
         op.setArg1( this.analizar(arg1));
         return op.evaluar();
     }
-    operarSuma(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    private operarSuma(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let op:Suma = new Suma(this.analizador,"+");
         op.setArg0( this.analizar(arg0));
         op.setArg1( this.analizar(arg1));
@@ -143,8 +144,11 @@ export default class Operacion{
     }
 
    
-
-    analizar(nodo:Nodo):nodoOperacion{
+    /**
+     * este metodo inicia expresion
+     * @param nodo aqui empiza un el nodo exp
+     */
+    public analizar(nodo:Nodo):nodoOperacion{
        let cantidad:number = nodo.childNode.length
        
         switch(cantidad){
@@ -158,7 +162,7 @@ export default class Operacion{
         throw new Error("error en analizar");
        
     }
-    operacion(nodo:Nodo):nodoOperacion{
+   private operacion(nodo:Nodo):nodoOperacion{
         let operacion:string =nodo.childNode[1].term;
         switch(operacion){
             case "'+'":
@@ -198,7 +202,7 @@ export default class Operacion{
         throw new Error("error en analizar");
     }
 
-    operacion2(nodo:Nodo):NodoOperacion{
+   private operacion2(nodo:Nodo):NodoOperacion{
         let term = nodo.childNode[0].term
         switch(term){
             case "'-'":
@@ -209,7 +213,7 @@ export default class Operacion{
         }
         throw new Error("error en analizar");
     }
-    negar(arg0:NodoOperacion){
+   private negar(arg0:NodoOperacion){
         let v:string[] = arg0.etiquetaV;
         let f:string[] =arg0.etiquetaF;
         arg0.etiquetaV = f;
@@ -217,7 +221,7 @@ export default class Operacion{
         return arg0;
     }
 
-    invertirDato(arg0:NodoOperacion){
+   private invertirDato(arg0:NodoOperacion){
         let t0 = this.analizador.newTemporal();
         this.analizador.agregarCodigo(this.analizador.asignar("-1",t0),arg0.column,arg0.fila);
         //let t1 = this.analizador.newTemporal();
@@ -229,7 +233,7 @@ export default class Operacion{
         let term = nodo.term
         switch(term){
             case "NULL":
-            return new nodoOperacion("nada",351244926+"",nodo.location.last_column,nodo.location.first_line);
+            return new nodoOperacion("nada",35174492+"",nodo.location.last_column,nodo.location.first_line);
             case "Datos":
             return this.resolverDatos(nodo);
         }
@@ -254,15 +258,15 @@ export default class Operacion{
             case "NUMBERLIST2":
             col = nodo.childNode[0].location.first_line;
             fil = nodo.childNode[0].location.last_column;
-            return new NodoOperacion(nodo.childNode[0].token,"double",col,fil);
+            return new NodoOperacion(nodo.childNode[0].token,this.analizador.DOUBLE,col,fil);
             case "NUMBERLIST":
             col = nodo.childNode[0].location.first_line;
             fil = nodo.childNode[0].location.last_column;
-            return new NodoOperacion(nodo.childNode[0].token,"int",col,fil);
+            return new NodoOperacion(nodo.childNode[0].token,this.analizador.INT,col,fil);
             case "CARACTER":
             col = nodo.childNode[0].location.first_line;
             fil = nodo.childNode[0].location.last_column;
-            return new NodoOperacion(nodo.childNode[0].token.charCodeAt(1)+"","caracter",col,fil);
+            return new NodoOperacion(nodo.childNode[0].token.charCodeAt(1)+"",this.analizador.CARACTER,col,fil);
             case "STRINGLIST":
             col = nodo.childNode[0].location.first_line;
             fil = nodo.childNode[0].location.last_column;
@@ -270,30 +274,32 @@ export default class Operacion{
             case "TRUE":
             col = nodo.childNode[0].location.first_line;
             fil = nodo.childNode[0].location.last_column;
-            let arg0 = new NodoOperacion("1","int",col,fil);
-            let arg1 = new NodoOperacion("1","int",col,fil);
+            let arg0 = new NodoOperacion("1",this.analizador.INT,col,fil);
+            let arg1 = new NodoOperacion("1",this.analizador.INT,col,fil);
             let t:Comparacion = new Comparacion(arg0,arg1,this.analizador,"==");    
             return t.evaluar();
             case "FALSE":
             col = nodo.childNode[0].location.first_line;
             fil = nodo.childNode[0].location.last_column;
-            let arg00 = new NodoOperacion("0","int",col,fil);
-            let arg10 = new NodoOperacion("1","int",col,fil);
+            let arg00 = new NodoOperacion("0",this.analizador.INT,col,fil);
+            let arg10 = new NodoOperacion("1",this.analizador.INT,col,fil);
             let t0:Comparacion = new Comparacion(arg00,arg10,this.analizador,"==");    
             return t0.evaluar();
             case "Identi":
-            col = nodo.childNode[0].location.first_line;
-            fil = nodo.childNode[0].location.last_column;
-            this.analizador.logPorCompletar("falta obterner datos de la tabla de simbolos");
-           
-        return new nodoOperacion("nada",35174492+"",col,fil)
+            //col = nodo.childNode[0].location.first_line;
+            //fil = nodo.childNode[0].location.last_column;
+            let variable = this.analizador.variable.identi(nodo.childNode[0])
+            let val = this.analizador.variable.getValorVariable(variable);
+            return new nodoOperacion(val,variable.simbolo.getTipo(),variable.location.last_column,variable.location.first_line);
+            
+         
         }
       
         throw new Error("error en analizar");
     }
 
     getValor(arg0:nodoOperacion){
-        if (arg0.tipo == "boolean") {
+        if (arg0.tipo == this.analizador.BOOLEANO) {
             let t0 = this.analizador.newTemporal();
             let es = this.analizador.newEtiqueta();
             /*para etiqueta verdadera */
@@ -314,6 +320,10 @@ export default class Operacion{
 
     }
 
+   
 
-    
+  
+
+
 }
+

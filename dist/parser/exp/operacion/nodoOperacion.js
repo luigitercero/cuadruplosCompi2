@@ -1,5 +1,9 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
 Object.defineProperty(exports, "__esModule", { value: true });
+var simbolo_1 = __importDefault(require("../../tablaSimbolos/simbolo"));
 var nodoOperacion = /** @class */ (function () {
     function nodoOperacion(valor, tipo, column, fila) {
         this.valor = valor;
@@ -8,6 +12,8 @@ var nodoOperacion = /** @class */ (function () {
         this.fila = fila;
         this.etiquetaV = [];
         this.etiquetaF = [];
+        this.dim = 0;
+        this.simbolo = new simbolo_1.default("", "", "");
     }
     nodoOperacion.prototype.addEtiquetaV = function (etiqueta) {
         this.etiquetaV.push(etiqueta);

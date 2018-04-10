@@ -201,7 +201,7 @@ Declaracion
 var  
     : ID
     | var '[' e ']' 
-    | ESTE '.'  ID
+    
     ;
 AsignarValor
     :';'
@@ -253,10 +253,10 @@ Parametros
     |  ')'
     ;
 Parametro
-    : Tipo ID 
-    | ID ID 
-    | Parametro ',' Tipo ID
-    | Parametro ',' ID ID 
+    : Tipo var 
+    | ID var 
+    | Parametro ',' Tipo var
+    | Parametro ',' ID var 
     ;
 CuerpoMetodo
     : Declaracion
@@ -275,6 +275,7 @@ Asignacion
     | '++' ';' 
     | '--' ';'
     | var '=' Nuevo ';'
+    | Navegar var '=' Nuevo ';'
    ;
 Navegar
     : var '.'
@@ -285,6 +286,7 @@ Navegar
     | Navegar  getMetodo '.'
     | Navegar var '->'
     | Navegar  getMetodo '->'
+    | ESTE '.'
     ;
 Control
     : If1
@@ -442,6 +444,7 @@ Identi
     |Identi '->' getMetodo
     |Identi '.' var
     |Identi '.' getMetodo
+    |ESTE '.'  var
     ;   
 %%
 

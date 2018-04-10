@@ -1,47 +1,62 @@
 
-import Nodo from './parser/nodo'
-import Inter from './parser/itermedio'
-import Exp from './parser/exp/operacion/Exp'
-import Variable from './parser/variable/variable'
-import Tabla from './parser/tablaSimbolos/tabla'
-import Metodo from './parser/metodo/metodo'
-import Clase from './parser/tablaSimbolos/clase'
+import Nodo from './nodo'
+import Inter from './itermedio'
+import Exp from './exp/operacion/Exp'
+import Variable from './variable/variable'
+
+import Metodo from './metodo/metodo'
+import Clase from './tablaSimbolos/clase'
+import Recoleccion from '../precompilacion/recoleccion'
+import Class from './clase/clase'
 
 export default class Analizador extends Inter {
     public exp:Exp;
     public variable:Variable;
     public metodoA:Metodo;
-    public tablaSimbolos : Tabla;
+    public clas:Class;
     public claseA:Clase;
+    public clases:Clase[];
     constructor(){
         super();    
         this.exp = new Exp(this);
         this.variable = new Variable(this);
-        this.tablaSimbolos = new Tabla();
         this.metodoA = new Metodo(this);
         this.claseA = new Clase("",0);
+        this.clases = new Array<Clase>();
+        this.clas = new Class(this);
     }
-    /**
-     * este va elegir si creaa una estrucrura o crea una clase proviene del encabezado
-     *    | Encabezado CrearClase
-     *    | Encabezado Estruct
-     * @param nodo 
-     */
-    public CE(nodo: Nodo): boolean {
-        let nombre:string = nodo.term;   
-        switch(nombre){
-            case "CrearClase":
-                this.log("CE a creaClase: "+
-                this.crearClase(nodo));
-                return true;
-            case  "Estruct":
-                this.logPorCompletar("estruct")
-                return true;
+verTodasLasClases(){
+
+    console.log("---------Obeservando clasese-----------")
+    for (let index = 0; index < this.clases.length; index++) {
+        let element = this.clases[index];
+        element.verMetodosDeClase();
+        element.verVariable();
+        
+    }
+
+    console.log("---------Fin Obeservando clasese-----------")
+
+}
+buscarClase(nombre:string):Clase{
+    for (let index = 0; index < this.clases.length; index++) {
+        let element = this.clases[index];
+        if (element.nombre == nombre){
+            element.verVariable();
+            return element;
+        
         }
-    return false;
     }
+    this.newError("no se pudo encontrar la clase con el nombre de "+nombre,0,0)
+    return new Clase("",0);
+}   
+verClaseA(){
+    console.log("---------Obeservando ClaseA-----------")
+    this.claseA.verMetodosDeClase();
+        this.claseA.verVariable();
+    console.log("---------Fin Obeservando ClaseA-----------")
 
-
+}
     /**
      * inicio
      *: Encabezado EOF
@@ -49,7 +64,9 @@ export default class Analizador extends Inter {
      * @param nodo 
      */
     public inicio (nodo:Nodo):boolean{
-        
+        let recoleccion:Recoleccion = new Recoleccion(this);
+        recoleccion.analizar(nodo);
+        //this.verTodasLasClases();
         let nombre:string = nodo.childNode[0].term;
         switch(nombre){
             case "inicio":
@@ -86,7 +103,7 @@ export default class Analizador extends Inter {
                 return true;
             case "CrearClase":
                 this.log ("encabezado a crear Clase: "+
-                this.crearClase(nodo.childNode[0]));
+                this.clas.crearClase(nodo.childNode[0]));
                 return true;
             case "Import":
                 this.log ("encabezado a Import: "+
@@ -95,6 +112,27 @@ export default class Analizador extends Inter {
         }
         return false;
     }
+
+    /**
+     * este va elegir si creaa una estrucrura o crea una clase proviene del encabezado
+     *    | Encabezado CrearClase
+     *    | Encabezado Estruct
+     * @param nodo 
+     */
+    public CE(nodo: Nodo): boolean {
+        let nombre:string = nodo.term;   
+        switch(nombre){
+            case "CrearClase":
+                this.log("CE a creaClase: "+
+                this.clas.crearClase(nodo));
+                return true;
+            case  "Estruct":
+                this.logPorCompletar("estruct")
+                return true;
+        }
+    return false;
+    }
+
 
     /**
      * Import
@@ -131,99 +169,7 @@ export default class Analizador extends Inter {
         this.log("vamo a importar");
         return true;
     }
-    /**
-     * CrearClase
-     *: Clase '}'
-     *;
-     * @param nodo 
-     */
-    public crearClase (nodo:Nodo):boolean{
-        let nombre:string =nodo.childNode[0].term;
-        switch(nombre){
-            case "CrearClase":
-                this.log("crearClase a crearClase: "+
-                this.crearClase(nodo.childNode[0]));
-                return true;
-            case "Clase":
-                this.log("crearClase a Clase: "+ 
-                this.clase(nodo.childNode[0]));
-                return true;
-        }
-        return false;
-    }
-    /**
-     * Clase
-     *: CLASE ID Herencia
-     *| Clase CuerpoClase
-     *;
-     * @param nodo 
-     */
-    public clase(nodo:Nodo):boolean{
-        let nombre:string =nodo.childNode[0].term;
-        switch(nombre){
-            case "CLASE":
-                this.claseA = new Clase(nodo.childNode[1].token,nodo.childNode[1].location.first_line);
-                this.herencia(nodo.childNode[2]);
-                return true;
-            case "Clase":
-                this.log("clase a clase: " +
-                this.clase(nodo.childNode[0]));
-                this.cuerpoClase(nodo.childNode[1]);
-                return true;
-        }
-        return false;
-    }
-    /**
-     * Herencia
-     *:'{'
-     *| HEREDADE ID '{'
-     *;
-     * @param nodo 
-     */
-    public herencia(nodo:Nodo):boolean{
-        let nombre:string = nodo.childNode[0].term;
-        switch(nombre){
-            case "HEREDADE":
-                this.logPorCompletar("herencia");
-                this.log("agregando herencia " + nodo.childNode[1].token);
-                return true;
-            case "Herencia":
-                this.herencia(nodo.childNode[0]);
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * este es el metod la produccion cuerpoClaes
-     * CuerpoClase
-     *   : DeclaracionClase 
-     *   | SobreEscribir
-     *   | Estruct
-     * ;
-     * @param nodo 
-     */
-    public cuerpoClase(nodo:Nodo):boolean{
-
-        let nombre:string = nodo.childNode[0].term;
-        switch(nombre){
-            case "DeclaracionClase"://declaracion de una variable en una clase
-                this.variable.declaracion(nodo.childNode[0]);
-                return true;
-            case "SobreEscribir":
-                this.log("cuerpoClase a sobrescribir: "+
-                this.metodoA.sobrescribir(nodo.childNode[0]));
-                return true;
-            case "Estruct":
-                this.logPorCompletar("agreagar struct a tabla de simbolos");
-                return true 
-            case "CuerpoClase":
-                this.log("cuerpoClase a cuerpoClase: " +
-                this.cuerpoClase(nodo.childNode[0]));
-                return true;
-        }
-        return false;
-    }
+   
  
     /**
      * Navegar

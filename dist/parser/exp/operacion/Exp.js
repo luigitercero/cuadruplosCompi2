@@ -20,13 +20,13 @@ var Exp = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Exp.prototype.evaluarTipo = function (valorTipo, simboloTipo) {
-        if (simboloTipo == "double") {
+        if (simboloTipo == this.analizador.DOUBLE) {
             return this.evaluarDouble(valorTipo);
         }
-        else if (simboloTipo == "int") {
+        else if (simboloTipo == this.analizador.INT) {
             return this.evaluarnumber(valorTipo);
         }
-        else if (simboloTipo == "caracter") {
+        else if (simboloTipo == this.analizador.CARACTER) {
             return this.evaluarCaracter(valorTipo);
         }
         else {
@@ -34,16 +34,16 @@ var Exp = /** @class */ (function (_super) {
         }
     };
     Exp.prototype.evaluarDouble = function (valorTipo) {
-        if (valorTipo == "double") {
+        if (valorTipo == this.analizador.DOUBLE) {
             return true;
         }
-        else if (valorTipo == "boolean") {
+        else if (valorTipo == this.analizador.BOOLEANO) {
             return true;
         }
-        else if (valorTipo == "int") {
+        else if (valorTipo == this.analizador.INT) {
             return true;
         }
-        else if (valorTipo == "caracter") {
+        else if (valorTipo == this.analizador.CARACTER) {
             return true;
         }
         else {
@@ -51,16 +51,16 @@ var Exp = /** @class */ (function (_super) {
         }
     };
     Exp.prototype.evaluarnumber = function (valorTipo) {
-        if (valorTipo == "double") {
+        if (valorTipo == this.analizador.DOUBLE) {
             return false;
         }
-        else if (valorTipo == "boolean") {
+        else if (valorTipo == this.analizador.BOOLEANO) {
             return true;
         }
-        else if (valorTipo == "int") {
+        else if (valorTipo == this.analizador.INT) {
             return true;
         }
-        else if (valorTipo == "caracter") {
+        else if (valorTipo == this.analizador.CARACTER) {
             return true;
         }
         else {
@@ -68,16 +68,16 @@ var Exp = /** @class */ (function (_super) {
         }
     };
     Exp.prototype.evaluarCaracter = function (valorTipo) {
-        if (valorTipo == "double") {
+        if (valorTipo == this.analizador.DOUBLE) {
             return false;
         }
-        else if (valorTipo == "boolean") {
+        else if (valorTipo == this.analizador.BOOLEANO) {
             return true;
         }
-        else if (valorTipo == "int") {
+        else if (valorTipo == this.analizador.INT) {
             return true;
         }
-        else if (valorTipo == "caracter") {
+        else if (valorTipo == this.analizador.CARACTER) {
             return true;
         }
         else {

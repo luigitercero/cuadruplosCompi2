@@ -1,6 +1,6 @@
 import {Router,Request,Response} from 'express';
 import Nodo from '../parser/nodo'
-import Analizador from '../analizador'
+import Analizador from '../parser/analizador'
 const router = Router();
 
 router.get ('/',(req: Request,res: Response)=>{

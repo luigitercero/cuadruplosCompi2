@@ -1,12 +1,12 @@
 import Nodo from './parser/nodo'
-import Analizador from './analizador'
+import Analizador from './parser/analizador'
 import Interprete from './compilador/Parser with parser/Interprete4D/interprete'
 export default class Init{
 
     constructor(){
         var p = require('./compilador/Parser with parser/Codigo3D/codigoFinal');
         var fs = require('fs');
-        let archivo = fs.readFileSync('/home/luigitercero/Documentos/Compi2/Archivo De entrada/test', 'utf-8');
+        let archivo = fs.readFileSync('/home/luigitercero/Documentos/Compi2/Archivo De entrada/arreglo', 'utf-8');
         let hola = p.parse(/*prueba7 + prueba8*/ archivo);
         let nodo = new Nodo (p.parser.treeparser.raiz);
         let analizador = new Analizador();
@@ -30,7 +30,7 @@ export default class Init{
             console.log(result.etiqueta[k].poss,result.etiqueta[k].etiqueta);
          }
          for(let k in result.C4D) {
-            console.log(result.C4D[k].poss,result.C4D[k].codigo);
+            console.log(result.C4D[k].poss,result.C4D[k].codigo,result.C4D[k].columna,result.C4D[k].linea);
          }
 
 

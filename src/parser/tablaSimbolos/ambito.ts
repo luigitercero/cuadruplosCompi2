@@ -11,23 +11,44 @@ export default class Ambito{
         this.ambito = new Array();
         this.prefijo = "";
     }
+    setPTR(inicio:number){
+        this.ptr = inicio;
+    }
 
-    buscarVariable(nombre:string) {}
+    buscarVariable(nombre:string):boolean {
+        for (let index = 0; index < this.ambito.length; index++) {
+            const element = this.ambito[index];
+            if (element.getNombre() == nombre){
+                return true;
+            }
+            
+        }
+        return false;
+    }
+    getVariable(nombre:string):Simbolo {
+        for (let index = 0; index < this.ambito.length; index++) {
+            const element = this.ambito[index];
+            if (element.getNombre() == nombre){
+                return element;
+            }
+            
+        }
+        return new Simbolo("","","");
+    }
     agregarVariable(nombre:string,visibilidad:string,tipo:string) {
         let simbolo = new Simbolo(nombre,visibilidad,tipo);
         this.ambito.push(simbolo);
         simbolo.possAmbito = this.ptr
-        this.ptr ++;
+        this.siguietePosicionLibre(simbolo);
         return simbolo;
     }
     agregarSimbolo(simbolo : Simbolo) {
        this.ambito.push(simbolo);
-       simbolo.possAmbito = this.ptr
        this.siguietePosicionLibre(simbolo);
     }
 
     siguietePosicionLibre(simbolo:Simbolo){
-        this.ptr = this.ptr + simbolo.getTamanio();
+        this.ptr ++;
     }
     existeVariable(nombre:string) :boolean {
         for (let index = 0; index < this.ambito.length; index++) {
@@ -41,6 +62,12 @@ export default class Ambito{
 
     getSize():number {return this.ambito.length;}
 
+    verVariables(){
+        for (let index = 0; index < this.ambito.length; index++) {
+            const element = this.ambito[index];
+            console.log(element.getNombre(), element.tam ,element.getTipo());
+        }
+    }
 
 
 

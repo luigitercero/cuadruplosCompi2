@@ -1,6 +1,6 @@
 
 import Operacion from './operacion';
-import Analizador from '../../../analizador';
+import Analizador from '../../analizador';
 import nodoOperacion from './nodoOperacion';
 export default class Casteo{
     arg0: nodoOperacion;
@@ -22,34 +22,34 @@ export default class Casteo{
     evaluar():nodoOperacion{
         if (this.arg0.tipo == 35174492+"" || this.arg1.tipo==35174492+"" ){
             throw new Error("errro de nulo no es posible operar" )
-        }else if (this.arg0.tipo == "boolean" && this.arg1.tipo == "int"){
+        }else if (this.arg0.tipo == this.analizador.BOOLEANO && this.arg1.tipo == this.analizador.INT){
             return this.boleanNumber();
-        }else if (this.arg0.tipo == "boolean" && this.arg1.tipo == "double"){
+        }else if (this.arg0.tipo == this.analizador.BOOLEANO && this.arg1.tipo == this.analizador.DOUBLE){
             return this.booleanDouble();
-        }else if (this.arg0.tipo == "boolean" && this.arg1.tipo == "caracter") {
+        }else if (this.arg0.tipo == this.analizador.BOOLEANO && this.arg1.tipo == this.analizador.CARACTER) {
             return this.boleanCaracter();
-        }else if (this.arg1.tipo == "boolean" && this.arg0.tipo ==  "int"){
+        }else if (this.arg1.tipo == this.analizador.BOOLEANO && this.arg0.tipo ==  this.analizador.INT){
             return this.numberBolean();
-        }else if (this.arg1.tipo == "boolean" && this.arg0.tipo == "double"){
+        }else if (this.arg1.tipo == this.analizador.BOOLEANO && this.arg0.tipo == this.analizador.DOUBLE){
             return this.doubleBoolean();
-        }else if (this.arg1.tipo == "boolean" && this.arg0.tipo == "caracter") {
+        }else if (this.arg1.tipo == this.analizador.BOOLEANO && this.arg0.tipo == this.analizador.CARACTER) {
             return this.caracterBolean();
         }
         
         else if(this.arg0.tipo == "string" || this.arg1.tipo=="string"){
             return this.stringString();
         }
-        else if (this.arg0.tipo == "boolean" && this.arg1.tipo == "boolean") {
+        else if (this.arg0.tipo == this.analizador.BOOLEANO && this.arg1.tipo == this.analizador.BOOLEANO) {
             return this.booleaBolean();
-        }else if(this.arg0.tipo ==  "int" && this.arg1.tipo ==  "int") {
+        }else if(this.arg0.tipo ==  this.analizador.INT && this.arg1.tipo ==  this.analizador.INT) {
             return this.numberNumber();
-        }else if(this.arg0.tipo == "double" && this.arg1.tipo == "double") {
+        }else if(this.arg0.tipo == this.analizador.DOUBLE && this.arg1.tipo == this.analizador.DOUBLE) {
             return this.doubleDouble();
-        }else if(this.arg0.tipo == "caracter" && this.arg1.tipo == "caracter") {
+        }else if(this.arg0.tipo == this.analizador.CARACTER && this.arg1.tipo == this.analizador.CARACTER) {
             return this.caracterCaracter();
-        }else if (this.arg0.tipo == "double" || this.arg1.tipo =="double") {
+        }else if (this.arg0.tipo == this.analizador.DOUBLE || this.arg1.tipo ==this.analizador.DOUBLE) {
             return this.doubleDouble();
-        }else if(this.arg0.tipo == "caracter" || this.arg1.tipo == "caracter"){
+        }else if(this.arg0.tipo == this.analizador.CARACTER || this.arg1.tipo == this.analizador.CARACTER){
             return this.caracterCaracter();
         }else {
             return this.numberNumber();

@@ -19,6 +19,7 @@ var variable_1 = __importDefault(require("./parser/variable/variable"));
 var tabla_1 = __importDefault(require("./parser/tablaSimbolos/tabla"));
 var metodo_1 = __importDefault(require("./parser/metodo/metodo"));
 var clase_1 = __importDefault(require("./parser/tablaSimbolos/clase"));
+var recoleccion_1 = __importDefault(require("./precompilacion/recoleccion"));
 var Analizador = /** @class */ (function (_super) {
     __extends(Analizador, _super);
     function Analizador() {
@@ -28,27 +29,10 @@ var Analizador = /** @class */ (function (_super) {
         _this.tablaSimbolos = new tabla_1.default();
         _this.metodoA = new metodo_1.default(_this);
         _this.claseA = new clase_1.default("", 0);
+        _this.clases = new Array();
         return _this;
     }
-    /**
-     * este va elegir si creaa una estrucrura o crea una clase proviene del encabezado
-     *    | Encabezado CrearClase
-     *    | Encabezado Estruct
-     * @param nodo
-     */
-    Analizador.prototype.CE = function (nodo) {
-        var nombre = nodo.term;
-        switch (nombre) {
-            case "CrearClase":
-                this.log("CE a creaClase: " +
-                    this.crearClase(nodo));
-                return true;
-            case "Estruct":
-                this.logPorCompletar("estruct");
-                return true;
-        }
-        return false;
-    };
+    Analizador.prototype.buscarClase = function () { return null; };
     /**
      * inicio
      *: Encabezado EOF
@@ -56,6 +40,8 @@ var Analizador = /** @class */ (function (_super) {
      * @param nodo
      */
     Analizador.prototype.inicio = function (nodo) {
+        var recoleccion = new recoleccion_1.default(this);
+        recoleccion.analizar(nodo);
         var nombre = nodo.childNode[0].term;
         switch (nombre) {
             case "inicio":
@@ -95,6 +81,25 @@ var Analizador = /** @class */ (function (_super) {
             case "Import":
                 this.log("encabezado a Import: " +
                     this.import(nodo.childNode[0]));
+                return true;
+        }
+        return false;
+    };
+    /**
+     * este va elegir si creaa una estrucrura o crea una clase proviene del encabezado
+     *    | Encabezado CrearClase
+     *    | Encabezado Estruct
+     * @param nodo
+     */
+    Analizador.prototype.CE = function (nodo) {
+        var nombre = nodo.term;
+        switch (nombre) {
+            case "CrearClase":
+                this.log("CE a creaClase: " +
+                    this.crearClase(nodo));
+                return true;
+            case "Estruct":
+                this.logPorCompletar("estruct");
                 return true;
         }
         return false;

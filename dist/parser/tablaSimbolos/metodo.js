@@ -17,8 +17,16 @@ var simbolo_1 = __importDefault(require("./simbolo"));
 var Metodo = /** @class */ (function (_super) {
     __extends(Metodo, _super);
     function Metodo(nombre, visibilidad, tipo, possAmbito) {
-        return _super.call(this, nombre, visibilidad, tipo) || this;
+        var _this = _super.call(this, nombre, visibilidad, tipo) || this;
+        _this.id = nombre;
+        _this.parametro = new Array();
+        return _this;
     }
+    Metodo.prototype.addParametro = function (simbolo) {
+        this.id = this.id + "_" + simbolo.getTipo();
+        this.parametro.push(simbolo);
+    };
+    Metodo.prototype.buscarSimbolo = function (nombre) { return false; };
     return Metodo;
 }(simbolo_1.default));
 exports.default = Metodo;

@@ -42,7 +42,7 @@ var Comparacion = /** @class */ (function (_super) {
         this.analizador.agregarCodigo(this.analizador.genOperacion(this.op, this.arg0.valor, this.arg1.valor, lv), c, f);
         this.analizador.agregarCodigo(this.analizador.genSalto(lf), c, f);
         var xor = this.analizador.opBool(this.op) + ", " + this.arg0.valor + ", " + this.arg1.valor;
-        var n = new nodoOperacion_1.default(xor, "boolean", c, f);
+        var n = new nodoOperacion_1.default(xor, this.analizador.BOOLEANO, c, f);
         n.addEtiquetaV(lv);
         n.addEtiquetaF(lf);
         return n;

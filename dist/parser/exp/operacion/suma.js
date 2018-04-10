@@ -26,18 +26,18 @@ var Suma = /** @class */ (function (_super) {
         return _this;
     }
     Suma.prototype.setArg0 = function (nodo) {
-        if (nodo.tipo == "boolean") {
+        if (nodo.tipo == this.analizador.BOOLEANO) {
             this.arg0 =
-                this.castearBoleano(nodo, "int");
+                this.castearBoleano(nodo, this.analizador.INT);
         }
         else {
             this.arg0 = nodo;
         }
     };
     Suma.prototype.setArg1 = function (nodo) {
-        if (nodo.tipo == "boolean") {
+        if (nodo.tipo == this.analizador.BOOLEANO) {
             this.arg1 =
-                this.castearBoleano(nodo, "int");
+                this.castearBoleano(nodo, this.analizador.INT);
         }
         else {
             this.arg1 = nodo;
@@ -48,32 +48,32 @@ var Suma = /** @class */ (function (_super) {
         var c = this.arg0.column;
         var f = this.arg0.fila;
         this.analizador.agregarCodigo(this.analizador.genOperacion(this.op, this.arg0.valor, this.arg1.valor, t), c, f);
-        return new nodoOperacion_1.default(t, "caracter", c, f);
+        return new nodoOperacion_1.default(t, this.analizador.CARACTER, c, f);
     };
     Suma.prototype.numberNumber = function () {
         var t = this.analizador.newTemporal();
         var c = this.arg0.column;
         var f = this.arg0.fila;
         this.analizador.agregarCodigo(this.analizador.genOperacion(this.op, this.arg0.valor, this.arg1.valor, t), c, f);
-        return new nodoOperacion_1.default(t, "int", c, f);
+        return new nodoOperacion_1.default(t, this.analizador.INT, c, f);
     };
     Suma.prototype.booleaBolean = function () {
         return this.numberNumber();
     };
     Suma.prototype.numberBolean = function () {
-        this.arg1 = this.castearBoleano(this.arg1, "int");
+        this.arg1 = this.castearBoleano(this.arg1, this.analizador.INT);
         return this.numberNumber();
     };
     Suma.prototype.boleanNumber = function () {
-        this.arg0 = this.castearBoleano(this.arg0, "int");
+        this.arg0 = this.castearBoleano(this.arg0, this.analizador.INT);
         return this.numberNumber();
     };
     Suma.prototype.boleanCaracter = function () {
-        this.arg0 = this.castearBoleano(this.arg0, "caracter");
+        this.arg0 = this.castearBoleano(this.arg0, this.analizador.CARACTER);
         return this.caracterCaracter();
     };
     Suma.prototype.caracterBolean = function () {
-        this.arg1 = this.castearBoleano(this.arg1, "caracter");
+        this.arg1 = this.castearBoleano(this.arg1, this.analizador.CARACTER);
         return this.caracterCaracter();
     };
     Suma.prototype.castearBoleano = function (arg0, tipo) {
@@ -96,14 +96,14 @@ var Suma = /** @class */ (function (_super) {
         var c = this.arg0.column;
         var f = this.arg0.fila;
         this.analizador.agregarCodigo(this.analizador.genOperacion(this.op, this.arg0.valor, this.arg1.valor, t), c, f);
-        return new nodoOperacion_1.default(t, "double", c, f);
+        return new nodoOperacion_1.default(t, this.analizador.DOUBLE, c, f);
     };
     Suma.prototype.booleanDouble = function () {
-        this.arg0 = this.castearBoleano(this.arg0, "double");
+        this.arg0 = this.castearBoleano(this.arg0, this.analizador.DOUBLE);
         return this.caracterCaracter();
     };
     Suma.prototype.doubleBoolean = function () {
-        this.arg1 = this.castearBoleano(this.arg1, "double");
+        this.arg1 = this.castearBoleano(this.arg1, this.analizador.DOUBLE);
         return this.caracterCaracter();
     };
     return Suma;

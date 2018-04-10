@@ -1,6 +1,6 @@
 import Casteo from "./casteo";
 import nodoOperacion from "./nodoOperacion"
-import Analizador from '../../../analizador';
+import Analizador from '../../analizador';
 export default class Suma extends Casteo {
     private op:string;
     constructor(analizador:Analizador,op:string) {
@@ -12,17 +12,17 @@ export default class Suma extends Casteo {
 
     
     setArg0(nodo:nodoOperacion){
-        if (nodo.tipo == "boolean") {
+        if (nodo.tipo == this.analizador.BOOLEANO) {
         this.arg0 =
-        this.castearBoleano(nodo,"int");
+        this.castearBoleano(nodo,this.analizador.INT);
         }else{
             this.arg0 = nodo;
         }   
     }
     setArg1(nodo:nodoOperacion){
-        if (nodo.tipo == "boolean") {
+        if (nodo.tipo == this.analizador.BOOLEANO) {
         this.arg1 =
-        this.castearBoleano(nodo,"int");
+        this.castearBoleano(nodo,this.analizador.INT);
         }else{
             this.arg1 = nodo;
         }
@@ -32,33 +32,33 @@ export default class Suma extends Casteo {
         let c =this.arg0.column;
         let f = this.arg0.fila;
         this.analizador.agregarCodigo(this.analizador.genOperacion(this.op,this.arg0.valor,this.arg1.valor,t),c,f);
-        return new nodoOperacion(t,"caracter",c,f);
+        return new nodoOperacion(t,this.analizador.CARACTER,c,f);
     }
     numberNumber():nodoOperacion{   
         let t = this.analizador.newTemporal();
         let c =this.arg0.column;
         let f = this.arg0.fila;
         this.analizador.agregarCodigo(this.analizador.genOperacion(this.op,this.arg0.valor,this.arg1.valor,t),c,f);
-        return new nodoOperacion(t,"int",c,f);
+        return new nodoOperacion(t,this.analizador.INT,c,f);
     }
     booleaBolean():nodoOperacion{
         return this.numberNumber();
     }
    
     numberBolean():nodoOperacion{
-        this.arg1 = this.castearBoleano(this.arg1,"int");
+        this.arg1 = this.castearBoleano(this.arg1,this.analizador.INT);
         return this.numberNumber();
     }
     boleanNumber():nodoOperacion{
-        this.arg0 = this.castearBoleano(this.arg0,"int");
+        this.arg0 = this.castearBoleano(this.arg0,this.analizador.INT);
         return this.numberNumber();
     }
     boleanCaracter() :nodoOperacion{
-        this.arg0 = this.castearBoleano(this.arg0,"caracter");
+        this.arg0 = this.castearBoleano(this.arg0,this.analizador.CARACTER);
         return this.caracterCaracter();
     }
     caracterBolean() :nodoOperacion{
-        this.arg1 = this.castearBoleano(this.arg1,"caracter");
+        this.arg1 = this.castearBoleano(this.arg1,this.analizador.CARACTER);
         return this.caracterCaracter();
     }
   castearBoleano(arg0:nodoOperacion,tipo:string){
@@ -82,14 +82,14 @@ export default class Suma extends Casteo {
         let c =this.arg0.column;
         let f = this.arg0.fila;
         this.analizador.agregarCodigo(this.analizador.genOperacion(this.op,this.arg0.valor,this.arg1.valor,t),c,f);
-        return new nodoOperacion(t,"double",c,f);
+        return new nodoOperacion(t,this.analizador.DOUBLE,c,f);
 }
 booleanDouble():nodoOperacion{
-    this.arg0 = this.castearBoleano(this.arg0,"double");
+    this.arg0 = this.castearBoleano(this.arg0,this.analizador.DOUBLE);
         return this.caracterCaracter();
 }
 doubleBoolean():nodoOperacion{
-    this.arg1 = this.castearBoleano(this.arg1,"double");
+    this.arg1 = this.castearBoleano(this.arg1,this.analizador.DOUBLE);
         return this.caracterCaracter();
 }
 

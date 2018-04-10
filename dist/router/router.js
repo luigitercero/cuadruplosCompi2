@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var nodo_1 = __importDefault(require("../parser/nodo"));
-var analizador_1 = __importDefault(require("../analizador"));
+var analizador_1 = __importDefault(require("../parser/analizador"));
 var router = express_1.Router();
 router.get('/', function (req, res) {
     var p = require('../compilador/Parser with parser/Codigo3D/codigoFinal');

@@ -12,6 +12,15 @@ var FormatoItermedio = /** @class */ (function () {
             'metodo': [{ 'metodo': "", 'poss': -1 }],
             'temporal': [{ "tempora": "retorno", "valor": 35174492 }]
         };
+        this.INT = "entero";
+        this.CARACTER = "caracter";
+        this.BOOLEANO = "booleano";
+        this.PUBLICO = "publico";
+        this.PRIVADO = "privado";
+        this.PROTEGIDO = "protegido";
+        this.VACIO = "vacio";
+        this.DOUBLE = "decimal";
+        this.NULL = "35174492";
         this.codigoIntermedio = "";
         this.temporal = 1;
         this.etiqueta = 1;
@@ -24,6 +33,7 @@ var FormatoItermedio = /** @class */ (function () {
         this.codigoIntermedio = this.codigoIntermedio + codigo + "\n";
         this.codigo4D.C4D.push({ 'poss': this.poss, 'codigo': codigo, 'columna': column, 'linea': line });
         this.poss++;
+        console.log("#" + codigo);
     };
     FormatoItermedio.prototype.pila = function (n) {
         return "Pila [ " + n + " ]";
@@ -57,8 +67,8 @@ var FormatoItermedio = /** @class */ (function () {
     };
     /**
      *
-     * @param pos es la posicion donde se va guardar en el heap
-     * @param valor es el valor que se guarda en la posicion del heap
+     * @param pos es la posicion en el heap
+     * @param valor es el valor del la posicion del heap
      */
     FormatoItermedio.prototype.getEnHeap = function (pos, valor) {
         return this.genCuadruplo("=>", pos, valor, "heap");

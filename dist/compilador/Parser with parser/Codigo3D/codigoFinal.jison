@@ -87,7 +87,7 @@ frac                        (?:\.[0-9]+)
 "Principal"                 return 'PRINCIPAL'
 "true"                      return 'TRUE'
 "false"                     return 'FALSE'
-"booleno"                   return 'BOOLEAN'
+"booleano"                   return 'BOOLEAN'
 "decimal"                   return 'DOUBLE'
 "caracter"                  return 'CHAR'
 
@@ -113,6 +113,7 @@ frac                        (?:\.[0-9]+)
 "repetir"                   return 'REAPEAT'    
 "HASTA_QUE"                 return 'UNTIL'
 "estructura"                return 'ESTRUCTURA'
+"nada"                      return 'NULL'
 
                                                      
 \"(?:{esc}["bfnrt/{esc}]|{esc}"u"[a-fA-F0-9]{4}|[^"{esc}])*\"  yytext = yytext.substr(1,yyleng-2); return 'STRINGLIST';
@@ -270,11 +271,7 @@ var:ID
      {nodo1= new Nodo ("var", @1,$1, [] ); nodo2= new Nodo ("'['", @2,$2, [] ); nodo3= new Nodo ("e", @3,$3, [] ); nodo4= new Nodo ("']'", @4,$4, [] );
       nodo = new Nodo("var",null,null,[$1,nodo2,$3,nodo4]); 
       $$ = nodo; }
-  | ESTE '.' ID
-     {nodo1= new Nodo ("ESTE", @1,$1, [] ); nodo2= new Nodo ("'.'", @2,$2, [] ); nodo3= new Nodo ("ID", @3,$3, [] );
-      nodo = new Nodo("var",null,null,[nodo1,nodo2,nodo3]); 
-      $$ = nodo; }
-  ; 
+;
 AsignarValor:';'
      {nodo1= new Nodo ("';'", @1,$1, [] ); 
       nodo = new Nodo("AsignarValor",null,null,[nodo1]);  
@@ -397,23 +394,24 @@ Parametros:Parametro ')'
       nodo = new Nodo("Parametros",null,null,[nodo1]); 
       $$ = nodo; }
   ; 
-Parametro:Tipo ID
-     {nodo1= new Nodo ("Tipo", @1,$1, [] ); nodo2= new Nodo ("ID", @2,$2, [] ); 
-      nodo = new Nodo("Parametro",null,null,[$1,nodo2]);  
+Parametro:Tipo var
+     {nodo1= new Nodo ("Tipo", @1,$1, [] ); nodo2= new Nodo ("var", @2,$2, [] ); 
+      nodo = new Nodo("Parametro",null,null,[$1,$2]);  
       $$ = nodo; }
-  | ID ID
-     {nodo1= new Nodo ("ID", @1,$1, [] ); nodo2= new Nodo ("ID", @2,$2, [] );
-      nodo = new Nodo("Parametro",null,null,[nodo1,nodo2]); 
+  | ID var
+     {nodo1= new Nodo ("ID", @1,$1, [] ); nodo2= new Nodo ("var", @2,$2, [] );
+      nodo = new Nodo("Parametro",null,null,[nodo1,$2]); 
       $$ = nodo; }
-  | Parametro ',' Tipo ID
-     {nodo1= new Nodo ("Parametro", @1,$1, [] ); nodo2= new Nodo ("','", @2,$2, [] ); nodo3= new Nodo ("Tipo", @3,$3, [] ); nodo4= new Nodo ("ID", @4,$4, [] );
-      nodo = new Nodo("Parametro",null,null,[$1,nodo2,$3,nodo4]); 
+  | Parametro ',' Tipo var
+     {nodo1= new Nodo ("Parametro", @1,$1, [] ); nodo2= new Nodo ("','", @2,$2, [] ); nodo3= new Nodo ("Tipo", @3,$3, [] ); nodo4= new Nodo ("var", @4,$4, [] );
+      nodo = new Nodo("Parametro",null,null,[$1,nodo2,$3,$4]); 
       $$ = nodo; }
-  | Parametro ',' ID ID
-     {nodo1= new Nodo ("Parametro", @1,$1, [] ); nodo2= new Nodo ("','", @2,$2, [] ); nodo3= new Nodo ("ID", @3,$3, [] ); nodo4= new Nodo ("ID", @4,$4, [] );
-      nodo = new Nodo("Parametro",null,null,[$1,nodo2,nodo3,nodo4]); 
+  | Parametro ',' ID var
+     {nodo1= new Nodo ("Parametro", @1,$1, [] ); nodo2= new Nodo ("','", @2,$2, [] ); nodo3= new Nodo ("ID", @3,$3, [] ); nodo4= new Nodo ("var", @4,$4, [] );
+      nodo = new Nodo("Parametro",null,null,[$1,nodo2,nodo3,$4]); 
       $$ = nodo; }
   ; 
+
 CuerpoMetodo:Declaracion
      {nodo1= new Nodo ("Declaracion", @1,$1, [] ); 
       nodo = new Nodo("CuerpoMetodo",null,null,[$1]);  
@@ -435,39 +433,48 @@ CuerpoMetodo:Declaracion
       nodo = new Nodo("CuerpoMetodo",null,null,[$1,nodo2]); 
       $$ = nodo; }
   ; 
-Asignacion:var '=' e ';'
-     {nodo1= new Nodo ("var", @1,$1, [] ); nodo2= new Nodo ("'='", @2,$2, [] ); nodo3= new Nodo ("e", @3,$3, [] ); nodo4= new Nodo ("';'", @4,$4, [] ); 
-      nodo = new Nodo("Asignacion",null,null,[$1,nodo2,$3,nodo4]);  
+Asignacion
+  :var Asignar ';'
+     {nodo1= new Nodo ("var", @1,$1, [] ); nodo2= new Nodo ("Asignar", @2,$2, [] ); nodo3= new Nodo ("';'", @3,$3, [] ); 
+      nodo = new Nodo("Asignacion",null,null,[$1,$2,nodo3]);  
       $$ = nodo; }
-  | Navegar var '=' e ';'
-     {nodo1= new Nodo ("Navegar", @1,$1, [] ); nodo2= new Nodo ("var", @2,$2, [] ); nodo3= new Nodo ("'='", @3,$3, [] ); nodo4= new Nodo ("e", @4,$4, [] ); nodo5= new Nodo ("';'", @5,$5, [] );
-      nodo = new Nodo("Asignacion",null,null,[$1,$2,nodo3,$4,nodo5]); 
-      $$ = nodo; }
-  | '+=' e ';'
-     {nodo1= new Nodo ("'+='", @1,$1, [] ); nodo2= new Nodo ("e", @2,$2, [] ); nodo3= new Nodo ("';'", @3,$3, [] );
-      nodo = new Nodo("Asignacion",null,null,[nodo1,$2,nodo3]); 
-      $$ = nodo; }
-  | '*=' e ';'
-     {nodo1= new Nodo ("'*='", @1,$1, [] ); nodo2= new Nodo ("e", @2,$2, [] ); nodo3= new Nodo ("';'", @3,$3, [] );
-      nodo = new Nodo("Asignacion",null,null,[nodo1,$2,nodo3]); 
-      $$ = nodo; }
-  | '/=' e ';'
-     {nodo1= new Nodo ("'/='", @1,$1, [] ); nodo2= new Nodo ("e", @2,$2, [] ); nodo3= new Nodo ("';'", @3,$3, [] );
-      nodo = new Nodo("Asignacion",null,null,[nodo1,$2,nodo3]); 
-      $$ = nodo; }
-  | '++' ';'
-     {nodo1= new Nodo ("'++'", @1,$1, [] ); nodo2= new Nodo ("';'", @2,$2, [] );
-      nodo = new Nodo("Asignacion",null,null,[nodo1,nodo2]); 
-      $$ = nodo; }
-  | '--' ';'
-     {nodo1= new Nodo ("'--'", @1,$1, [] ); nodo2= new Nodo ("';'", @2,$2, [] );
-      nodo = new Nodo("Asignacion",null,null,[nodo1,nodo2]); 
-      $$ = nodo; }
-  | var '=' Nuevo ';'
-     {nodo1= new Nodo ("var", @1,$1, [] ); nodo2= new Nodo ("'='", @2,$2, [] ); nodo3= new Nodo ("Nuevo", @3,$3, [] ); nodo4= new Nodo ("';'", @4,$4, [] );
-      nodo = new Nodo("Asignacion",null,null,[$1,nodo2,$3,nodo4]); 
+  | Navegar var Asignar ';'
+     {nodo1= new Nodo ("Navegar", @1,$1, [] ); nodo2= new Nodo ("var", @2,$2, [] ); nodo3= new Nodo ("Asignar", @3,$3, [] ); nodo4= new Nodo ("';'", @4,$4, [] );
+      nodo = new Nodo("Asignacion",null,null,[$1,$2,$3,nodo4]); 
       $$ = nodo; }
   ; 
+Asignar:'+=' e 
+     {nodo1= new Nodo ("'+='", @1,$1, [] ); nodo2= new Nodo ("e", @2,$2, [] );
+      nodo = new Nodo("Asignar",null,null,[nodo1,$2]);  
+      $$ = nodo; }
+  | '*=' e 
+     {nodo1= new Nodo ("'*='", @1,$1, [] ); nodo2= new Nodo ("e", @2,$2, [] ); 
+      nodo = new Nodo("Asignar",null,null,[nodo1,$2]); 
+      $$ = nodo; }
+  | '/=' e 
+     {nodo1= new Nodo ("'/='", @1,$1, [] ); nodo2= new Nodo ("e", @2,$2, [] ); 
+      nodo = new Nodo("Asignar",null,null,[nodo1,$2]); 
+      $$ = nodo; }
+  | '++' 
+     {nodo1= new Nodo ("'++'", @1,$1, [] ); nodo2= new Nodo ("';'", @2,$2, [] );
+      nodo = new Nodo("Asignar",null,null,[nodo1,nodo2]); 
+      $$ = nodo; }
+  | '--' 
+     {nodo1= new Nodo ("'--'", @1,$1, [] ); nodo2= new Nodo ("';'", @2,$2, [] );
+      nodo = new Nodo("Asignar",null,null,[nodo1,nodo2]); 
+      $$ = nodo; }
+  | '=' Nuevo 
+     {nodo1= new Nodo ("'='", @1,$1, [] ); nodo2= new Nodo ("Nuevo", @2,$2, [] ); 
+      nodo = new Nodo("Asignar",null,null,[nodo1,$2]); 
+      $$ = nodo; }
+  | '=' e 
+     {nodo1= new Nodo ("'='", @1,$1, [] ); nodo2= new Nodo ("e", @2,$2, [] ); 
+      nodo = new Nodo("Asignar",null,null,[nodo1,$2]); 
+      $$ = nodo; }
+  ; 
+
+
+
 Navegar:var '.'
      {nodo1= new Nodo ("var", @1,$1, [] ); nodo2= new Nodo ("'.'", @2,$2, [] ); 
       nodo = new Nodo("Navegar",null,null,[$1,nodo2]);  
@@ -500,7 +507,12 @@ Navegar:var '.'
      {nodo1= new Nodo ("Navegar", @1,$1, [] ); nodo2= new Nodo ("getMetodo", @2,$2, [] ); nodo3= new Nodo ("'->'", @3,$3, [] );
       nodo = new Nodo("Navegar",null,null,[$1,$2,nodo3]); 
       $$ = nodo; }
+  | ESTE '.'
+     {nodo1= new Nodo ("ESTE", @1,$1, [] ); nodo2= new Nodo ("'.'", @2,$2, [] );
+      nodo = new Nodo("Navegar",null,null,[nodo1,nodo2]); 
+      $$ = nodo; }
   ; 
+
 Control:If1
      {nodo1= new Nodo ("If1", @1,$1, [] ); 
       nodo = new Nodo("Control",null,null,[$1]);  
@@ -928,7 +940,13 @@ Identi:var
      {nodo1= new Nodo ("Identi", @1,$1, [] ); nodo2= new Nodo ("'.'", @2,$2, [] ); nodo3= new Nodo ("getMetodo", @3,$3, [] );
       nodo = new Nodo("Identi",null,null,[$1,nodo2,$3]); 
       $$ = nodo; }
+  | ESTE '.' var
+     {nodo1= new Nodo ("ESTE", @1,$1, [] ); nodo2= new Nodo ("'.'", @2,$2, [] ); nodo3= new Nodo ("var", @3,$3, [] );
+      nodo = new Nodo("Identi",null,null,[nodo1,nodo2,$3]); 
+      $$ = nodo; }
   ; 
+
+
 
 %%
 
@@ -938,7 +956,7 @@ function Nodo ( term, location, token , childNode) {
   this.location = location;
   this.token = token;
   this.childNode = childNode;
-}
+} 
 
  parser.treeparser  = {
  raiz : null
