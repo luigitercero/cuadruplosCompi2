@@ -67,7 +67,7 @@ export default class Simbolo {
 }
 class Valor {
     public valor:Nodo|null;
-    public location:location
+    public location:location|any;
     constructor(valor?:Nodo,location?:location){
        if (valor!=null && location != null){
         this.valor = valor;

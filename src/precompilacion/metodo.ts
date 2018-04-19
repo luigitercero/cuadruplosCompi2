@@ -64,7 +64,8 @@ export default class Metodo {
      *   : Tipo ID '(' Parametros '{'
      *   | ID ID '(' Parametros '{'
      *   | Metodo  CuerpoMetodo
-     *   | constructor 
+     *   | constructor
+     *   | Principal 
      *   ;
      * @param nodo 
      */
@@ -104,6 +105,13 @@ export default class Metodo {
                 this.parametros(nodo.childNode[0].childNode[2],metodo);
                 this.recoleccion.analizador.claseA.agregarMetodo(metodo);
             return true;
+            case "Principal":
+            tipo = "Principal"
+                nombreMetodo = "Principal";
+                metodo = new MetodoS(nombreMetodo,visi,tipo,nodo.childNode[0].childNode[0].location.first_line)
+                this.recoleccion.analizador.claseA.agregarMetodo(metodo); 
+                return true;
+            
         }
         this.recoleccion.analizador.newError("error al crear metodo",0,0);
         return false;

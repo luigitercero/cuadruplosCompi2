@@ -22,6 +22,13 @@ frac                        (?:\.[0-9]+)
 
 \/\/[^\n]*                                                   /* skip comment */
 "/*"[^"*/"]*"*/"                                           /*ignore */
+
+"+="                                                        return '+='
+"++"                                                        return '++'
+"--"                                                        return '--'
+"*="                                                        return '*='
+"/="                                                        return '/='
+"+="                                                        return '+='
 "->"                                                        return '->'
 "*"                                                         return '*'
 "/"                                                         return '/'
@@ -108,7 +115,7 @@ frac                        (?:\.[0-9]+)
 "lista"                     return 'LISTA'
 "pila"                      return 'PILA'
 "cola"                      return 'COLA'
-"miestras"                  return 'WHILE'
+"mientras"                  return 'WHILE'
 "ciclo_doble_condicion"     return 'DOBLECONDICION'
 "repetir"                   return 'REAPEAT'    
 "HASTA_QUE"                 return 'UNTIL'
@@ -230,6 +237,7 @@ CuerpoClase:DeclaracionClase
      {nodo1= new Nodo ("Estruct", @1,$1, [] );
       nodo = new Nodo("CuerpoClase",null,null,[$1]); 
       $$ = nodo; }
+  
   ; 
 DeclaracionClase:Visibilidad Declaracion
      {nodo1= new Nodo ("Visibilidad", @1,$1, [] ); nodo2= new Nodo ("Declaracion", @2,$2, [] ); 
@@ -378,7 +386,12 @@ Metodo:Tipo ID '(' Parametros '{'
      {nodo1= new Nodo ("Constructor", @1,$1, [] );
       nodo = new Nodo("Metodo",null,null,[$1]); 
       $$ = nodo; }
+  | Principal
+     {nodo1= new Nodo ("Principal", @1,$1, [] );
+      nodo = new Nodo("Metodo",null,null,[$1]); 
+      $$ = nodo; }
   ; 
+
 Constructor:ID '(' Parametros '{'
      {nodo1= new Nodo ("ID", @1,$1, [] ); nodo2= new Nodo ("'('", @2,$2, [] ); nodo3= new Nodo ("Parametros", @3,$3, [] ); nodo4= new Nodo ("'{'", @4,$4, [] ); 
       nodo = new Nodo("Constructor",null,null,[nodo1,nodo2,$3,nodo4]);  
@@ -456,12 +469,12 @@ Asignar:'+=' e
       nodo = new Nodo("Asignar",null,null,[nodo1,$2]); 
       $$ = nodo; }
   | '++' 
-     {nodo1= new Nodo ("'++'", @1,$1, [] ); nodo2= new Nodo ("';'", @2,$2, [] );
-      nodo = new Nodo("Asignar",null,null,[nodo1,nodo2]); 
+     {nodo1= new Nodo ("'++'", @1,$1, [] ); 
+      nodo = new Nodo("Asignar",null,null,[nodo1]); 
       $$ = nodo; }
   | '--' 
-     {nodo1= new Nodo ("'--'", @1,$1, [] ); nodo2= new Nodo ("';'", @2,$2, [] );
-      nodo = new Nodo("Asignar",null,null,[nodo1,nodo2]); 
+     {nodo1= new Nodo ("'--'", @1,$1, [] );
+      nodo = new Nodo("Asignar",null,null,[nodo1]); 
       $$ = nodo; }
   | '=' Nuevo 
      {nodo1= new Nodo ("'='", @1,$1, [] ); nodo2= new Nodo ("Nuevo", @2,$2, [] ); 
@@ -584,7 +597,7 @@ Default:DEFAULT ':' Cuerpo1 '}'
       nodo = new Nodo("Default",null,null,[nodo1]); 
       $$ = nodo; }
   ; 
-Cuerpo:'{' Cuerpo1 '}'
+Cuerpo: '{' Cuerpo1 '}'
      {nodo1= new Nodo ("'{'", @1,$1, [] ); nodo2= new Nodo ("Cuerpo1", @2,$2, [] ); nodo3= new Nodo ("'}'", @3,$3, [] ); 
       nodo = new Nodo("Cuerpo",null,null,[nodo1,$2,nodo3]);  
       $$ = nodo; }
@@ -615,6 +628,10 @@ Caso:CASE e ':' Cuerpo1
      {nodo1= new Nodo ("CASE", @1,$1, [] ); nodo2= new Nodo ("e", @2,$2, [] ); nodo3= new Nodo ("':'", @3,$3, [] ); nodo4= new Nodo ("Cuerpo1", @4,$4, [] ); 
       nodo = new Nodo("Caso",null,null,[nodo1,$2,nodo3,$4]);  
       $$ = nodo; }
+    |CASE e ':'
+     {nodo1= new Nodo ("CASE", @1,$1, [] ); nodo2= new Nodo ("e", @2,$2, [] ); nodo3= new Nodo ("':'", @3,$3, [] ); 
+      nodo = new Nodo("Caso",null,null,[nodo1,$2,nodo3]);  
+      $$ = nodo; }
   ; 
 Branching:BREAK
      {nodo1= new Nodo ("BREAK", @1,$1, [] ); 
@@ -642,7 +659,7 @@ Expresion:'(' e ')'
       nodo = new Nodo("Expresion",null,null,[nodo1,$2,nodo3]);  
       $$ = nodo; }
   ; 
-Do_While:DO Cuerpo WHILE Expresion
+Do_While:DO Cuerpo WHILE Expresion ';'
      {nodo1= new Nodo ("DO", @1,$1, [] ); nodo2= new Nodo ("Cuerpo", @2,$2, [] ); nodo3= new Nodo ("WHILE", @3,$3, [] ); nodo4= new Nodo ("Expresion", @4,$4, [] ); 
       nodo = new Nodo("Do_While",null,null,[nodo1,$2,nodo3,$4]);  
       $$ = nodo; }
@@ -657,11 +674,13 @@ Repeat_Until:REAPEAT Cuerpo UNTIL Expresion
       nodo = new Nodo("Repeat_Until",null,null,[nodo1,$2,nodo3,$4]);  
       $$ = nodo; }
   ; 
-For:FOR '('VARIABLE':' Asignacion ';' DESDE ':' e ';' HASTA ':' e ')' Cuerpo
-     {nodo1= new Nodo ("FOR", @1,$1, [] ); nodo2= new Nodo ("'('VARIABLE':'", @2,$2, [] ); nodo3= new Nodo ("Asignacion", @3,$3, [] ); nodo4= new Nodo ("';'", @4,$4, [] ); nodo5= new Nodo ("DESDE", @5,$5, [] ); nodo6= new Nodo ("':'", @6,$6, [] ); nodo7= new Nodo ("e", @7,$7, [] ); nodo8= new Nodo ("';'", @8,$8, [] ); nodo9= new Nodo ("HASTA", @9,$9, [] ); nodo10= new Nodo ("':'", @10,$10, [] ); nodo11= new Nodo ("e", @11,$11, [] ); nodo12= new Nodo ("')'", @12,$12, [] ); nodo13= new Nodo ("Cuerpo", @13,$13, [] ); 
-      nodo = new Nodo("For",null,null,[nodo1,nodo2,$3,nodo4,nodo5,nodo6,$7,nodo8,nodo9,nodo10,$11,nodo12,$13]);  
+For:FOR '(' VARIABLE ':' ID ';' DESDE ':' e ';' HASTA ':' e ')' Cuerpo
+     {nodo1= new Nodo ("FOR", @1,$1, [] ); nodo2= new Nodo ("'('", @2,$2, [] ); nodo3= new Nodo ("VARIABLE", @3,$3, [] ); nodo4= new Nodo ("':'", @4,$4, [] ); nodo5= new Nodo ("ID", @5,$5, [] ); nodo6= new Nodo ("';'", @6,$6, [] ); nodo7= new Nodo ("DESDE", @7,$7, [] ); nodo8= new Nodo ("':'", @8,$8, [] ); nodo9= new Nodo ("e", @9,$9, [] ); nodo10= new Nodo ("';'", @10,$10, [] ); nodo11= new Nodo ("HASTA", @11,$11, [] ); nodo12= new Nodo ("':'", @12,$12, [] ); nodo13= new Nodo ("e", @13,$13, [] ); nodo14= new Nodo ("')'", @14,$14, [] ); nodo15= new Nodo ("Cuerpo", @15,$15, [] ); 
+      nodo = new Nodo("For",null,null,[nodo1,nodo2,nodo3,nodo4,nodo5,nodo6,nodo7,nodo8,$9,nodo10,nodo11,nodo12,$13,nodo14,$15]);  
       $$ = nodo; }
   ; 
+
+
 Loop:LOOP ID Cuerpo
      {nodo1= new Nodo ("LOOP", @1,$1, [] ); nodo2= new Nodo ("ID", @2,$2, [] ); nodo3= new Nodo ("Cuerpo", @3,$3, [] ); 
       nodo = new Nodo("Loop",null,null,[nodo1,nodo2,$3]);  
@@ -679,7 +698,8 @@ Repetir:REPETIRMIENTRAS Expresion Cuerpo
   ; 
 
 
-Principal:PRINCIPAL '(' ')' Cuerpo
+Principal
+    :PRINCIPAL '(' ')' '{'
      {nodo1= new Nodo ("PRINCIPAL", @1,$1, [] ); nodo2= new Nodo ("'('", @2,$2, [] ); nodo3= new Nodo ("')'", @3,$3, [] ); nodo4= new Nodo ("Cuerpo", @4,$4, [] ); 
       nodo = new Nodo("Principal",null,null,[nodo1,nodo2,nodo3,$4]);  
       $$ = nodo; }

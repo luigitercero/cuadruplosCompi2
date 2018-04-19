@@ -26,8 +26,8 @@ var Tabla = /** @class */ (function () {
         this.actual = nuevoAmbito;
     };
     Tabla.prototype.disminuirAmbito = function () {
-        var ambitoActual = this.Lista[this.Lista.length - 1];
-        this.ptr = this.ptr - ambitoActual.ptr;
+        var ambitoActual = this.actual;
+        this.ptr = this.ptr - ambitoActual.ambito.length;
         this.Lista.pop();
         this.actual = this.Lista[this.Lista.length - 1];
     };
@@ -35,6 +35,7 @@ var Tabla = /** @class */ (function () {
         simbolo.possAmbito = this.ptr;
         this.actual.agregarSimbolo(simbolo);
         this.siguietePosicionLibre(simbolo);
+        return this.ptr;
     };
     Tabla.prototype.buscarEnPila = function (nombre) {
         for (var index = 0; index < this.Lista.length; index++) {

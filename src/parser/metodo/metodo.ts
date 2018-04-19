@@ -3,17 +3,16 @@ import Asignacion from './asignacion'
 import Nodo from '../nodo';
 import Declaracion from './declaracion';
 import Metodo from '../tablaSimbolos/metodo';
-import Variable from './variable';
+
+import Cuerpo from './cuerpo'
 export default class metodo {
  public analizador: Analizador;
- public asignar:Asignacion;
- public declarar:Declaracion;
- public variable:Variable;
+
+ 
  constructor (analizador : Analizador){
      this.analizador = analizador;
-    this.asignar = new Asignacion(analizador);
-    this.variable = new Variable(analizador);
-    this.declarar = new Declaracion(analizador);
+     
+     
 }
 
     /**
@@ -110,7 +109,7 @@ export default class metodo {
                 return metodo;
             case "Metodo":
                 let Nombre = this.metodo(nodo.childNode[0],visi);
-                this.cuerpoMetodo(nodo.childNode[1]);
+                this.analizador.cuerpo.cuerpoMetodo(nodo.childNode[1]);
                 return Nombre;
                 
             case "Constructor":
@@ -121,8 +120,19 @@ export default class metodo {
                 this.analizador.agregarCodigo(this.analizador.llamarMetodo(this.analizador.claseA.nombre+"preconstructor"),nodo.childNode[0].childNode[0].location.last_column,
                 nodo.childNode[0].childNode[0].location.first_line);
                 metodo = this.analizador.claseA.buscarMetodo(name);
-                this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre);
+                //this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre);
                 return metodo;
+            case "Principal":
+                name = "Principal";
+                nombreMetodo = this.analizador.claseA.nombre+"_"+ name;
+                this.analizador.setStart();
+                this.analizador.agregarCodigo(this.analizador.metodoBegin(nombreMetodo),nodo.childNode[0].childNode[0].location.last_column,
+                nodo.childNode[0].childNode[0].location.first_line);
+                this.analizador.agregarCodigo(this.analizador.llamarMetodo(this.analizador.claseA.nombre+"preconstructor"),nodo.childNode[0].childNode[0].location.last_column,
+                nodo.childNode[0].childNode[0].location.first_line);
+                metodo = this.analizador.claseA.buscarMetodo(name);
+               // this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre);
+            return metodo;
         }
        throw this.analizador.newError("error al crear metodo",0,0);
 
@@ -193,47 +203,7 @@ export default class metodo {
     }
 
 
-       /**
-     * var  
-     *: ID
-     *| var '[' e ']' 
     
-     * ;
-     * @param nodo 
-     * @param tipo 
-     * @param visibilidad 
-     */
-    var(nodo:Nodo,tipo:string,visibilidad:string){
-    }
-    /**
-     * CuerpoMetodo
-     *   : Declaracion
-     *   | Asignacion
-     *   | getMetodoZ ';'
-     *   | Control
-     *   | Branching ';'
-     *   ;
-     * @param nodo 
-     */
-    public cuerpoMetodo(nodo:Nodo):boolean{
-        let term = nodo.childNode[0].term
-        switch(term){
-            case "Declaracion":
-            this.declarar.declaracion(nodo.childNode[0],"");
-                return true;
-            case "Asignacion":
-            this.asignar.asignacion(nodo.childNode[0]);
-            return true;
-            case "getMetodoZ":
-            return true;
-            case "Control":
-            return true;
-            case "Branching":
-            return true;
-        }
-        this.analizador.newError("error em cuerpo metodo",0,0);
-        return false;
-    }
     
     
 

@@ -13,6 +13,7 @@ var nodoOperacion = /** @class */ (function () {
         this.etiquetaV = [];
         this.etiquetaF = [];
         this.dim = 0;
+        this.temp = "";
         this.simbolo = new simbolo_1.default("", "", "");
     }
     nodoOperacion.prototype.addEtiquetaV = function (etiqueta) {

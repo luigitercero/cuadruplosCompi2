@@ -1,4 +1,8 @@
 import Operacion from "./operacion";
+import Nodo from "../../nodo";
+import Dir from '../../variable/obtenerDireccion'
+import nodoOperacion from "./nodoOperacion";
+import Suma from "./suma";
 
 export default class Exp extends Operacion{
     evaluarTipo(valorTipo: string, simboloTipo: string): boolean {
@@ -56,12 +60,22 @@ export default class Exp extends Operacion{
         }
     }
 
-    evaluarPP(variable:Dir) {
 
+    evaluarPP( variable:Dir,signo:string) {
+        let arg1:nodoOperacion = new nodoOperacion(1+"",this.analizador.INT,variable.location.last_column,variable.location.first_line);
+        let arg0:nodoOperacion = this.gerVal(variable);
+        let op:Suma = new Suma(this.analizador,signo);
+        op.setArg0(arg0);
+        op.setArg1(arg1);
+        return op.evaluar();
     }
-    evaluarMM(variable:Dir) {
-
+    masIgual(nodo:Nodo, variable:Dir,signo:string) {
+        let arg1:nodoOperacion = this.analizar(nodo);
+        let arg0:nodoOperacion = this.gerVal(variable);
+        let op:Suma = new Suma(this.analizador,signo);
+        op.setArg0(arg0);
+        op.setArg1(arg1);
+        return op.evaluar();
     }
-    masIgual(variable:Dir)
-    
-} 
+   
+}

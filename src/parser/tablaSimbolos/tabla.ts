@@ -32,8 +32,8 @@ export default class Tabla {
 
 
     disminuirAmbito() {
-        let ambitoActual:Ambito = this.Lista[this.Lista.length-1];
-        this.ptr = this.ptr - ambitoActual.ptr;
+        let ambitoActual:Ambito = this.actual;
+        this.ptr = this.ptr - ambitoActual.ambito.length;
         this.Lista.pop();
         this.actual = this.Lista[this.Lista.length-1];
     }
@@ -42,6 +42,7 @@ export default class Tabla {
         simbolo.possAmbito = this.ptr;
         this.actual.agregarSimbolo(simbolo);
         this.siguietePosicionLibre(simbolo);
+        return this.ptr;
     }
     buscarEnPila(nombre:string):Simbolo|null{
       

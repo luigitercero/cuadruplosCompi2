@@ -41,6 +41,7 @@ var Ambito = /** @class */ (function () {
     };
     Ambito.prototype.agregarSimbolo = function (simbolo) {
         this.ambito.push(simbolo);
+        simbolo.possAmbito = this.ptr;
         this.siguietePosicionLibre(simbolo);
     };
     Ambito.prototype.siguietePosicionLibre = function (simbolo) {

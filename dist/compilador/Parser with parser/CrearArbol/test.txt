@@ -357,4 +357,11 @@ Doble_Condicion: DOBLECONDICION '(' e ',' e ')'Cuerpo
     | '=' e 
     ;
 
+Metodo
+    : Tipo ID '(' Parametros '{'
+    | ID ID '(' Parametros '{'
+    | Metodo  CuerpoMetodo
+    | Constructor
+    | Principal
+    ;
    

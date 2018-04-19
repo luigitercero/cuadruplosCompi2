@@ -10,10 +10,12 @@ var FormatoItermedio = /** @class */ (function () {
             'state': true,
             'etiqueta': [{ 'etiqueta': "", 'poss': -1 }],
             'metodo': [{ 'metodo': "", 'poss': -1 }],
-            'temporal': [{ "tempora": "retorno", "valor": 35174492 }]
+            'temporal': [{ "tempora": "retorno", "valor": 35174492 }],
+            'start': 1,
         };
         this.INT = "entero";
         this.CARACTER = "caracter";
+        this.STRING = "string";
         this.BOOLEANO = "booleano";
         this.PUBLICO = "publico";
         this.PRIVADO = "privado";
@@ -33,7 +35,13 @@ var FormatoItermedio = /** @class */ (function () {
         this.codigoIntermedio = this.codigoIntermedio + codigo + "\n";
         this.codigo4D.C4D.push({ 'poss': this.poss, 'codigo': codigo, 'columna': column, 'linea': line });
         this.poss++;
-        console.log("#" + codigo);
+        console.log("#" + codigo, ' columna: ' + column + ' linea: ' + line);
+    };
+    FormatoItermedio.prototype.siguiLibreHeap = function () {
+        return this.genOperacion("+", "heap", 1 + "", "heap");
+    };
+    FormatoItermedio.prototype.setStart = function () {
+        this.codigo4D.start = this.poss;
     };
     FormatoItermedio.prototype.pila = function (n) {
         return "Pila [ " + n + " ]";
@@ -114,20 +122,35 @@ var FormatoItermedio = /** @class */ (function () {
     FormatoItermedio.prototype.genSalto = function (etiqueta) {
         return this.genCuadruplo("jmp", "", "", etiqueta);
     };
+    /**
+     * L1,L2:
+     */
     FormatoItermedio.prototype.escribirEtiqueta = function (etiqueta) {
         var _this = this;
         var salida = "";
         etiqueta.forEach(function (element) {
             if (salida == "") {
                 salida = element;
-                _this.codigo4D.etiqueta.push({ 'etiqueta': element, 'poss': _this.poss });
+                var a = element.replace("L", "");
+                _this.codigo4D.etiqueta[+a] = { "etiqueta": element, "poss": _this.poss };
             }
             else {
                 salida = salida + "," + element;
-                _this.codigo4D.etiqueta.push({ 'etiqueta': element, 'poss': _this.poss });
+                var a = element.replace("L", "");
+                _this.codigo4D.etiqueta[+a] = { "etiqueta": element, "poss": _this.poss };
             }
         });
-        return (salida + ":");
+        if (salida != "") {
+            return (salida + ":");
+        }
+        else {
+            return "";
+        }
+    };
+    FormatoItermedio.prototype.escribirEtiquetaS = function (etiqueta) {
+        var a = etiqueta.replace("L", "");
+        this.codigo4D.etiqueta[+a] = { "etiqueta": etiqueta, "poss": this.poss };
+        return etiqueta + ":";
     };
     /**
      * asignar valor a variable
@@ -195,6 +218,7 @@ var FormatoItermedio = /** @class */ (function () {
     FormatoItermedio.prototype.newEtiqueta = function () {
         var l = "L" + this.etiqueta;
         this.etiqueta = this.etiqueta + 1;
+        this.codigo4D.etiqueta.push({ 'etiqueta': l, 'poss': -1 });
         return l;
     };
     /**

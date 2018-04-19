@@ -5,7 +5,7 @@ export default class InfVarible {
     public temporal:string;
     public done:string;
     public simbolo:Simbolo
-    public location:Location
+    public location:Location|any
     public tam:number;
     public dir:string;
     constructor(temporal:string, done:string,simbolo:Simbolo) {

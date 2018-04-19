@@ -12,7 +12,8 @@ export default class FormatoItermedio{
         'state':true,
         'etiqueta':[{'etiqueta':"",'poss':-1}],
         'metodo' :[{'metodo':"",'poss':-1}],
-        'temporal':[{"tempora":"retorno","valor":35174492}]
+        'temporal':[{"tempora":"retorno","valor":35174492}],
+        'start':1,
     };
     public get3D(){
         return this.codigo4D;
@@ -21,7 +22,14 @@ export default class FormatoItermedio{
         this.codigoIntermedio  = this.codigoIntermedio + codigo+"\n";
         this.codigo4D.C4D.push({'poss':this.poss,'codigo':codigo,'columna':column,'linea':line});
         this.poss ++;
-        console.log("#"+codigo);
+        console.log("#"+codigo,' columna: '+column +' linea: ' +line );
+    }
+
+    public siguiLibreHeap() {
+        return this.genOperacion("+","heap",1+"","heap")
+    }
+    public setStart() {
+        this.codigo4D.start = this.poss;
     }
 
     constructor(){
@@ -112,13 +120,33 @@ export default class FormatoItermedio{
     public genSalto(etiqueta:string):string{
         return  this.genCuadruplo("jmp","","",etiqueta);
      }
+     /**
+      * L1,L2:
+      */
      public escribirEtiqueta(etiqueta:string[]):string{
         let salida = "";
         etiqueta.forEach(element => {
-            if (salida == "") {salida = element; this.codigo4D.etiqueta.push({'etiqueta': element,'poss':this.poss});}
-            else {salida = salida + "," +element;this.codigo4D.etiqueta.push({'etiqueta': element,'poss':this.poss});} 
-        }); 
-        return (salida + ":");
+            if (salida == "") {
+                salida = element; 
+                let a =  element.replace("L","");
+                this.codigo4D.etiqueta[+a] ={"etiqueta":element,"poss":this.poss};
+               
+                }
+            else {salida = salida + "," +element;
+            let a =  element.replace("L","");
+            this.codigo4D.etiqueta[+a] ={"etiqueta":element,"poss":this.poss};
+            } 
+        }); if(salida != ""){
+            return (salida + ":");
+        }else {return ""}
+        
+     }
+
+     public escribirEtiquetaS(etiqueta:string):string{
+        let a =  etiqueta.replace("L","");
+        this.codigo4D.etiqueta[+a] ={"etiqueta":etiqueta,"poss":this.poss};
+        return etiqueta+":";
+        
      }
      /**
       * asignar valor a variable
@@ -186,6 +214,7 @@ export default class FormatoItermedio{
     public newEtiqueta(){
         let l = "L" + this.etiqueta;
         this.etiqueta = this.etiqueta + 1;
+        this.codigo4D.etiqueta.push({'etiqueta': l,'poss':-1});
         return l;
     }
     /**
@@ -211,6 +240,7 @@ export default class FormatoItermedio{
     
    public INT :string = "entero";
    public CARACTER:string ="caracter";
+   public STRING:string ="string";
    public BOOLEANO:string = "booleano";
    public PUBLICO:string = "publico";
    public PRIVADO:string = "privado";
@@ -219,3 +249,8 @@ export default class FormatoItermedio{
    public DOUBLE:string="decimal"
    public NULL:string="35174492"
 }
+
+interface IPerson {
+    firstName: string;
+    lastName: string;
+ }

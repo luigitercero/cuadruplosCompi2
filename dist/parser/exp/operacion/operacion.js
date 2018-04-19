@@ -246,31 +246,32 @@ var Operacion = /** @class */ (function () {
         var fil = -1;
         switch (term) {
             case "NUMBERLIST2":
-                col = nodo.childNode[0].location.first_line;
-                fil = nodo.childNode[0].location.last_column;
+                col = nodo.childNode[0].location.last_column;
+                fil = nodo.childNode[0].location.first_line;
                 return new nodoOperacion_1.default(nodo.childNode[0].token, this.analizador.DOUBLE, col, fil);
             case "NUMBERLIST":
-                col = nodo.childNode[0].location.first_line;
-                fil = nodo.childNode[0].location.last_column;
+                col = nodo.childNode[0].location.last_column;
+                fil = nodo.childNode[0].location.first_line;
                 return new nodoOperacion_1.default(nodo.childNode[0].token, this.analizador.INT, col, fil);
             case "CARACTER":
-                col = nodo.childNode[0].location.first_line;
-                fil = nodo.childNode[0].location.last_column;
+                col = nodo.childNode[0].location.last_column;
+                fil = nodo.childNode[0].location.first_line;
                 return new nodoOperacion_1.default(nodo.childNode[0].token.charCodeAt(1) + "", this.analizador.CARACTER, col, fil);
             case "STRINGLIST":
-                col = nodo.childNode[0].location.first_line;
-                fil = nodo.childNode[0].location.last_column;
-                return new nodoOperacion_1.default(nodo.childNode[0].token, "string", col, fil);
+                col = nodo.childNode[0].location.last_column;
+                fil = nodo.childNode[0].location.first_line;
+                var cadena = this.cadena(nodo.childNode[0].token, nodo.childNode[0].location);
+                return cadena;
             case "TRUE":
-                col = nodo.childNode[0].location.first_line;
-                fil = nodo.childNode[0].location.last_column;
+                col = nodo.childNode[0].location.last_column;
+                fil = nodo.childNode[0].location.first_line;
                 var arg0 = new nodoOperacion_1.default("1", this.analizador.INT, col, fil);
                 var arg1 = new nodoOperacion_1.default("1", this.analizador.INT, col, fil);
                 var t = new comparacion_1.default(arg0, arg1, this.analizador, "==");
                 return t.evaluar();
             case "FALSE":
-                col = nodo.childNode[0].location.first_line;
-                fil = nodo.childNode[0].location.last_column;
+                col = nodo.childNode[0].location.last_column;
+                fil = nodo.childNode[0].location.first_line;
                 var arg00 = new nodoOperacion_1.default("0", this.analizador.INT, col, fil);
                 var arg10 = new nodoOperacion_1.default("1", this.analizador.INT, col, fil);
                 var t0 = new comparacion_1.default(arg00, arg10, this.analizador, "==");
@@ -279,10 +280,27 @@ var Operacion = /** @class */ (function () {
                 //col = nodo.childNode[0].location.first_line;
                 //fil = nodo.childNode[0].location.last_column;
                 var variable = this.analizador.variable.identi(nodo.childNode[0]);
-                var val = this.analizador.variable.getValorVariable(variable);
-                return new nodoOperacion_2.default(val, variable.simbolo.getTipo(), variable.location.last_column, variable.location.first_line);
+                return this.gerVal(variable);
         }
         throw new Error("error en analizar");
+    };
+    Operacion.prototype.cadena = function (cadena, location) {
+        var t1 = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(this.analizador.asignar("heap", t1), location.last_column, location.first_line);
+        for (var index = 0; index < cadena.length; index++) {
+            var element = cadena.charCodeAt(index);
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap("heap", element + ""), location.last_column, location.first_line);
+            this.analizador.agregarCodigo(this.analizador.siguiLibreHeap(), location.last_column, location.first_line);
+        }
+        this.analizador.agregarCodigo(this.analizador.saveEnHeap("heap", this.analizador.NULL), location.last_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.siguiLibreHeap(), location.last_column, location.first_line);
+        var nodo = new nodoOperacion_1.default(t1, this.analizador.STRING, location.last_column, location.first_line);
+        nodo.valor = t1;
+        return nodo;
+    };
+    Operacion.prototype.gerVal = function (variable) {
+        var val = this.analizador.variable.getValorVariable(variable);
+        return new nodoOperacion_2.default(val, variable.simbolo.getTipo(), variable.location.last_column, variable.location.first_line);
     };
     Operacion.prototype.getValor = function (arg0) {
         if (arg0.tipo == this.analizador.BOOLEANO) {

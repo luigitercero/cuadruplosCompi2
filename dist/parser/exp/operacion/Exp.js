@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 var operacion_1 = __importDefault(require("./operacion"));
+var nodoOperacion_1 = __importDefault(require("./nodoOperacion"));
+var suma_1 = __importDefault(require("./suma"));
 var Exp = /** @class */ (function (_super) {
     __extends(Exp, _super);
     function Exp() {
@@ -83,6 +85,22 @@ var Exp = /** @class */ (function (_super) {
         else {
             return false;
         }
+    };
+    Exp.prototype.evaluarPP = function (variable, signo) {
+        var arg1 = new nodoOperacion_1.default(1 + "", this.analizador.INT, variable.location.last_column, variable.location.first_line);
+        var arg0 = this.gerVal(variable);
+        var op = new suma_1.default(this.analizador, signo);
+        op.setArg0(arg0);
+        op.setArg1(arg1);
+        return op.evaluar();
+    };
+    Exp.prototype.masIgual = function (nodo, variable, signo) {
+        var arg1 = this.analizar(nodo);
+        var arg0 = this.gerVal(variable);
+        var op = new suma_1.default(this.analizador, signo);
+        op.setArg0(arg0);
+        op.setArg1(arg1);
+        return op.evaluar();
     };
     return Exp;
 }(operacion_1.default));

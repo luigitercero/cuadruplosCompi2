@@ -1,17 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-}
 Object.defineProperty(exports, "__esModule", { value: true });
-var asignacion_1 = __importDefault(require("./asignacion"));
-var declaracion_1 = __importDefault(require("./declaracion"));
-var variable_1 = __importDefault(require("./variable"));
 var metodo = /** @class */ (function () {
     function metodo(analizador) {
         this.analizador = analizador;
-        this.asignar = new asignacion_1.default(analizador);
-        this.variable = new variable_1.default(analizador);
-        this.declarar = new declaracion_1.default(analizador);
     }
     /**
      * SobreEscribir
@@ -101,7 +92,7 @@ var metodo = /** @class */ (function () {
                 return metodo;
             case "Metodo":
                 var Nombre = this.metodo(nodo.childNode[0], visi);
-                this.cuerpoMetodo(nodo.childNode[1]);
+                this.analizador.cuerpo.cuerpoMetodo(nodo.childNode[1]);
                 return Nombre;
             case "Constructor":
                 name = "constructor" + this.parametros(nodo.childNode[0].childNode[2]);
@@ -109,7 +100,16 @@ var metodo = /** @class */ (function () {
                 this.analizador.agregarCodigo(this.analizador.metodoBegin(nombreMetodo), nodo.childNode[0].childNode[0].location.last_column, nodo.childNode[0].childNode[0].location.first_line);
                 this.analizador.agregarCodigo(this.analizador.llamarMetodo(this.analizador.claseA.nombre + "preconstructor"), nodo.childNode[0].childNode[0].location.last_column, nodo.childNode[0].childNode[0].location.first_line);
                 metodo = this.analizador.claseA.buscarMetodo(name);
-                this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre);
+                //this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre);
+                return metodo;
+            case "Principal":
+                name = "Principal";
+                nombreMetodo = this.analizador.claseA.nombre + "_" + name;
+                this.analizador.setStart();
+                this.analizador.agregarCodigo(this.analizador.metodoBegin(nombreMetodo), nodo.childNode[0].childNode[0].location.last_column, nodo.childNode[0].childNode[0].location.first_line);
+                this.analizador.agregarCodigo(this.analizador.llamarMetodo(this.analizador.claseA.nombre + "preconstructor"), nodo.childNode[0].childNode[0].location.last_column, nodo.childNode[0].childNode[0].location.first_line);
+                metodo = this.analizador.claseA.buscarMetodo(name);
+                // this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre);
                 return metodo;
         }
         throw this.analizador.newError("error al crear metodo", 0, 0);
@@ -172,47 +172,6 @@ var metodo = /** @class */ (function () {
         }
         this.analizador.newError("error al crear parametro", 0, 0);
         return "";
-    };
-    /**
-  * var
-  *: ID
-  *| var '[' e ']'
- 
-  * ;
-  * @param nodo
-  * @param tipo
-  * @param visibilidad
-  */
-    metodo.prototype.var = function (nodo, tipo, visibilidad) {
-    };
-    /**
-     * CuerpoMetodo
-     *   : Declaracion
-     *   | Asignacion
-     *   | getMetodoZ ';'
-     *   | Control
-     *   | Branching ';'
-     *   ;
-     * @param nodo
-     */
-    metodo.prototype.cuerpoMetodo = function (nodo) {
-        var term = nodo.childNode[0].term;
-        switch (term) {
-            case "Declaracion":
-                this.declarar.declaracion(nodo.childNode[0], "");
-                return true;
-            case "Asignacion":
-                this.asignar.asignacion(nodo.childNode[0]);
-                return true;
-            case "getMetodoZ":
-                return true;
-            case "Control":
-                return true;
-            case "Branching":
-                return true;
-        }
-        this.analizador.newError("error em cuerpo metodo", 0, 0);
-        return false;
     };
     return metodo;
 }());

@@ -1,15 +1,15 @@
 import Analizador from '../analizador';
 import Nodo from '../nodo';
 import nodoOperacion from '../exp/operacion/nodoOperacion';
-import Variable from "./variable";
+
 import Simbolo from '../tablaSimbolos/simbolo';
 import Location from '../location';
 import Dir from '../variable/obtenerDireccion'
-export default class Asignacion extends Variable {
-
+export default class Asignacion  {
+    protected analizador:Analizador;
     
     constructor(analizador:Analizador) {
-        super(analizador);
+       this.analizador = analizador;
     }
 
 
@@ -32,14 +32,14 @@ export default class Asignacion extends Variable {
         }else{
             
             this.analizador.agregarCodigo(this.analizador.genComentario
-                ("agregando valor a "+ simbolo.getNombre())
-                ,location.first_line,location.last_column);// es un comentario
+                ("agregando valor a "+ simbolo.getNombre()),
+                location.last_column,location.first_line);// es un comentario
            this.evaluarAsignacionasignarValor(nodo.childNode[1],simbolo,location);
 
         }
         this.analizador.agregarCodigo(this.analizador.genComentario
-            ("fin de incializacion de variable "+ simbolo.getNombre())
-            ,location.first_line,location.last_column);// es un comentario
+            ("fin de incializacion de variable "+ simbolo.getNombre()),
+            location.last_column,location.first_line);// es un comentario
 
     }
 
@@ -58,13 +58,15 @@ export default class Asignacion extends Variable {
             if(this.analizador.exp.evaluarTipo(resultado.tipo , simbolo.getTipo())) {
                 let val = this.analizador.exp.getValor(resultado); //el temporal del resulttod
                 let temp = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(),location.first_line,location.last_column);
-                this.analizador.agregarCodigo(this.analizador.saveEnPila(temp.temporal,val),location.first_line,location.last_column);
+                this.analizador.agregarCodigo(this.analizador.saveEnPila(temp.temporal,val),
+                location.last_column,location.first_line,);
                     return true;
                 
             }else if (resultado.tipo == this.analizador.NULL){
                 let val = this.analizador.NULL; //el temporal del resulttod
                 let temp = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(),location.first_line,location.last_column);
-                this.analizador.agregarCodigo(this.analizador.saveEnPila(temp.temporal,val),location.first_line,location.last_column);
+                this.analizador.agregarCodigo(this.analizador.saveEnPila(temp.temporal,val),
+                location.last_column,location.first_line);
                     return true;
             }else{
                 throw this.analizador.newError("error por compatibilidad de tipos ",location.first_line,location.last_column); 
@@ -95,10 +97,15 @@ export default class Asignacion extends Variable {
     public asignacion(nodo:Nodo):boolean{
         let term = nodo.childNode[0].term;
         let variable:Dir;
+        let resultado:nodoOperacion;
+        let location ;
         switch (term) {
             case "var":
              variable = this.analizador.variable.var(nodo.childNode[0]);
-             this.asignar( nodo.childNode[1],variable);
+             resultado = this.asignar( nodo.childNode[1],variable);
+             location = variable.location;
+             this.analizador.variable.setValVariable(variable,resultado,location);
+            
              return true;
             case "Navegar":
                 this.navegar(nodo.childNode[0]);
@@ -125,32 +132,38 @@ export default class Asignacion extends Variable {
 
     ;
      */
-   private asignar(nodo:Nodo, variable:Dir) {
+   private asignar(nodo:Nodo, variable:Dir) :nodoOperacion{
     let term = nodo.childNode[0].term 
         switch(term){
             case "'++'":
-            return this.analizador.exp.evaluarPP(variable);
+            return this.analizador.exp.evaluarPP(variable,"+");
             case "'--'":
-            return this.analizador.exp.evaluarMM(variable);
+            return this.analizador.exp.evaluarPP(variable,"-");
             case "'='":
             return this.getAdd(nodo.childNode[1]);
-            case "'+=":
-            return this.analizador.exp.masIgual(nodo.childNode[1],variable);
+            case "'+='":
+            return this.analizador.exp.masIgual(nodo.childNode[1],variable,"+");
             case "'*='":
-            return this.analizador.exp.porIgual(nodo.childNode[1],variable);
+            return  this.analizador.exp.masIgual(nodo.childNode[1],variable,"*");
             case "'/='":
-            return this.analizador.exp.divIgual(nodo.childNode[1],variable);
+            return  this.analizador.exp.masIgual(nodo.childNode[1],variable,"/");
         }
-        this.analizador.newError("error al asignar",0,0)
+        throw this.analizador.newError("error al asignar",0,0)
+        
    }
 
-   private getAdd(nodo:Nodo){
+   private getAdd(nodo:Nodo) : nodoOperacion{
         let term = nodo.term;
         switch(term) {
             case "Nuevo":
             case "e":
-            return this.analizador.exp.analizar
+            return this.analizador.exp.analizar(nodo);
         }
+        throw this.analizador.newError("error al asignar",0,0)
    }
+
+
+  
+
     
 }

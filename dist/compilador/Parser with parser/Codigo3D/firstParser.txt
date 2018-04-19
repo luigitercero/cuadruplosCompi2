@@ -88,13 +88,13 @@ frac                        (?:\.[0-9]+)
 "hasta"                     return 'HASTA'
 "enciclar"                  return 'LOOP'
 "contador"                  return 'COUNT'
-"Principal"                 return 'PRINCIPAL'
+
 "true"                      return 'TRUE'
 "false"                     return 'FALSE'
 "booleno"                   return 'BOOLEAN'
 "decimal"                   return 'DOUBLE'
 "caracter"                  return 'CHAR'
-
+"principal"                 return 'PRINCIPAL'
 "imprimir"                  return 'IMPRIMIR'
 "concatenar"                return 'CONCATENAR'
 "convertiracadena"          return 'CONVERTIRCADENA'
@@ -244,6 +244,7 @@ Metodo
     | ID ID '(' Parametros '{'
     | Metodo  CuerpoMetodo
     | Constructor
+    | Principal
     ;
 Constructor
     : ID '(' Parametros '{'
@@ -315,7 +316,7 @@ Default
     : DEFAULT ':' Cuerpo1 '}'
     | '}'
     ;
-Cuerpo: '{'Cuerpo1 '}'
+Cuerpo: '{' Cuerpo1 '}'
     | '{' '}'
     ;
 Cuerpo1
@@ -329,6 +330,7 @@ CuerpoSwitch
     ;
 Caso
     : CASE e ':' Cuerpo1
+    | CASE e ':'
     ;
 Branching
     : BREAK
@@ -349,7 +351,7 @@ Repeat_Until
     : REAPEAT Cuerpo UNTIL Expresion
     ; 
 For
-    : FOR '('VARIABLE':' Asignacion ';' DESDE':' e ';' HASTA ':' e ')' Cuerpo
+    : FOR '('VARIABLE':' ID ';' DESDE':' e ';' HASTA ':' e ')' Cuerpo
     ;
 Loop
     : LOOP ID Cuerpo

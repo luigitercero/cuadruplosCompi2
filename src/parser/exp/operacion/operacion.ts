@@ -5,6 +5,8 @@ import nodoOperacion from './nodoOperacion';
 import Suma from './suma';
 import Comparacion from './comparacion';
 import Simbolo from '../../tablaSimbolos/simbolo';
+import InfVarible from '../../variable/obtenerDireccion';
+import Location from '../../location';
 
 
 export default class Operacion{
@@ -53,11 +55,13 @@ protected  analizador: Analizador;
     private operarXor(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         if (a0.tipo == this.analizador.BOOLEANO)
-        this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaF),a0.column,a0.fila);//agregnaod etiqueta falsa
+        this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaF),
+        a0.column,a0.fila);//agregnaod etiqueta falsa
         else this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
         let a1= this.analizar(arg1);
         if(a1.tipo == this.analizador.BOOLEANO ){
-            this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaV),a0.column,a0.fila);//agregnaod etiqueta verdadera
+            this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaV),
+            a0.column,a0.fila);//agregnaod etiqueta verdadera
             let l5 = this.analizador.newEtiqueta();
             let l6 = this.analizador.newEtiqueta();
             this.analizador.agregarCodigo(a1.valor+","+ l5,a1.column,a1.fila);
@@ -73,7 +77,7 @@ protected  analizador: Analizador;
         else 
          throw this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
     }
-    private operarAnd(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    public operarAnd(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         if (a0.tipo == this.analizador.BOOLEANO)
         this.analizador.agregarCodigo(this.analizador.escribirEtiqueta( a0.etiquetaV),a0.column,a0.fila);//agregnaod etiqueta verdadera
@@ -89,7 +93,7 @@ protected  analizador: Analizador;
         else 
          throw this.analizador.newError("no es un operrador boleano",a0.column,a0.fila);
     }
-    private operarOr(arg0: Nodo, arg1: Nodo): nodoOperacion {
+    public operarOr(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0= this.analizar(arg0);
         if (a0.tipo == this.analizador.BOOLEANO)
         this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaF),a0.column,a0.fila);//agregnaod etiqueta verdadera
@@ -256,31 +260,32 @@ protected  analizador: Analizador;
         switch(term){
 
             case "NUMBERLIST2":
-            col = nodo.childNode[0].location.first_line;
-            fil = nodo.childNode[0].location.last_column;
+            col = nodo.childNode[0].location.last_column;
+            fil = nodo.childNode[0].location.first_line;
             return new NodoOperacion(nodo.childNode[0].token,this.analizador.DOUBLE,col,fil);
             case "NUMBERLIST":
-            col = nodo.childNode[0].location.first_line;
-            fil = nodo.childNode[0].location.last_column;
+            col = nodo.childNode[0].location.last_column;
+            fil = nodo.childNode[0].location.first_line;
             return new NodoOperacion(nodo.childNode[0].token,this.analizador.INT,col,fil);
             case "CARACTER":
-            col = nodo.childNode[0].location.first_line;
-            fil = nodo.childNode[0].location.last_column;
+            col = nodo.childNode[0].location.last_column;
+            fil = nodo.childNode[0].location.first_line;
             return new NodoOperacion(nodo.childNode[0].token.charCodeAt(1)+"",this.analizador.CARACTER,col,fil);
             case "STRINGLIST":
-            col = nodo.childNode[0].location.first_line;
-            fil = nodo.childNode[0].location.last_column;
-            return new NodoOperacion(nodo.childNode[0].token,"string",col,fil);
+            col = nodo.childNode[0].location.last_column;
+            fil = nodo.childNode[0].location.first_line;
+            let cadena : NodoOperacion = this.cadena(nodo.childNode[0].token,nodo.childNode[0].location);
+            return cadena;
             case "TRUE":
-            col = nodo.childNode[0].location.first_line;
-            fil = nodo.childNode[0].location.last_column;
+            col = nodo.childNode[0].location.last_column;
+            fil = nodo.childNode[0].location.first_line;
             let arg0 = new NodoOperacion("1",this.analizador.INT,col,fil);
             let arg1 = new NodoOperacion("1",this.analizador.INT,col,fil);
             let t:Comparacion = new Comparacion(arg0,arg1,this.analizador,"==");    
             return t.evaluar();
             case "FALSE":
-            col = nodo.childNode[0].location.first_line;
-            fil = nodo.childNode[0].location.last_column;
+            col = nodo.childNode[0].location.last_column;
+            fil = nodo.childNode[0].location.first_line;
             let arg00 = new NodoOperacion("0",this.analizador.INT,col,fil);
             let arg10 = new NodoOperacion("1",this.analizador.INT,col,fil);
             let t0:Comparacion = new Comparacion(arg00,arg10,this.analizador,"==");    
@@ -289,13 +294,43 @@ protected  analizador: Analizador;
             //col = nodo.childNode[0].location.first_line;
             //fil = nodo.childNode[0].location.last_column;
             let variable = this.analizador.variable.identi(nodo.childNode[0])
-            let val = this.analizador.variable.getValorVariable(variable);
-            return new nodoOperacion(val,variable.simbolo.getTipo(),variable.location.last_column,variable.location.first_line);
-            
+            return this.gerVal (variable);
          
         }
       
         throw new Error("error en analizar");
+    }
+
+
+    private cadena(cadena:string, location:Location) {
+        let t1 = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(
+            this.analizador.asignar("heap",t1),location.last_column,location.first_line
+        );
+        
+            for (let index = 0; index < cadena.length; index++) {
+                const element = cadena.charCodeAt(index);
+                this.analizador.agregarCodigo(
+                    this.analizador.saveEnHeap("heap",element +""),location.last_column,location.first_line
+                );
+                this.analizador.agregarCodigo(
+                    this.analizador.siguiLibreHeap(),location.last_column,location.first_line
+                );
+            }
+        
+        this.analizador.agregarCodigo(
+            this.analizador.saveEnHeap("heap",this.analizador.NULL),location.last_column,location.first_line
+        );
+        this.analizador.agregarCodigo(
+            this.analizador.siguiLibreHeap(),location.last_column,location.first_line
+        );
+        let nodo = new NodoOperacion(t1,this.analizador.STRING,location.last_column,location.first_line);
+        nodo.valor = t1;
+        return nodo;
+    }
+    gerVal(variable:InfVarible) : nodoOperacion{
+        let val = this.analizador.variable.getValorVariable(variable);
+        return new nodoOperacion(val,variable.simbolo.getTipo(),variable.location.last_column,variable.location.first_line);
     }
 
     getValor(arg0:nodoOperacion){

@@ -8,7 +8,7 @@ import Metodo from './metodo/metodo'
 import Clase from './tablaSimbolos/clase'
 import Recoleccion from '../precompilacion/recoleccion'
 import Class from './clase/clase'
-
+import Cuerpo from './metodo/cuerpo'
 export default class Analizador extends Inter {
     public exp:Exp;
     public variable:Variable;
@@ -16,11 +16,13 @@ export default class Analizador extends Inter {
     public clas:Class;
     public claseA:Clase;
     public clases:Clase[];
+    public cuerpo:Cuerpo;
     constructor(){
         super();    
         this.exp = new Exp(this);
         this.variable = new Variable(this);
         this.metodoA = new Metodo(this);
+        this.cuerpo = new Cuerpo(this);
         this.claseA = new Clase("",0);
         this.clases = new Array<Clase>();
         this.clas = new Class(this);
@@ -171,214 +173,6 @@ verClaseA(){
     }
    
  
-    /**
-     * Navegar
-     *   : var '.'
-     *   | var '->'
-     *   | getMetodo '.'
-     *   | getMetodo '->'
-     *   | Navegar var '.'
-     *   | Navegar  getMetodo '.'
-     *   | Navegar var '->'
-     *   | Navegar  getMetodo '->'
-     *   ;
-     * @param nodo 
-     */
-    public navegar(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     *  Control
-     *   : If1
-     *   | If2
-     *   | Switch
-     *   | While
-     *   | Do_While
-     *   | Repeat_Until
-     *   | For
-     *   | Loop
-     *   | Count
-     *   | Doble_Condicion
-     *   ;
-     * @param nodo
-     */
-    public control(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     * Cuerpo: '{'Cuerpo1 '}'
-     *   | '{' '}'
-     *   ;
-     * @param nodo 
-     */
-    public cuerpo(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     * Cuerpo1
-     *   :Cuerpo1 CuerpoMetodo
-     *   |CuerpoMetodo
-     *   ;
-     * @param nodo 
-     */
-    public curpo1(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     * Branching
-     *   : BREAK
-     *   | BREAK ID
-     *   | CONTINUE
-     *   | RETURN
-     *   | RETURN e
-     *   ;
-     * @param nodo 
-     */
-    public branching(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     * Expresion
-     *  : '(' e ')'
-     *  ;
-     * @param nodo 
-     */
-    public expresion(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     * getMetodoZ 
-     *   : Navegar  getMetodo  
-     *   | getMetodo 
-     *   ;
-     * @param nodo 
-     */
-    public getMetodoZ(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     * getMetodo
-     *   : ID '(' getParametro
-     *   | Primitivas '(' getParametro
-     *   | Tipo '(' getParametro
-     *   ;
-     * @param nodo 
-     */
-    public getMetodo(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     * getParametro 
-     *   : ParametroM ')'
-     *   | ')'
-     *   ;
-     * @param nodo 
-     */
-    public getParametro(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     * ParametroM 
-     *   : ParametroM ',' e
-     *   | ParametroM ',' Tipo
-     *   | e
-     *   | Tipo
-     *   ;
-     * @param nodo 
-     */
-    public parametroM(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     * Primitivas
-     *   :IMPRIMIR
-     *   |CONCATENAR
-     *   |CONVERTIRCADENA
-     *   |CONVERTIRENTERO
-     *   |CREARPUNTERO
-     *   |OBTERNERDIRECCION
-     *   |RESERVAMEMORIA
-     *   |CONSULTARTAMANIO
-     *   |TECLADO
-     *   ;
-     * @param nodo 
-     */
-    public primitivas(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     * e
-     *   : e '+' e
-     *   | e '-' e
-     *   | e '*' e
-     *   | e '/' e
-     *   | e '%' e
-     *   | e '^' e
-     *   | '-' e 
-     *   | '(' e ')'
-     *   | e '<' e
-     *   | e '>' e
-     *   | e '<=' e
-     *   | e '>=' e
-     *   | e '==' e
-     *   | e '!=' e
-     *   | e '&&' e
-     *   | e '||' e
-     *   | e '??' e
-     *   | '!' e
-     *   | Datos
-     *   | NULL 
-     *   ;
-     * @param nodo 
-     */
-    public e(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     * Lista
-     *   : List '}'
-     *   ;
-     * @param nodo 
-     */
-    public lista(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     * List
-     *   : '{' DefList
-     *   | List ',' DefList
-     *   ;
-     * @param nodo 
-     */
-    public list(nodo:Nodo):boolean{
-        return false;
-    }
-    /**
-     * Datos 
-     *   : NUMBERLIST
-     *   | Identi
-     *   | STRINGLIST  
-     *   | TRUE
-     *   | FALSE
-     *   ;
-     * @param nodo 
-     * @param Nodo 
-     */
-    public datos(nodo:Nodo):boolean{
-        return false;
-    }
-
-    /**
-     * Identi
-     *   :var
-     *   |getMetodo
-     *   |Identi '->' var
-     *   |Identi '->' getMetodo
-     *   |Identi '.' var
-     *   |Identi '.' getMetodo
-     *   ;   
-     */
-    public identi(nodo:Nodo):boolean{
-        return false;
-    }
+    
+    
 }

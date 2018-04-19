@@ -4,7 +4,7 @@ import Class from '../tablaSimbolos/clase'
 import Simbolo from "../tablaSimbolos/simbolo";
 export default class Clase{
 
-    public analizador:Analizador
+    private analizador:Analizador
     constructor(analizador:Analizador){
         this.analizador = analizador;
     }

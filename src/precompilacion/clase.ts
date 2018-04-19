@@ -93,6 +93,7 @@ export default class Clase{
             case "Estruct":
                 this.recoleccion.analizador.logPorCompletar("agreagar struct a tabla de simbolos");
                 return true 
+       
         }
         this.recoleccion.analizador.newError("no existe nodo pra continuar el cuerpo clase",0,0);
         return false;

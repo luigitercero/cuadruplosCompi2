@@ -61,6 +61,7 @@ var Metodo = /** @class */ (function () {
  *   | ID ID '(' Parametros '{'
  *   | Metodo  CuerpoMetodo
  *   | constructor
+ *   | Principal
  *   ;
  * @param nodo
  */
@@ -97,6 +98,12 @@ var Metodo = /** @class */ (function () {
                 nombreMetodo = "constructor";
                 metodo = new metodo_1.default(nombreMetodo, visi, tipo, nodo.childNode[0].childNode[0].location.first_line);
                 this.parametros(nodo.childNode[0].childNode[2], metodo);
+                this.recoleccion.analizador.claseA.agregarMetodo(metodo);
+                return true;
+            case "Principal":
+                tipo = "Principal";
+                nombreMetodo = "Principal";
+                metodo = new metodo_1.default(nombreMetodo, visi, tipo, nodo.childNode[0].childNode[0].location.first_line);
                 this.recoleccion.analizador.claseA.agregarMetodo(metodo);
                 return true;
         }

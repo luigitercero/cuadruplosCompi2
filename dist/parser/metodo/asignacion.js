@@ -1,23 +1,8 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-}
 Object.defineProperty(exports, "__esModule", { value: true });
-var variable_1 = __importDefault(require("./variable"));
-var Asignacion = /** @class */ (function (_super) {
-    __extends(Asignacion, _super);
+var Asignacion = /** @class */ (function () {
     function Asignacion(analizador) {
-        return _super.call(this, analizador) || this;
+        this.analizador = analizador;
     }
     /**
     * * AsignarValor
@@ -35,10 +20,10 @@ var Asignacion = /** @class */ (function (_super) {
         if (nombre == "';'") {
         }
         else {
-            this.analizador.agregarCodigo(this.analizador.genComentario("agregando valor a " + simbolo.getNombre()), location.first_line, location.last_column); // es un comentario
+            this.analizador.agregarCodigo(this.analizador.genComentario("agregando valor a " + simbolo.getNombre()), location.last_column, location.first_line); // es un comentario
             this.evaluarAsignacionasignarValor(nodo.childNode[1], simbolo, location);
         }
-        this.analizador.agregarCodigo(this.analizador.genComentario("fin de incializacion de variable " + simbolo.getNombre()), location.first_line, location.last_column); // es un comentario
+        this.analizador.agregarCodigo(this.analizador.genComentario("fin de incializacion de variable " + simbolo.getNombre()), location.last_column, location.first_line); // es un comentario
     };
     Asignacion.prototype.evaluarAsignacionasignarValor = function (nodo, simbolo, location) {
         var nombre = nodo.term;
@@ -51,13 +36,13 @@ var Asignacion = /** @class */ (function (_super) {
                 if (this.analizador.exp.evaluarTipo(resultado.tipo, simbolo.getTipo())) {
                     var val = this.analizador.exp.getValor(resultado); //el temporal del resulttod
                     var temp_1 = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
-                    this.analizador.agregarCodigo(this.analizador.saveEnPila(temp_1.temporal, val), location.first_line, location.last_column);
+                    this.analizador.agregarCodigo(this.analizador.saveEnPila(temp_1.temporal, val), location.last_column, location.first_line);
                     return true;
                 }
                 else if (resultado.tipo == this.analizador.NULL) {
                     var val = this.analizador.NULL; //el temporal del resulttod
                     var temp_2 = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
-                    this.analizador.agregarCodigo(this.analizador.saveEnPila(temp_2.temporal, val), location.first_line, location.last_column);
+                    this.analizador.agregarCodigo(this.analizador.saveEnPila(temp_2.temporal, val), location.last_column, location.first_line);
                     return true;
                 }
                 else {
@@ -86,10 +71,14 @@ var Asignacion = /** @class */ (function (_super) {
     Asignacion.prototype.asignacion = function (nodo) {
         var term = nodo.childNode[0].term;
         var variable;
+        var resultado;
+        var location;
         switch (term) {
             case "var":
                 variable = this.analizador.variable.var(nodo.childNode[0]);
-                this.asignar(nodo.childNode[1], variable);
+                resultado = this.asignar(nodo.childNode[1], variable);
+                location = variable.location;
+                this.analizador.variable.setValVariable(variable, resultado, location);
                 return true;
             case "Navegar":
                 this.navegar(nodo.childNode[0]);
@@ -107,28 +96,38 @@ var Asignacion = /** @class */ (function (_super) {
         | '++'
         | '--'
         | '=' Nuevo
-        | '=' e
+        | '=' e     | '=' e
+    
         ;
          */
     Asignacion.prototype.asignar = function (nodo, variable) {
         var term = nodo.childNode[0].term;
         switch (term) {
             case "'++'":
-                this.analizador.exp.evaluarPP(variable);
+                return this.analizador.exp.evaluarPP(variable, "+");
             case "'--'":
-                this.analizador.exp.evaluarMM(variable);
+                return this.analizador.exp.evaluarPP(variable, "-");
             case "'='":
-                this.getAdd(nodo.childNode[1]);
+                return this.getAdd(nodo.childNode[1]);
+            case "'+='":
+                return this.analizador.exp.masIgual(nodo.childNode[1], variable, "+");
+            case "'*='":
+                return this.analizador.exp.masIgual(nodo.childNode[1], variable, "*");
+            case "'/='":
+                return this.analizador.exp.masIgual(nodo.childNode[1], variable, "/");
         }
+        throw this.analizador.newError("error al asignar", 0, 0);
     };
     Asignacion.prototype.getAdd = function (nodo) {
         var term = nodo.term;
         switch (term) {
             case "Nuevo":
             case "e":
+                return this.analizador.exp.analizar(nodo);
         }
+        throw this.analizador.newError("error al asignar", 0, 0);
     };
     return Asignacion;
-}(variable_1.default));
+}());
 exports.default = Asignacion;
 //# sourceMappingURL=asignacion.js.map

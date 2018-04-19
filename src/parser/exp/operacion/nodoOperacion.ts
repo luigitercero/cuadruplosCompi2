@@ -7,9 +7,10 @@ export default class nodoOperacion {
     public valor:string;
     public column:number;
     public fila:number;
+
     public etiquetaV:string[];
     public etiquetaF:string[];
- 
+    
     public dim:number;
     public temp:string;
     public simbolo:Simbolo;
@@ -22,6 +23,7 @@ export default class nodoOperacion {
         this. etiquetaV=[];
         this. etiquetaF=[];
         this.dim = 0;
+        this.temp = "";
         this.simbolo = new Simbolo("","","")
     }
     addEtiquetaV(etiqueta:string){

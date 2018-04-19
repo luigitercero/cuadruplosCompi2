@@ -44,6 +44,7 @@ export default class Ambito{
     }
     agregarSimbolo(simbolo : Simbolo) {
        this.ambito.push(simbolo);
+       simbolo.possAmbito = this.ptr
        this.siguietePosicionLibre(simbolo);
     }
 
