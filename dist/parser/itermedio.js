@@ -12,6 +12,7 @@ var FormatoItermedio = /** @class */ (function () {
             'metodo': [{ 'metodo': "", 'poss': -1 }],
             'temporal': [{ "tempora": "retorno", "valor": 35174492 }],
             'start': 1,
+            'end': 5
         };
         this.INT = "entero";
         this.CARACTER = "caracter";
@@ -27,13 +28,18 @@ var FormatoItermedio = /** @class */ (function () {
         this.temporal = 1;
         this.etiqueta = 1;
         this.poss = 1;
-        this.contador = 1;
+        this.contador = 0;
     }
     FormatoItermedio.prototype.get3D = function () {
         return this.codigo4D;
     };
+    FormatoItermedio.prototype.setFinal = function () {
+        this.codigo4D.end = this.poss;
+    };
     /*retorna el numero de metodo que toca */
     FormatoItermedio.prototype.getContador = function () {
+        this.contador++;
+        this.codigo4D.metodo.push({ 'metodo': "metodo" + this.contador, 'poss': this.poss });
         return this.contador;
     };
     FormatoItermedio.prototype.agregarCodigo = function (codigo, column, line) {
@@ -169,10 +175,9 @@ var FormatoItermedio = /** @class */ (function () {
      * iniciar un metodo
      * @param nombre  nombre del metodo
      */
-    FormatoItermedio.prototype.metodoBegin = function (nombre) {
-        this.codigo4D.metodo.push({ 'metodo': nombre, 'poss': this.poss });
-        this.contador++;
-        return this.genCuadruplo("begin", "", "", nombre);
+    FormatoItermedio.prototype.metodoBegin = function (id) {
+        this.codigo4D.metodo[+id] = { "metodo": "metodo" + id, "poss": this.poss };
+        return this.genCuadruplo("begin", "", "", "metodo" + id);
     };
     /**
      * inalizar un metodo con el formato

@@ -11,10 +11,14 @@ export default class Operacion{
     public heap:number[];
     public ptr:number= 0;
     public pth:number= 0;
+    public linea:number=0;
+    public metodoAnterior:number[];
     constructor(lTeporales:any){
         this.es = lTeporales;
         this.stack = new Array();
         this.heap = new Array();
+        this.metodoAnterior= new Array();
+        this.metodoAnterior.push(-1)
     }
 
     igual(arg0:number,etiqueta:string,arg1:number,linea:number) {
@@ -136,5 +140,16 @@ export default class Operacion{
         console.log(num);
     }
     
-    
+    callMetodo(nombre:string) {
+        let poss =  nombre.replace("metodo","");
+        this.metodoAnterior.push(this.linea);
+        return this.es.metodo[+poss].poss;
+    }   
+    begin(nombre:string) {
+        
+    }
+    endMetodo(nombre:string){
+        let anterior = this.metodoAnterior.pop()
+        return anterior;
+    }
 }

@@ -4,6 +4,7 @@ export default class Interprete{
 
     public p:any;
     public S:any;
+    public end:any
     constructor(inteprete:any){
         
         
@@ -16,6 +17,7 @@ export default class Interprete{
         this.p.parser.struct.leer = this;
         this.p.parser.struct.temporal = inteprete.temporal;
         this.S = inteprete.start;
+        this.end = inteprete.end;
 
     }
 
@@ -30,9 +32,14 @@ export default class Interprete{
                     ,this.p.parser.struct.codigo[index].columna, this.p.parser.struct.codigo[index].linea
                 );
                this.p.parser.indice.valor = index;
+               this.p.parser.struct.op.linea =index;
                this.p.parse(this.p.parser.struct.codigo[index].codigo);
                index = this.p.parser.indice.valor
-            } 
+                if (index < 0) {
+                    break;
+                }
+            }
+            console.log("felicidades a termindo la lectura de cuadruplo") 
         }
     }
 }

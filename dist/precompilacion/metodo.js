@@ -80,6 +80,7 @@ var Metodo = /** @class */ (function () {
                 tipo = nodo.childNode[0].childNode[0].token;
                 nombreMetodo = nodo.childNode[1].token;
                 metodo = new metodo_1.default(nombreMetodo, visi, tipo, nodo.childNode[1].location.first_line);
+                metodo.id = this.recoleccion.analizador.getContador() + "";
                 this.parametros(nodo.childNode[3], metodo);
                 this.recoleccion.analizador.claseA.agregarMetodo(metodo);
                 return true;
@@ -87,6 +88,7 @@ var Metodo = /** @class */ (function () {
                 tipo = nodo.childNode[0].token;
                 nombreMetodo = nodo.childNode[1].token;
                 metodo = new metodo_1.default(nombreMetodo, visi, tipo, nodo.childNode[1].location.first_line);
+                metodo.id = this.recoleccion.analizador.getContador() + "";
                 this.parametros(nodo.childNode[3], metodo);
                 this.recoleccion.analizador.claseA.agregarMetodo(metodo);
                 return true;
@@ -97,6 +99,7 @@ var Metodo = /** @class */ (function () {
                 tipo = "constructor";
                 nombreMetodo = "constructor";
                 metodo = new metodo_1.default(nombreMetodo, visi, tipo, nodo.childNode[0].childNode[0].location.first_line);
+                metodo.id = this.recoleccion.analizador.getContador() + "";
                 this.parametros(nodo.childNode[0].childNode[2], metodo);
                 this.recoleccion.analizador.claseA.agregarMetodo(metodo);
                 return true;
@@ -104,6 +107,7 @@ var Metodo = /** @class */ (function () {
                 tipo = "Principal";
                 nombreMetodo = "Principal";
                 metodo = new metodo_1.default(nombreMetodo, visi, tipo, nodo.childNode[0].childNode[0].location.first_line);
+                metodo.id = this.recoleccion.analizador.getContador() + "";
                 this.recoleccion.analizador.claseA.agregarMetodo(metodo);
                 return true;
         }
@@ -151,7 +155,7 @@ var Metodo = /** @class */ (function () {
                 metodo.addParametro(simbolo);
                 return true;
             case "ID":
-                tipo = nodo.childNode[0].token;
+                tipo = nodo.childNode[0].token.toLocaleLowerCase();
                 simbolo = this.var(nodo.childNode[1], tipo, visibilidad, metodo);
                 metodo.addParametro(simbolo);
                 return true;

@@ -1,5 +1,9 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
 Object.defineProperty(exports, "__esModule", { value: true });
+var tabla_1 = __importDefault(require("../tablaSimbolos/tabla"));
 var metodo = /** @class */ (function () {
     function metodo(analizador) {
         this.analizador = analizador;
@@ -36,22 +40,36 @@ var metodo = /** @class */ (function () {
     metodo.prototype.crearMetodo = function (nodo) {
         var nombre = nodo.childNode[0].term;
         var metodos;
-        this.analizador.claseA.tabla.aumetarAbmito();
+        var simtemp = this.analizador.claseA.tabla;
+        this.analizador.claseA.tabla = new tabla_1.default();
         this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre);
+        this.analizador.claseA.tabla.aumetarAbmito();
         switch (nombre) {
             case "Visibilidad":
                 metodos = this.metodo(nodo.childNode[1], nodo.childNode[0].childNode[0].token);
-                this.analizador.agregarCodigo(this.analizador.metodoEnd(this.analizador.claseA.nombre + "_" + metodos.id), nodo.childNode[2].location.last_column, nodo.childNode[2].location.first_line);
+                this.endMetodo(metodos, nodo.childNode[2].location);
                 this.analizador.claseA.tabla.disminuirAmbito();
+                this.analizador.claseA.tabla = simtemp;
                 return true;
             case "Metodo":
                 metodos = this.metodo(nodo.childNode[0], this.analizador.PUBLICO);
-                var coment = this.analizador.genComentario(metodos.nomMetodo + "");
-                this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo" + metodos.id) + coment, nodo.childNode[1].location.last_column, nodo.childNode[1].location.first_line);
+                this.endMetodo(metodos, nodo.childNode[1].location);
                 this.analizador.claseA.tabla.disminuirAmbito();
+                this.analizador.claseA.tabla = simtemp;
                 return true;
         }
         return false;
+    };
+    metodo.prototype.endMetodo = function (metodos, location) {
+        var coment = this.analizador.genComentario(metodos.nomMetodo + "");
+        /*
+        this.analizador.agregarCodigo(this.analizador.genOperacion("-","ptr",this.analizador.claseA.tabla.ptr+"","ptr"),
+         location.last_column,location.first_line);
+        */
+        if (metodos.getNombre() == "Principal") {
+            this.analizador.setFinal();
+        }
+        this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo" + metodos.id) + coment, location.last_column, location.first_line);
     };
     /**
      * Metodo
@@ -103,9 +121,13 @@ var metodo = /** @class */ (function () {
     };
     metodo.prototype.metodoImp = function (name, location) {
         var metodo = this.analizador.claseA.buscarMetodo(name);
-        metodo.id = this.analizador.getContador() + "";
+        metodo.preFijo = this.analizador.claseA.nombre;
         var comentario = this.analizador.genComentario(this.analizador.claseA.nombre + "_" + name);
-        this.analizador.agregarCodigo(this.analizador.metodoBegin("metodo" + metodo.id) + comentario, location.last_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.metodoBegin(metodo.id) + comentario, location.last_column, location.first_line);
+        for (var index = 0; index < metodo.parametro.length; index++) {
+            var element = metodo.parametro[index];
+            this.analizador.claseA.tabla.agregarSimboloApila(element);
+        }
         return metodo;
     };
     /**

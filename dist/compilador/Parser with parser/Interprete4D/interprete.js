@@ -14,6 +14,7 @@ var Interprete = /** @class */ (function () {
         this.p.parser.struct.leer = this;
         this.p.parser.struct.temporal = inteprete.temporal;
         this.S = inteprete.start;
+        this.end = inteprete.end;
     }
     Interprete.prototype.start = function () {
         console.log("Iniciando lectura de cuadruplo");
@@ -24,9 +25,14 @@ var Interprete = /** @class */ (function () {
             for (var index = iniciaEn; index < this.p.parser.struct.codigo.length; index++) {
                 console.log(this.p.parser.struct.codigo[index].poss, this.p.parser.struct.codigo[index].codigo, this.p.parser.struct.codigo[index].columna, this.p.parser.struct.codigo[index].linea);
                 this.p.parser.indice.valor = index;
+                this.p.parser.struct.op.linea = index;
                 this.p.parse(this.p.parser.struct.codigo[index].codigo);
                 index = this.p.parser.indice.valor;
+                if (index < 0) {
+                    break;
+                }
             }
+            console.log("felicidades a termindo la lectura de cuadruplo");
         }
     };
     return Interprete;

@@ -114,8 +114,8 @@ export default class Clase{
         let nombreClase = this.analizador.claseA.nombre;
         let poss = this.analizador.claseA.poss;
         let coment = this.analizador.genComentario("nombreClase_Precontructor" )
-        let nombre ="metodo"+ this.analizador.getContador();
-        this.analizador.agregarCodigo(this.analizador.metodoBegin(nombre)+coment,0,poss);
+        let id = this.analizador.getContador();
+        this.analizador.agregarCodigo(this.analizador.metodoBegin(id+"")+coment,0,poss);
         for (let index = 0; index < this.analizador.claseA.tabla.esto.ambito.length; index++) {
             const element = this.analizador.claseA.tabla.esto.ambito[index];
             if (element.valor.valor!= null){
@@ -123,7 +123,7 @@ export default class Clase{
                 this.analizador.variable.evaluarAsignacionasignarValor(sim);
             }
         }
-        this.analizador.agregarCodigo(this.analizador.metodoEnd(nombre)+coment,0,poss);
+        this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo"+id)+coment,0,poss);
     }
 
 }

@@ -1,3 +1,5 @@
+import metodo from "./metodo/metodo";
+
 
 /**
  * esta clase lleva el control del formato intermido
@@ -6,8 +8,8 @@ export default class FormatoItermedio{
     private codigoIntermedio:string;
     private temporal:number;
     private etiqueta:number;
-    private poss:number;
-    private contador:number
+    private poss:number;//cuenta por que linea voy escribiendo 
+    private contador:number//cuenta los mentodos
     public codigo4D = {
         'C4D':[{'poss':-1,'codigo':"",'columna':-1,'linea':-1,}],
         'state':true,
@@ -15,13 +17,18 @@ export default class FormatoItermedio{
         'metodo' :[{'metodo':"",'poss':-1}],
         'temporal':[{"tempora":"retorno","valor":35174492}],
         'start':1,
+        'end':5
     };
     public get3D(){
         return this.codigo4D;
     }
-
+    setFinal() {
+        this.codigo4D.end = this.poss;
+    }
     /*retorna el numero de metodo que toca */
     public getContador() {
+        this.contador++;
+        this.codigo4D.metodo.push({'metodo':"metodo"+this.contador,'poss':this.poss});
         return this.contador;
     }
     public agregarCodigo(codigo:string,column:number|-1,line:number|-1){
@@ -43,7 +50,7 @@ export default class FormatoItermedio{
         this.temporal = 1;
         this.etiqueta = 1;
         this.poss = 1;
-        this.contador = 1;
+        this.contador = 0;
     }
     private pila (n:number):string{
      return "Pila [ " + n + " ]";
@@ -167,10 +174,9 @@ export default class FormatoItermedio{
      * iniciar un metodo
      * @param nombre  nombre del metodo
      */
-    public metodoBegin(nombre:string):string{ 
-        this.codigo4D.metodo.push({'metodo':nombre,'poss':this.poss});
-        this.contador ++;
-        return this.genCuadruplo("begin","","",nombre);
+    public metodoBegin(id:string):string{ 
+        this.codigo4D.metodo[+id] ={"metodo":"metodo"+id,"poss":this.poss};
+        return this.genCuadruplo("begin","","","metodo"+id);
     }
     /**
      * inalizar un metodo con el formato

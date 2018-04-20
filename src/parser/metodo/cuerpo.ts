@@ -122,8 +122,7 @@ export default class cuerpo {
         let nombre;
         switch(term) {
             case "ID" :
-            nombre = nodo.childNode[0].term;
-            
+            nombre = nodo.childNode[0].token;
             this.metodoID(nombre,this.getParametro(nodo.childNode[2]),nodo.childNode[0].location);
             return
             case "Primitivas" :
@@ -176,15 +175,25 @@ export default class cuerpo {
         }   
     }
     
-    private metodoID(id:string, parametoM:nodoOperacion[],location:Location) {
-        let tam=this.analizador.claseA.tabla.ptr 
-        let esto = this.analizador.variable.obtenerValorVariable("this",location.first_line,location.last_column);
-        let temp = this.analizador.claseA.tabla.ptr;
-        let postfijo = "";
+    private metodoID(nombre:string, parametoM:nodoOperacion[],location:Location) {
+        let tam=this.analizador.claseA.tabla.ptr
+        //obtengo la direccion donde esta this o esto  
+        let esto = this.analizador.variable.obtenerValorVariable("esto",location.first_line,location.last_column);
+        //aqui empiza el ambito simulado
+        let temp = this.analizador.claseA.tabla.ptr;//en esta posicion se encuentra el retorno
+        temp ++; //en esta posicion se guarda this
         
-        
-        this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre);
+        let t2 = this.analizador.newTemporal()
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("+","ptr",temp+"",t2),location.last_column,location.first_line
+        );
 
+        this.analizador.agregarCodigo(
+            this.analizador.saveEnPila(t2,esto.done),location.last_column,location.first_line
+        );
+        temp ++;//siguiete posicionlibre
+
+        let param = "";
         for (let index = 0; index < parametoM.length; index++) {
             let t1 = this.analizador.newTemporal();
             
@@ -195,12 +204,22 @@ export default class cuerpo {
             this.analizador.agregarCodigo(
                 this.analizador.saveEnPila(t1,parametoM[index].valor),parametoM[index].column,parametoM[index].fila
             );
+            param = param + "_" + parametoM[index].tipo;
             temp ++;
-            postfijo = "_"+parametoM[index].tipo;
         }
 
-        let nombreFinal = id+postfijo;
-
+        
+        let metodoNombre = nombre+param;
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("+","ptr",tam+"","ptr"),location.last_column,location.first_line
+        );
+        let metodo = this.analizador.claseA.buscarMetodo(metodoNombre);
+        this.analizador.agregarCodigo(
+            this.analizador.llamarMetodo("metodo"+metodo.id),location.last_column,location.first_line
+        );
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("-","ptr",tam+"","ptr"),location.last_column,location.first_line
+        );
     }
 
 }

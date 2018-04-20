@@ -22,12 +22,16 @@ var Metodo = /** @class */ (function (_super) {
         _this.nomMetodo = nombre;
         _this.parametro = new Array();
         _this.postFijo = new Array();
+        _this.preFijo = "";
         return _this;
     }
     Metodo.prototype.addParametro = function (simbolo) {
-        this.nomMetodo = this.id + "_" + simbolo.getTipo();
+        this.nomMetodo = this.nomMetodo + "_" + simbolo.getTipo();
         this.postFijo.push(simbolo.getTipo());
         this.parametro.push(simbolo);
+    };
+    Metodo.prototype.setPrefijo = function (prefijo) {
+        this.preFijo = prefijo;
     };
     Metodo.prototype.addPostFijo = function (tipo) {
         this.postFijo.push(tipo);

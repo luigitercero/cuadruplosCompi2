@@ -11,9 +11,12 @@ var Operacion = /** @class */ (function () {
         };
         this.ptr = 0;
         this.pth = 0;
+        this.linea = 0;
         this.es = lTeporales;
         this.stack = new Array();
         this.heap = new Array();
+        this.metodoAnterior = new Array();
+        this.metodoAnterior.push(-1);
     }
     Operacion.prototype.igual = function (arg0, etiqueta, arg1, linea) {
         if (arg0 == arg1) {
@@ -115,6 +118,17 @@ var Operacion = /** @class */ (function () {
     };
     Operacion.prototype.printD = function (num) {
         console.log(num);
+    };
+    Operacion.prototype.callMetodo = function (nombre) {
+        var poss = nombre.replace("metodo", "");
+        this.metodoAnterior.push(this.linea);
+        return this.es.metodo[+poss].poss;
+    };
+    Operacion.prototype.begin = function (nombre) {
+    };
+    Operacion.prototype.endMetodo = function (nombre) {
+        var anterior = this.metodoAnterior.pop();
+        return anterior;
     };
     return Operacion;
 }());

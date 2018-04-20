@@ -22,7 +22,7 @@ server.app.use('/',router);
 var cons = require('consolidate');
 // view engine setup
 server.app.engine('html', cons.swig);
-server.app.set('view engine', 'html');
+server.app.set('view engine', 'ejs');
 server.app.use(bodyParser());
 server.app.set('views', path.join(__dirname, 'server/views'));
 server.app.use(bodyParser());

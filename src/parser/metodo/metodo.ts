@@ -6,6 +6,7 @@ import Metodo from '../tablaSimbolos/metodo';
 
 import Cuerpo from './cuerpo'
 import Location from '../location';
+import Tabla from '../tablaSimbolos/tabla';
 export default class metodo {
  public analizador: Analizador;
 
@@ -49,25 +50,43 @@ export default class metodo {
     public crearMetodo(nodo:Nodo):boolean{
         let nombre :string = nodo.childNode[0].term
         let metodos
-        this.analizador.claseA.tabla.aumetarAbmito();
+        let simtemp = this.analizador.claseA.tabla;
+        this.analizador.claseA.tabla = new Tabla();
         this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre);
+        this.analizador.claseA.tabla.aumetarAbmito();
+        
         switch(nombre){
             case "Visibilidad":
                 metodos= this.metodo(nodo.childNode[1],nodo.childNode[0].childNode[0].token);
-                this.analizador.agregarCodigo(this.analizador.metodoEnd(this.analizador.claseA.nombre+"_"+metodos.id),
-                nodo.childNode[2].location.last_column,nodo.childNode[2].location.first_line);
+                this.endMetodo(metodos,nodo.childNode[2].location); 
                 this.analizador.claseA.tabla.disminuirAmbito();
+                this.analizador.claseA.tabla =simtemp;
                 return true;
             case "Metodo":  
                 metodos =this.metodo(nodo.childNode[0],this.analizador.PUBLICO);
-                let coment = this.analizador.genComentario (metodos.nomMetodo+"");
-                this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo"+metodos.id)+coment,
-                nodo.childNode[1].location.last_column,nodo.childNode[1].location.first_line);
+                this.endMetodo(metodos,nodo.childNode[1].location); 
                 this.analizador.claseA.tabla.disminuirAmbito();
+                this.analizador.claseA.tabla =simtemp;
                 return true;
         }
         return false;
     }
+
+    endMetodo(metodos:Metodo,location:Location) {
+        let coment = this.analizador.genComentario (metodos.nomMetodo+"");
+        /*
+        this.analizador.agregarCodigo(this.analizador.genOperacion("-","ptr",this.analizador.claseA.tabla.ptr+"","ptr"),
+         location.last_column,location.first_line);
+        */
+        if (metodos.getNombre() == "Principal") {
+            this.analizador.setFinal();
+
+        }
+        this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo"+metodos.id)+coment,
+         location.last_column,location.first_line);
+
+    }
+
     /**
      * Metodo
      *   : Tipo ID '(' Parametros '{'
@@ -119,10 +138,15 @@ export default class metodo {
     }
 
     private metodoImp(name:string, location:Location) {
-        let metodo = this.analizador.claseA.buscarMetodo(name);
-        metodo.id = this.analizador.getContador()+"";
+        let metodo:Metodo = this.analizador.claseA.buscarMetodo(name);
+        metodo.preFijo = this.analizador.claseA.nombre;
+        
         let comentario = this.analizador.genComentario (this.analizador.claseA.nombre+"_"+ name);
-        this.analizador.agregarCodigo(this.analizador.metodoBegin("metodo"+metodo.id) +comentario,location.last_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.metodoBegin(metodo.id) +comentario,location.last_column, location.first_line);
+        for (let index = 0; index < metodo.parametro.length; index++) {
+            const element = metodo.parametro[index];
+            this.analizador.claseA.tabla.agregarSimboloApila(element);
+        }
         return metodo;
     }
 
@@ -162,9 +186,11 @@ export default class metodo {
         switch(term){
             case "Tipo":
              tipo =nodo.childNode[0].childNode[0].token
+             
              return  tipo;
             case "ID":
              tipo =nodo.childNode[0].token
+             
              return  tipo
             case "Parametro":
              return this.parametro(nodo.childNode[0]) + "_"+this.addParametron(nodo);

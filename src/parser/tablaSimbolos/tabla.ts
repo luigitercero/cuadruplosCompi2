@@ -7,12 +7,23 @@ export default class Tabla {
     public actual:Ambito;
     public ptr:number
     
-    constructor() {
-        this.actual = new Ambito();
-        this.esto = new Ambito();
-        this.Lista = new Array<Ambito>();
-        this.Lista.push(this.actual);
-        this.ptr = 0 ;
+    constructor(tabla?:Tabla) {
+        if (tabla != null) {
+            this.actual = new Ambito();
+            this.esto = tabla.esto;
+            this.Lista = new Array<Ambito>();
+            this.Lista.push(this.actual);
+            this.ptr = 0 ;
+
+        }else {
+            this.actual = new Ambito();
+            this.esto = new Ambito();
+            this.Lista = new Array<Ambito>();
+            this.Lista.push(this.actual);
+            this.ptr = 0 ;
+
+        }
+        
     }
 
     addReturnAndThis(estoTipo:string){

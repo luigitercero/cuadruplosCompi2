@@ -123,14 +123,14 @@ SaltoP
     | JLE ',' Dato ',' Dato ',' ETIQUETA {parser.indice.valor = parser.struct.op.menorIgual($3,$7,$5,parser.indice.valor);}
     ;
 Metodo
-    : BEGIN ',' ',' ',' ID
+    : BEGIN ',' ',' ',' ID {(parser.struct.op.begin($5));}
     ;
 
 ReMetodo
-   : END ',' ',' ',' ID
+   : END ',' ',' ',' ID {parser.indice.valor = parser.struct.op.endMetodo($5);}
    ;
 LlamarMetodo
-    : CALL ',' ',' ',' ID
+    : CALL ',' ',' ',' ID {parser.indice.valor = parser.struct.op.callMetodo($5);}
     ;
 GuardarARR
     : '<=' ',' Dato ',' Dato ',' STACK {parser.struct.op.setSTACK($3,$5);}

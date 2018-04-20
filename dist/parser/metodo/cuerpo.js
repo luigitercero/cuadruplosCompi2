@@ -112,7 +112,7 @@ var cuerpo = /** @class */ (function () {
         var nombre;
         switch (term) {
             case "ID":
-                nombre = nodo.childNode[0].term;
+                nombre = nodo.childNode[0].token;
                 this.metodoID(nombre, this.getParametro(nodo.childNode[2]), nodo.childNode[0].location);
                 return;
             case "Primitivas":
@@ -159,20 +159,30 @@ var cuerpo = /** @class */ (function () {
                 return true;
         }
     };
-    cuerpo.prototype.metodoID = function (id, parametoM, location) {
+    cuerpo.prototype.metodoID = function (nombre, parametoM, location) {
         var tam = this.analizador.claseA.tabla.ptr;
-        var esto = this.analizador.variable.obtenerValorVariable("this", location.first_line, location.last_column);
-        var temp = this.analizador.claseA.tabla.ptr;
-        var postfijo = "";
-        this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre);
+        //obtengo la direccion donde esta this o esto  
+        var esto = this.analizador.variable.obtenerValorVariable("esto", location.first_line, location.last_column);
+        //aqui empiza el ambito simulado
+        var temp = this.analizador.claseA.tabla.ptr; //en esta posicion se encuentra el retorno
+        temp++; //en esta posicion se guarda this
+        var t2 = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", temp + "", t2), location.last_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.saveEnPila(t2, esto.done), location.last_column, location.first_line);
+        temp++; //siguiete posicionlibre
+        var param = "";
         for (var index = 0; index < parametoM.length; index++) {
             var t1 = this.analizador.newTemporal();
             this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", temp + "", t1), parametoM[index].column, parametoM[index].fila);
             this.analizador.agregarCodigo(this.analizador.saveEnPila(t1, parametoM[index].valor), parametoM[index].column, parametoM[index].fila);
+            param = param + "_" + parametoM[index].tipo;
             temp++;
-            postfijo = "_" + parametoM[index].tipo;
         }
-        var nombreFinal = id + postfijo;
+        var metodoNombre = nombre + param;
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", tam + "", "ptr"), location.last_column, location.first_line);
+        var metodo = this.analizador.claseA.buscarMetodo(metodoNombre);
+        this.analizador.agregarCodigo(this.analizador.llamarMetodo("metodo" + metodo.id), location.last_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.genOperacion("-", "ptr", tam + "", "ptr"), location.last_column, location.first_line);
     };
     return cuerpo;
 }());

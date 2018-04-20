@@ -6,12 +6,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var simbolo_1 = __importDefault(require("./simbolo"));
 var ambito_1 = __importDefault(require("./ambito"));
 var Tabla = /** @class */ (function () {
-    function Tabla() {
-        this.actual = new ambito_1.default();
-        this.esto = new ambito_1.default();
-        this.Lista = new Array();
-        this.Lista.push(this.actual);
-        this.ptr = 0;
+    function Tabla(tabla) {
+        if (tabla != null) {
+            this.actual = new ambito_1.default();
+            this.esto = tabla.esto;
+            this.Lista = new Array();
+            this.Lista.push(this.actual);
+            this.ptr = 0;
+        }
+        else {
+            this.actual = new ambito_1.default();
+            this.esto = new ambito_1.default();
+            this.Lista = new Array();
+            this.Lista.push(this.actual);
+            this.ptr = 0;
+        }
     }
     Tabla.prototype.addReturnAndThis = function (estoTipo) {
         var retorno = new simbolo_1.default("retorno", "", "");

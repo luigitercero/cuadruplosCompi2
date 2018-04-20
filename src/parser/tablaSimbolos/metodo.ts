@@ -4,23 +4,27 @@ import { error } from "util";
 export default class Metodo extends Simbolo {
     public id:string;
     public parametro:Simbolo[];
-    public postFijo:String[];
+    public postFijo:string[];
     public nomMetodo:String;
+    public preFijo:string
     constructor(nombre: string, visibilidad: string, tipo: string, possAmbito: number){
         super(nombre,visibilidad,tipo);
         this.id = nombre;
         this.nomMetodo = nombre;
         this.parametro = new Array<Simbolo>();
-        this.postFijo = new Array<String>() ;
+        this.postFijo = new Array<string>() ;
+        this.preFijo = "";
     }
 
     addParametro(simbolo:Simbolo){
-        this.nomMetodo = this.id + "_" +simbolo.getTipo();
+        this.nomMetodo = this.nomMetodo + "_" +simbolo.getTipo();
         this.postFijo.push(simbolo.getTipo());
         this.parametro.push(simbolo);
     }
-    
-    addPostFijo(tipo:String) {
+    setPrefijo (prefijo:string) {
+        this.preFijo = prefijo;
+    }
+    addPostFijo(tipo:string) {
         this.postFijo.push(tipo);
     }
 

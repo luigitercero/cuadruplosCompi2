@@ -128,6 +128,15 @@ break;
 case 29:
 parser.indice.valor = parser.struct.op.menorIgual($$[$0-4],$$[$0],$$[$0-2],parser.indice.valor);
 break;
+case 30:
+(parser.struct.op.begin($$[$0]));
+break;
+case 31:
+parser.indice.valor = parser.struct.op.endMetodo($$[$0]);
+break;
+case 32:
+parser.indice.valor = parser.struct.op.callMetodo($$[$0]);
+break;
 case 33:
 parser.struct.op.setSTACK($$[$0-4],$$[$0-2]);
 break;
