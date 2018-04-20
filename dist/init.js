@@ -23,6 +23,7 @@ var Init = /** @class */ (function () {
         analizador.inicio(nodo);
         console.log("esto es 3D");
         var result = analizador.get3D();
+        this.d4 = result;
         for (var k in result.C4D) {
             console.log(result.C4D[k].poss, result.C4D[k].codigo, result.C4D[k].columna, result.C4D[k].linea);
         }

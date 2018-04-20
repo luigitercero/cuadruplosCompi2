@@ -165,6 +165,7 @@ var FormatoItermedio = /** @class */ (function () {
      * @param nombre  nombre del metodo
      */
     FormatoItermedio.prototype.metodoBegin = function (nombre) {
+        this.codigo4D.metodo.push({ 'metodo': nombre, 'poss': this.poss });
         return this.genCuadruplo("begin", "", "", nombre);
     };
     /**

@@ -2,7 +2,7 @@ import Nodo from './parser/nodo'
 import Analizador from './parser/analizador'
 import Interprete from './compilador/Parser with parser/Interprete4D/interprete'
 export default class Init{
-
+    public d4:any;
     constructor(){
         var p = require('./compilador/Parser with parser/Codigo3D/codigoFinal');
         var fs = require('fs');
@@ -20,7 +20,7 @@ export default class Init{
         console.log(
         "esto es 3D");
         let result = analizador.get3D();
-
+            this.d4 = result;
        
         for(let k in result.C4D) {
             console.log(result.C4D[k].poss,result.C4D[k].codigo,result.C4D[k].columna,result.C4D[k].linea);

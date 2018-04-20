@@ -5,6 +5,8 @@ var Server = /** @class */ (function () {
     function Server(port) {
         this.port = port;
         this.app = express();
+        //server.app.set('views',path.join(__dirname,'views'))
+        //server.app.set('view engine','ejs');
     }
     Server.prototype.start = function (callback) {
         this.app.listen(this.port, callback);
