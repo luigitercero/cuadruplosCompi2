@@ -20,3 +20,16 @@ se ejecuta la tarea ya creada
 luego instalo los tipos de typescript
 
 npm install @types/express
+
+para usar esta onda en render .html
+ npm install consolidate
+ npm install swig
+
+add following lines to your app.js file
+
+var cons = require('consolidate');
+
+// view engine setup
+app.engine('html', cons.swig)
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'html');

@@ -7,6 +7,7 @@ export default class FormatoItermedio{
     private temporal:number;
     private etiqueta:number;
     private poss:number;
+    private contador:number
     public codigo4D = {
         'C4D':[{'poss':-1,'codigo':"",'columna':-1,'linea':-1,}],
         'state':true,
@@ -17,6 +18,11 @@ export default class FormatoItermedio{
     };
     public get3D(){
         return this.codigo4D;
+    }
+
+    /*retorna el numero de metodo que toca */
+    public getContador() {
+        return this.contador;
     }
     public agregarCodigo(codigo:string,column:number|-1,line:number|-1){
         this.codigoIntermedio  = this.codigoIntermedio + codigo+"\n";
@@ -32,11 +38,12 @@ export default class FormatoItermedio{
         this.codigo4D.start = this.poss;
     }
 
-    constructor(){
+    constructor() {
         this.codigoIntermedio = "";
         this.temporal = 1;
         this.etiqueta = 1;
         this.poss = 1;
+        this.contador = 1;
     }
     private pila (n:number):string{
      return "Pila [ " + n + " ]";
@@ -162,6 +169,7 @@ export default class FormatoItermedio{
      */
     public metodoBegin(nombre:string):string{ 
         this.codigo4D.metodo.push({'metodo':nombre,'poss':this.poss});
+        this.contador ++;
         return this.genCuadruplo("begin","","",nombre);
     }
     /**

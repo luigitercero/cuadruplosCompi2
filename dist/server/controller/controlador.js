@@ -4,7 +4,7 @@ var Controlador = /** @class */ (function () {
     function Controlador() {
     }
     Controlador.prototype.index = function (req, res, next) {
-        return res.render('ilin');
+        return res.render('ilin.html');
     };
     return Controlador;
 }());

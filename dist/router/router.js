@@ -13,9 +13,11 @@ router.get('/', function (req, res) {
     var d4 = new init_1.default();
     res.send(d4.d4);
 });
-router.get('/i', function (req, res) {
-    res.sendFile(path.join(__dirname + '/views/ilin.html'));
-});
-//router.get ('/i',controller.index);
+/*
+router.get ('/i',(req: Request,res: Response)=>{
+    res.sendFile(path.join(__dirname+'/views/ilin.html'));
+ });
+ */
+router.get('/i', controller.index);
 exports.default = router;
 //# sourceMappingURL=router.js.map

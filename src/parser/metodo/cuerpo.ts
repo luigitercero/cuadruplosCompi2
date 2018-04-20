@@ -9,6 +9,7 @@ import Salida from './control/nodoSalida';
 import { error } from 'util';
 import nodoOperacion from '../exp/operacion/nodoOperacion';
 import Primitivas from './primitivas/primitivas'
+import Location from '../location';
 
 export default class cuerpo {
     public asignar:Asignacion;
@@ -121,9 +122,14 @@ export default class cuerpo {
         let nombre;
         switch(term) {
             case "ID" :
+            nombre = nodo.childNode[0].term;
+            
+            this.metodoID(nombre,this.getParametro(nodo.childNode[2]),nodo.childNode[0].location);
+            return
             case "Primitivas" :
             nombre = nodo.childNode[0].childNode[0].term;
             this.primitivas.analizar(nombre,this.getParametro(nodo.childNode[2]));
+            return
             case "Tipo" :
 
 
@@ -169,18 +175,32 @@ export default class cuerpo {
             return true;
         }   
     }
-     /**
-      * Primitivas
-      * :IMPRIMIR
-      * |CONCATENAR
-      * |CONVERTIRCADENA
-      * |CONVERTIRENTERO
-      * |CREARPUNTERO
-      * |OBTERNERDIRECCION
-      * |RESERVAMEMORIA
-      * |CONSULTARTAMANIO
-      * |TECLADO
-      * ;
-      */
+    
+    private metodoID(id:string, parametoM:nodoOperacion[],location:Location) {
+        let tam=this.analizador.claseA.tabla.ptr 
+        let esto = this.analizador.variable.obtenerValorVariable("this",location.first_line,location.last_column);
+        let temp = this.analizador.claseA.tabla.ptr;
+        let postfijo = "";
+        
+        
+        this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre);
+
+        for (let index = 0; index < parametoM.length; index++) {
+            let t1 = this.analizador.newTemporal();
+            
+            this.analizador.agregarCodigo(
+                this.analizador.genOperacion("+","ptr",temp+"",t1),parametoM[index].column,parametoM[index].fila
+            );
+
+            this.analizador.agregarCodigo(
+                this.analizador.saveEnPila(t1,parametoM[index].valor),parametoM[index].column,parametoM[index].fila
+            );
+            temp ++;
+            postfijo = "_"+parametoM[index].tipo;
+        }
+
+        let nombreFinal = id+postfijo;
+
+    }
 
 }

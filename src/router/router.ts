@@ -11,10 +11,10 @@ router.get ('/',(req: Request,res: Response)=>{
    let d4 =  new Init()
     res.send(d4.d4);
 });
-
+/*
 router.get ('/i',(req: Request,res: Response)=>{
     res.sendFile(path.join(__dirname+'/views/ilin.html'));
  });
- 
-//router.get ('/i',controller.index);
+ */
+router.get ('/i',controller.index);
 export default router;

@@ -9,7 +9,7 @@ private port: number;
         this.port =port;
         this.app =express();
         //server.app.set('views',path.join(__dirname,'views'))
-//server.app.set('view engine','ejs');
+        //server.app.set('view engine','ejs');
 
     }
 

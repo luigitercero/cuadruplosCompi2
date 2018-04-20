@@ -27,9 +27,14 @@ var FormatoItermedio = /** @class */ (function () {
         this.temporal = 1;
         this.etiqueta = 1;
         this.poss = 1;
+        this.contador = 1;
     }
     FormatoItermedio.prototype.get3D = function () {
         return this.codigo4D;
+    };
+    /*retorna el numero de metodo que toca */
+    FormatoItermedio.prototype.getContador = function () {
+        return this.contador;
     };
     FormatoItermedio.prototype.agregarCodigo = function (codigo, column, line) {
         this.codigoIntermedio = this.codigoIntermedio + codigo + "\n";
@@ -166,6 +171,7 @@ var FormatoItermedio = /** @class */ (function () {
      */
     FormatoItermedio.prototype.metodoBegin = function (nombre) {
         this.codigo4D.metodo.push({ 'metodo': nombre, 'poss': this.poss });
+        this.contador++;
         return this.genCuadruplo("begin", "", "", nombre);
     };
     /**

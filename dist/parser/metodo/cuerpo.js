@@ -112,9 +112,13 @@ var cuerpo = /** @class */ (function () {
         var nombre;
         switch (term) {
             case "ID":
+                nombre = nodo.childNode[0].term;
+                this.metodoID(nombre, this.getParametro(nodo.childNode[2]), nodo.childNode[0].location);
+                return;
             case "Primitivas":
                 nombre = nodo.childNode[0].childNode[0].term;
                 this.primitivas.analizar(nombre, this.getParametro(nodo.childNode[2]));
+                return;
             case "Tipo":
         }
     };
@@ -154,6 +158,21 @@ var cuerpo = /** @class */ (function () {
                 parametro.push(this.analizador.exp.analizar(nodo.childNode[0]));
                 return true;
         }
+    };
+    cuerpo.prototype.metodoID = function (id, parametoM, location) {
+        var tam = this.analizador.claseA.tabla.ptr;
+        var esto = this.analizador.variable.obtenerValorVariable("this", location.first_line, location.last_column);
+        var temp = this.analizador.claseA.tabla.ptr;
+        var postfijo = "";
+        this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre);
+        for (var index = 0; index < parametoM.length; index++) {
+            var t1 = this.analizador.newTemporal();
+            this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", temp + "", t1), parametoM[index].column, parametoM[index].fila);
+            this.analizador.agregarCodigo(this.analizador.saveEnPila(t1, parametoM[index].valor), parametoM[index].column, parametoM[index].fila);
+            temp++;
+            postfijo = "_" + parametoM[index].tipo;
+        }
+        var nombreFinal = id + postfijo;
     };
     return cuerpo;
 }());

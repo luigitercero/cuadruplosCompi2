@@ -19,12 +19,18 @@ var Metodo = /** @class */ (function (_super) {
     function Metodo(nombre, visibilidad, tipo, possAmbito) {
         var _this = _super.call(this, nombre, visibilidad, tipo) || this;
         _this.id = nombre;
+        _this.nomMetodo = nombre;
         _this.parametro = new Array();
+        _this.postFijo = new Array();
         return _this;
     }
     Metodo.prototype.addParametro = function (simbolo) {
-        this.id = this.id + "_" + simbolo.getTipo();
+        this.nomMetodo = this.id + "_" + simbolo.getTipo();
+        this.postFijo.push(simbolo.getTipo());
         this.parametro.push(simbolo);
+    };
+    Metodo.prototype.addPostFijo = function (tipo) {
+        this.postFijo.push(tipo);
     };
     Metodo.prototype.buscarSimbolo = function (nombre) { return false; };
     return Metodo;

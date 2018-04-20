@@ -33,7 +33,7 @@ var Clase = /** @class */ (function () {
         console.log("/*****esto son los metodos de la clase " + this.nombre + "*****/");
         for (var index = 0; index < this.metodo.length; index++) {
             var element = this.metodo[index];
-            console.log(element.id + ", " + element.getTipo());
+            console.log(element.nomMetodo + ", " + element.getTipo());
         }
         console.log("/*****termina los metodos de la clase " + this.nombre + "*****/");
     };
@@ -45,7 +45,7 @@ var Clase = /** @class */ (function () {
     Clase.prototype.buscarMetodo = function (nombre) {
         for (var index = 0; index < this.metodo.length; index++) {
             var element = this.metodo[index];
-            if (element.id == nombre) {
+            if (element.nomMetodo == nombre) {
                 return element;
             }
         }
@@ -54,7 +54,7 @@ var Clase = /** @class */ (function () {
     Clase.prototype.existeMetodo = function (nombre) {
         for (var index = 0; index < this.metodo.length; index++) {
             var element = this.metodo[index];
-            if (element.id == nombre) {
+            if (element.nomMetodo == nombre) {
                 return true;
             }
         }

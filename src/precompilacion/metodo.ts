@@ -74,7 +74,6 @@ export default class Metodo {
      *: ID '(' Parametros '{'
      *;
      */
-
     public metodo (nodo:Nodo ,visi:string):boolean{
         let nombre = nodo.childNode[0].term;
         let tipo:string = this.recoleccion.analizador.VACIO;
@@ -157,11 +156,13 @@ export default class Metodo {
              tipo =nodo.childNode[0].childNode[0].token
              simbolo = this.var(nodo.childNode[1],tipo,visibilidad ,metodo)
              metodo.addParametro(simbolo);
+             
              return true;
             case "ID":
              tipo =nodo.childNode[0].token
              simbolo = this.var(nodo.childNode[1],tipo, visibilidad,metodo)
              metodo.addParametro(simbolo);
+             
             return true;
             case "Parametro":
              this.parametro(nodo.childNode[0],metodo);

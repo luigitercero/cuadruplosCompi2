@@ -101,7 +101,9 @@ var Clase = /** @class */ (function () {
         this.analizador.claseA.tabla.esto;
         var nombreClase = this.analizador.claseA.nombre;
         var poss = this.analizador.claseA.poss;
-        this.analizador.agregarCodigo(this.analizador.metodoBegin(nombreClase + "preconstructor$$"), 0, poss);
+        var coment = this.analizador.genComentario("nombreClase_Precontructor");
+        var nombre = "metodo" + this.analizador.getContador();
+        this.analizador.agregarCodigo(this.analizador.metodoBegin(nombre) + coment, 0, poss);
         for (var index = 0; index < this.analizador.claseA.tabla.esto.ambito.length; index++) {
             var element = this.analizador.claseA.tabla.esto.ambito[index];
             if (element.valor.valor != null) {
@@ -109,7 +111,7 @@ var Clase = /** @class */ (function () {
                 this.analizador.variable.evaluarAsignacionasignarValor(sim);
             }
         }
-        this.analizador.agregarCodigo(this.analizador.metodoEnd(nombreClase + "preconstructor$$"), 0, poss);
+        this.analizador.agregarCodigo(this.analizador.metodoEnd(nombre) + coment, 0, poss);
     };
     return Clase;
 }());

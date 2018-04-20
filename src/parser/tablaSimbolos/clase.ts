@@ -39,7 +39,7 @@ export default class Clase{
         console.log("/*****esto son los metodos de la clase "  +this.nombre + "*****/");
         for (let index = 0; index < this.metodo.length; index++) {
             const element = this.metodo[index];
-                console.log(element.id + ", " + element.getTipo() );
+                console.log(element.nomMetodo + ", " + element.getTipo() );
         }
         console.log("/*****termina los metodos de la clase "  +this.nombre + "*****/");
     }
@@ -53,7 +53,7 @@ export default class Clase{
     public buscarMetodo(nombre:string):Metodo{
         for (let index = 0; index < this.metodo.length; index++) {
             const element = this.metodo[index];
-            if (element.id == nombre){
+            if (element.nomMetodo == nombre){
                 return element;
             }
         }   
@@ -63,7 +63,7 @@ export default class Clase{
     public existeMetodo(nombre:string):boolean {
         for (let index = 0; index < this.metodo.length; index++) {
             const element = this.metodo[index];
-            if (element.id == nombre){
+            if (element.nomMetodo == nombre){
                 return true;
             }
         }   
