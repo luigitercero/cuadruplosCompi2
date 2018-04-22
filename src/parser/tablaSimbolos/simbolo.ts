@@ -1,24 +1,32 @@
 import Nodo from "../nodo";
 import location from '../location'
 import { error } from "util";
+import Location from "../location";
 export default class Simbolo {
     private nombre :string;
     private visibilidad: string;
     private tipo : string;
-    private dim:number[]
+    public dim:Nodo[]
     public linea:number;
     public possAmbito:number;
     public tam:number;
     public valor:Valor;
+    private location:Location;
     
-    
+    setLocacion_declaracion(location:Location){
+        this.location = location;
+    }
+
+    getLocacion_de_declaracion():Location {
+        return this.location;
+    }
     getDim(number:number){
         return this.dim[number];
     }
     constructor (nombre:string, visibilidad:string, tipo:string) {
-        this.nombre = nombre;
-        this.visibilidad = visibilidad;
-        this.tipo = this.filtro(tipo);
+        this.nombre = nombre.toLocaleLowerCase();
+        this.visibilidad = visibilidad.toLocaleLowerCase();
+        this.tipo = this.filtro(tipo.toLocaleLowerCase());
         this.linea = -1;
         this.possAmbito = -1;
         /**
@@ -49,9 +57,9 @@ export default class Simbolo {
     getTipo ():string {
         return this.tipo;
     }
-    addDimension(tam:number) {  
+    addDimension(tam:Nodo) {  
         this.dim.push(tam);
-        this.tam = this.tam *tam;
+        //this.tam = this.tam *tam;
     }
     getTamanio ():number {
         return this.tam;

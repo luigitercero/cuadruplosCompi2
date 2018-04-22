@@ -70,6 +70,9 @@ var cuerpo = /** @class */ (function () {
                 return ciclo;
             case "RETURN":
                 l1 = this.analizador.newEtiqueta();
+                if (nodo.childNode.length > 1) {
+                    this.agregarRetorno(nodo.childNode[1], nodo.childNode[0].location);
+                }
                 this.analizador.agregarCodigo(this.analizador.genSalto(l1), location.last_column, location.first_line);
                 ciclo.addEtiquetaR(l1, location);
                 return ciclo;
@@ -81,6 +84,14 @@ var cuerpo = /** @class */ (function () {
             return true;
         }
         throw this.analizador.newError("no estamos para hacer un ciclo", 0, 0);
+    };
+    cuerpo.prototype.agregarRetorno = function (nodo, location) {
+        var op = this.analizador.exp.analizar(nodo);
+        var retorno = this.analizador.variable.obtenerDirVariable("retorno", location.first_line, location.last_column);
+        if (op.tipo != retorno.simbolo.getTipo()) {
+            throw this.analizador.newError("retorno no coincide con el tipo", location.first_line, location.last_column);
+        }
+        this.analizador.agregarCodigo(this.analizador.saveEnPila(retorno.dir, op.valor), location.last_column, location.first_line);
     };
     /**
      * getMetodoZ
@@ -113,8 +124,7 @@ var cuerpo = /** @class */ (function () {
         switch (term) {
             case "ID":
                 nombre = nodo.childNode[0].token;
-                this.metodoID(nombre, this.getParametro(nodo.childNode[2]), nodo.childNode[0].location);
-                return;
+                return this.metodoID(nombre, this.getParametro(nodo.childNode[2]), nodo.childNode[0].location);
             case "Primitivas":
                 nombre = nodo.childNode[0].childNode[0].term;
                 this.primitivas.analizar(nombre, this.getParametro(nodo.childNode[2]));
@@ -154,6 +164,7 @@ var cuerpo = /** @class */ (function () {
             case "ParametroM":
                 this.parametroM(nodo.childNode[0], parametro);
                 this.parametroM(nodo.childNode[1], parametro);
+                return true;
             case "e":
                 parametro.push(this.analizador.exp.analizar(nodo.childNode[0]));
                 return true;
@@ -179,10 +190,11 @@ var cuerpo = /** @class */ (function () {
             temp++;
         }
         var metodoNombre = nombre + param;
-        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", tam + "", "ptr"), location.last_column, location.first_line);
         var metodo = this.analizador.claseA.buscarMetodo(metodoNombre);
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", tam + "", "ptr"), location.last_column, location.first_line);
         this.analizador.agregarCodigo(this.analizador.llamarMetodo("metodo" + metodo.id), location.last_column, location.first_line);
         this.analizador.agregarCodigo(this.analizador.genOperacion("-", "ptr", tam + "", "ptr"), location.last_column, location.first_line);
+        return metodo;
     };
     return cuerpo;
 }());

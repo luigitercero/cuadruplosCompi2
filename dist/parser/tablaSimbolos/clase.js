@@ -8,7 +8,7 @@ var ambito_1 = __importDefault(require("./ambito"));
 var simbolo_1 = __importDefault(require("./simbolo"));
 var Clase = /** @class */ (function () {
     function Clase(nombre, poss) {
-        this.nombre = nombre;
+        this.nombre = nombre.toLocaleLowerCase();
         this.poss = poss;
         this.tabla = new tabla_1.default();
         this.crearEsto();
@@ -45,7 +45,7 @@ var Clase = /** @class */ (function () {
     Clase.prototype.buscarMetodo = function (nombre) {
         for (var index = 0; index < this.metodo.length; index++) {
             var element = this.metodo[index];
-            if (element.nomMetodo == nombre) {
+            if (element.nomMetodo == nombre.toLocaleLowerCase()) {
                 return element;
             }
         }
@@ -54,19 +54,19 @@ var Clase = /** @class */ (function () {
     Clase.prototype.existeMetodo = function (nombre) {
         for (var index = 0; index < this.metodo.length; index++) {
             var element = this.metodo[index];
-            if (element.nomMetodo == nombre) {
+            if (element.nomMetodo == nombre.toLocaleLowerCase()) {
                 return true;
             }
         }
         return false;
     };
     Clase.prototype.buscarSimbolo = function (nombre) {
-        var simbolo = this.tabla.buscarEnPila(nombre);
+        var simbolo = this.tabla.buscarEnPila(nombre.toLocaleLowerCase());
         if (simbolo != null) {
             return simbolo;
         }
         else {
-            simbolo = this.tabla.buscarEnHeap(nombre);
+            simbolo = this.tabla.buscarEnHeap(nombre.toLocaleLowerCase());
             if (simbolo != null) {
                 return simbolo;
             }
@@ -75,7 +75,7 @@ var Clase = /** @class */ (function () {
     };
     Clase.prototype.buscarSimboloenEsto = function (nombre) {
         var simbolo;
-        simbolo = this.tabla.buscarEnHeap(nombre);
+        simbolo = this.tabla.buscarEnHeap(nombre.toLocaleLowerCase());
         if (simbolo != null) {
             return simbolo;
         }

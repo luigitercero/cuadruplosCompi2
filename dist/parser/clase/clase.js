@@ -1,5 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
 Object.defineProperty(exports, "__esModule", { value: true });
+var nodoOperacion_1 = __importDefault(require("../exp/operacion/nodoOperacion"));
+var metodo_1 = __importDefault(require("../tablaSimbolos/metodo"));
 var Clase = /** @class */ (function () {
     function Clase(analizador) {
         this.analizador = analizador;
@@ -98,20 +103,46 @@ var Clase = /** @class */ (function () {
         return false;
     };
     Clase.prototype.asignarVariablesGlobales = function () {
-        this.analizador.claseA.tabla.esto;
         var nombreClase = this.analizador.claseA.nombre;
         var poss = this.analizador.claseA.poss;
-        var coment = this.analizador.genComentario("nombreClase_Precontructor");
+        var coment = this.analizador.genComentario(nombreClase + "_Precontructor");
+        var _Precontructor = new metodo_1.default("Preconstructor", this.analizador.PUBLICO, nombreClase);
+        this.analizador.claseA.agregarMetodo(_Precontructor);
         var id = this.analizador.getContador();
+        _Precontructor.id = id + "";
         this.analizador.agregarCodigo(this.analizador.metodoBegin(id + "") + coment, 0, poss);
         for (var index = 0; index < this.analizador.claseA.tabla.esto.ambito.length; index++) {
             var element = this.analizador.claseA.tabla.esto.ambito[index];
+            var sim = element;
+            if (sim.dim.length > 0) {
+                this.agregarDimGlobal(sim);
+            }
             if (element.valor.valor != null) {
-                var sim = element;
                 this.analizador.variable.evaluarAsignacionasignarValor(sim);
             }
         }
         this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo" + id) + coment, 0, poss);
+    };
+    /**
+     * agrega el tama;ano necesario para los arreglos
+     * @param simbolo
+     */
+    Clase.prototype.agregarDimGlobal = function (simbolo) {
+        var op = new nodoOperacion_1.default("", "", 0, simbolo.linea);
+        op.simbolo = simbolo;
+        for (var index = 0; index < simbolo.dim.length; index++) {
+            var element = simbolo.dim[index];
+            var val = this.analizador.exp.analizar(element);
+            op.simbolo.tam = index;
+            this.analizador.variable.agregarDimAHeapGLOBAL(op, val, simbolo.getLocacion_de_declaracion());
+        }
+        if (op.simbolo.tam > 0) {
+            this.analizador.agregarCodigo(this.analizador.genComentario("desplazamiento de variable a psoicion de valores"), op.column, op.fila);
+            var temp = this.analizador.variable.obtenerValorVariable(op.simbolo.getNombre(), op.column, op.fila);
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.done, op.temp), op.column, op.fila);
+            this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", op.temp, "heap"), op.column, op.fila);
+            this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", 1 + "", "heap"), op.column, op.fila);
+        }
     };
     return Clase;
 }());

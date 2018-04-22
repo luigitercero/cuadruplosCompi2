@@ -63,7 +63,7 @@ export default class Exp extends Operacion{
 
     evaluarPP( variable:Dir,signo:string) {
         let arg1:nodoOperacion = new nodoOperacion(1+"",this.analizador.INT,variable.location.last_column,variable.location.first_line);
-        let arg0:nodoOperacion = this.gerVal(variable);
+        let arg0:nodoOperacion = this.analizador.variable.gerVal(variable);
         let op:Suma = new Suma(this.analizador,signo);
         op.setArg0(arg0);
         op.setArg1(arg1);
@@ -71,7 +71,7 @@ export default class Exp extends Operacion{
     }
     masIgual(nodo:Nodo, variable:Dir,signo:string) {
         let arg1:nodoOperacion = this.analizar(nodo);
-        let arg0:nodoOperacion = this.gerVal(variable);
+        let arg0:nodoOperacion = this.analizador.variable.gerVal(variable);
         let op:Suma = new Suma(this.analizador,signo);
         op.setArg0(arg0);
         op.setArg1(arg1);

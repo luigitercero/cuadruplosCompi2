@@ -88,7 +88,7 @@ export default class Declaracion extends Asignacion{
         }
         return false;
     }
-/**SE FILTRA EL HEAP A LAS SIGUIENTE POSICION LIBRE DEPENDIENDO SE SE USO UN ARREGLO */
+/**SE FILTRA EL HEAP A LAS SIGUIENTE POSICION LIBRE DEPENDIENDO SE SE USO UN ARREGLO este es solo para arreglos locales*/
     protected  filtrarVariable(variable:nodoOperacion) {
         if (variable.simbolo.tam > 0) {
             this.analizador.agregarCodigo(this.analizador.genComentario("desplazamiento de variable a psoicion de valores"),variable.column,variable.fila);

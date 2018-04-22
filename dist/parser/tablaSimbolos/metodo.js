@@ -17,9 +17,9 @@ var simbolo_1 = __importDefault(require("./simbolo"));
 var Metodo = /** @class */ (function (_super) {
     __extends(Metodo, _super);
     function Metodo(nombre, visibilidad, tipo, possAmbito) {
-        var _this = _super.call(this, nombre, visibilidad, tipo) || this;
-        _this.id = nombre;
-        _this.nomMetodo = nombre;
+        var _this = _super.call(this, nombre.toLocaleLowerCase(), visibilidad.toLowerCase(), tipo.toLocaleLowerCase()) || this;
+        _this.id = nombre.toLocaleLowerCase();
+        _this.nomMetodo = nombre.toLocaleLowerCase();
         _this.parametro = new Array();
         _this.postFijo = new Array();
         _this.preFijo = "";
@@ -31,10 +31,10 @@ var Metodo = /** @class */ (function (_super) {
         this.parametro.push(simbolo);
     };
     Metodo.prototype.setPrefijo = function (prefijo) {
-        this.preFijo = prefijo;
+        this.preFijo = prefijo.toLocaleLowerCase();
     };
     Metodo.prototype.addPostFijo = function (tipo) {
-        this.postFijo.push(tipo);
+        this.postFijo.push(tipo.toLocaleLowerCase());
     };
     Metodo.prototype.buscarSimbolo = function (nombre) { return false; };
     return Metodo;

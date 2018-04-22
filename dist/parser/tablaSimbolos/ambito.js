@@ -17,7 +17,7 @@ var Ambito = /** @class */ (function () {
     Ambito.prototype.buscarVariable = function (nombre) {
         for (var index = 0; index < this.ambito.length; index++) {
             var element = this.ambito[index];
-            if (element.getNombre() == nombre) {
+            if (element.getNombre() == nombre.toLocaleLowerCase()) {
                 return true;
             }
         }
@@ -26,14 +26,14 @@ var Ambito = /** @class */ (function () {
     Ambito.prototype.getVariable = function (nombre) {
         for (var index = 0; index < this.ambito.length; index++) {
             var element = this.ambito[index];
-            if (element.getNombre() == nombre) {
+            if (element.getNombre() == nombre.toLocaleLowerCase()) {
                 return element;
             }
         }
         return new simbolo_1.default("", "", "");
     };
     Ambito.prototype.agregarVariable = function (nombre, visibilidad, tipo) {
-        var simbolo = new simbolo_1.default(nombre, visibilidad, tipo);
+        var simbolo = new simbolo_1.default(nombre.toLocaleLowerCase(), visibilidad, tipo);
         this.ambito.push(simbolo);
         simbolo.possAmbito = this.ptr;
         this.siguietePosicionLibre(simbolo);
@@ -49,7 +49,7 @@ var Ambito = /** @class */ (function () {
     };
     Ambito.prototype.existeVariable = function (nombre) {
         for (var index = 0; index < this.ambito.length; index++) {
-            if (this.ambito[index].getNombre() == (nombre)) {
+            if (this.ambito[index].getNombre() == (nombre.toLocaleLowerCase())) {
                 return true;
             }
         }

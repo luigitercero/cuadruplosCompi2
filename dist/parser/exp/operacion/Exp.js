@@ -88,7 +88,7 @@ var Exp = /** @class */ (function (_super) {
     };
     Exp.prototype.evaluarPP = function (variable, signo) {
         var arg1 = new nodoOperacion_1.default(1 + "", this.analizador.INT, variable.location.last_column, variable.location.first_line);
-        var arg0 = this.gerVal(variable);
+        var arg0 = this.analizador.variable.gerVal(variable);
         var op = new suma_1.default(this.analizador, signo);
         op.setArg0(arg0);
         op.setArg1(arg1);
@@ -96,7 +96,7 @@ var Exp = /** @class */ (function (_super) {
     };
     Exp.prototype.masIgual = function (nodo, variable, signo) {
         var arg1 = this.analizar(nodo);
-        var arg0 = this.gerVal(variable);
+        var arg0 = this.analizador.variable.gerVal(variable);
         var op = new suma_1.default(this.analizador, signo);
         op.setArg0(arg0);
         op.setArg1(arg1);

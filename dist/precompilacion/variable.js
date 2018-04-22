@@ -68,7 +68,7 @@ var Variable = /** @class */ (function () {
         }
         return false;
     };
-    /**
+    /** este var solo sirve para la primera pasada
      * var
      *: ID
      *| var '[' e ']'
@@ -87,19 +87,17 @@ var Variable = /** @class */ (function () {
                 if (this.recoleccion.analizador.claseA.tabla.esto.buscarVariable(nombre))
                     this.recoleccion.analizador.newError("la variable existe", nodo.childNode[0].location.first_line, nodo.childNode[0].location.last_column);
                 else {
-                    return new simbolo_1.default(nombre, visibilidad, tipo);
+                    var sim = new simbolo_1.default(nombre, visibilidad, tipo);
+                    sim.linea = nodo.childNode[0].location.first_line;
+                    sim.setLocacion_declaracion(nodo.childNode[0].location);
+                    return sim;
                 }
                 throw this.recoleccion.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
             case "var":
                 var variable = this.var(nodo.childNode[0], tipo, visibilidad);
-                var val = this.recoleccion.analizador.exp.analizar(nodo.childNode[2]);
-                if (val.tipo == this.recoleccion.analizador.INT) {
-                    variable.addDimension(+val.valor);
-                    return variable;
-                }
-                else {
-                    this.recoleccion.analizador.newError("no se pudo evaluar el tipo", nodo.childNode[1].location.first_line, nodo.childNode[1].location.last_column);
-                }
+                var val = nodo.childNode[2];
+                variable.addDimension(val);
+                return variable;
             default:
                 throw this.recoleccion.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
         }

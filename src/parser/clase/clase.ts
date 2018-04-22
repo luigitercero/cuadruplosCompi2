@@ -2,6 +2,8 @@ import Analizador from "../analizador";
 import Nodo from '../nodo';
 import Class from '../tablaSimbolos/clase'
 import Simbolo from "../tablaSimbolos/simbolo";
+import nodoOperacion from "../exp/operacion/nodoOperacion";
+import Metodo from "../tablaSimbolos/metodo";
 export default class Clase{
 
     private analizador:Analizador
@@ -110,20 +112,54 @@ export default class Clase{
     }
 
     public asignarVariablesGlobales() {
-        this.analizador.claseA.tabla.esto
+       
         let nombreClase = this.analizador.claseA.nombre;
         let poss = this.analizador.claseA.poss;
-        let coment = this.analizador.genComentario("nombreClase_Precontructor" )
+        let coment = this.analizador.genComentario(nombreClase+"_Precontructor" )
+        let _Precontructor = new Metodo("Preconstructor",this.analizador.PUBLICO,nombreClase);
+        this.analizador.claseA.agregarMetodo(_Precontructor);
+       
         let id = this.analizador.getContador();
+        _Precontructor.id = id+"";
         this.analizador.agregarCodigo(this.analizador.metodoBegin(id+"")+coment,0,poss);
         for (let index = 0; index < this.analizador.claseA.tabla.esto.ambito.length; index++) {
             const element = this.analizador.claseA.tabla.esto.ambito[index];
+            let sim:Simbolo = element; 
+            if (sim.dim.length > 0) {
+                this.agregarDimGlobal(sim);
+            }
             if (element.valor.valor!= null){
-                let sim:Simbolo = element; 
+                
                 this.analizador.variable.evaluarAsignacionasignarValor(sim);
             }
         }
         this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo"+id)+coment,0,poss);
+    }
+    /**
+     * agrega el tama;ano necesario para los arreglos 
+     * @param simbolo 
+     */
+    private agregarDimGlobal (simbolo:Simbolo) {
+      
+       
+        let op = new nodoOperacion("","",0,simbolo.linea);
+        op.simbolo = simbolo;
+  
+        
+        for (let index = 0; index < simbolo.dim.length; index++) {
+            const element = simbolo.dim[index];
+            const val:nodoOperacion = this.analizador.exp.analizar(element);
+            op.simbolo.tam = index;
+            this.analizador.variable.agregarDimAHeapGLOBAL(op,val,simbolo.getLocacion_de_declaracion()); 
+        }
+        if (op.simbolo.tam > 0) {
+            this.analizador.agregarCodigo(this.analizador.genComentario("desplazamiento de variable a psoicion de valores"),op.column,op.fila);
+            let temp =  this.analizador.variable.obtenerValorVariable(op.simbolo.getNombre(),op.column,op.fila);
+            
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.done,op.temp),op.column,op.fila);
+            this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap",op.temp,"heap"),op.column,op.fila);
+            this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap",1+"","heap"),op.column,op.fila);
+        }
     }
 
 }

@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 }
 Object.defineProperty(exports, "__esModule", { value: true });
+var nodoOperacion_1 = __importDefault(require("../exp/operacion/nodoOperacion"));
 var obtenerDireccion_1 = __importDefault(require("./obtenerDireccion"));
 var Variable = /** @class */ (function () {
     function Variable(analizdor) {
@@ -27,12 +28,29 @@ var Variable = /** @class */ (function () {
         switch (term) {
             case "var":
                 variable = this.analizador.variable.var(nodo.childNode[0]);
-                return variable;
+                return this.gerVal(variable);
             case "getMetodo":
+                return this.getmetodo(nodo.childNode[0]);
             case "Identi":
                 return this.identi(nodo.childNode[0]);
         }
         throw this.analizador.newError("error en identi", 0, 0);
+    };
+    Variable.prototype.gerVal = function (variable) {
+        var val = this.analizador.variable.getValorVariable(variable);
+        return new nodoOperacion_1.default(val, variable.simbolo.getTipo(), variable.location.last_column, variable.location.first_line);
+    };
+    Variable.prototype.getmetodo = function (nodo) {
+        var l = nodo.childNode[0].location;
+        var metodo = this.analizador.cuerpo.getMetodo(nodo);
+        var tam = this.analizador.claseA.tabla.ptr;
+        var t1 = this.analizador.newTemporal();
+        var t2 = this.analizador.newTemporal();
+        var mov = this.analizador.genOperacion("+", "ptr", tam + "", t1);
+        var getR = this.analizador.getEnPila(t1, t2);
+        this.analizador.agregarCodigo(mov, l.last_column, l.first_line);
+        this.analizador.agregarCodigo(getR, l.last_column, l.first_line);
+        return new nodoOperacion_1.default(t2, metodo.getTipo(), l.last_column, l.first_line);
     };
     /**
      * obtengo la direccion de la variable
@@ -158,6 +176,9 @@ var Variable = /** @class */ (function () {
         this.analizador.agregarCodigo(this.analizador.getEnHeap(temp1, temp2), variable.location.last_column, variable.location.first_line);
         return temp2;
     };
+    /**
+     * AGREGANDO VALOR A VARIABLES DESPUES DE DECLARARSE
+     */
     Variable.prototype.evaluarAsignacionasignarValor = function (simbolo) {
         var nodo = simbolo.valor.getNodo();
         var nombre = nodo.term;
@@ -331,6 +352,55 @@ var Variable = /** @class */ (function () {
      *;
     */
     Variable.prototype.defList = function (nodo, simbolo) {
+    };
+    Variable.prototype.agregarDimAHeap = function (variable, val, location) {
+        if (variable.simbolo.tam == 0) {
+            this.analizador.salidaConsola("iniciado variable con tama;o 0");
+            this.analizador.agregarCodigo(this.analizador.saveEnPila(variable.simbolo.possAmbito + "", "heap"), location.last_column, location.first_line);
+            this.analizador.agregarCodigo(this.analizador.genComentario("saltando la primera poscion"), location.last_column, location.first_line);
+            this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", "1", "heap"), location.last_column, location.first_line);
+            //escribe el valor en el heap del primer tama;o
+            return this.dimension1(variable, val, location);
+        }
+        else {
+            return this.dimensionAny(variable, val, location);
+        }
+    };
+    Variable.prototype.dimension1 = function (variable, val, location) {
+        this.analizador.salidaConsola("escribe una dimension");
+        this.analizador.agregarCodigo(this.analizador.saveEnHeap("heap", val.valor), location.last_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", "1", "heap"), location.last_column, location.first_line);
+        variable.temp = val.valor;
+        variable.simbolo.addTam(1);
+    };
+    Variable.prototype.dimensionAny = function (variable, val, location) {
+        if (val.tipo == this.analizador.INT) {
+            this.analizador.salidaConsola("agregando otro tama;");
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap("heap", val.valor), location.last_column, location.first_line);
+            this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", "1", "heap"), location.last_column, location.first_line);
+            var CrearTam = this.analizador.newTemporal();
+            //en esta etapa estoy reservando el tama;o real que estara tomando el arreglo en el futrua
+            this.analizador.agregarCodigo(this.analizador.genOperacion("*", variable.temp, val.valor, CrearTam), location.last_column, location.first_line);
+            variable.temp = CrearTam;
+            variable.simbolo.addTam(1);
+            return variable;
+        }
+        else {
+            this.analizador.newError("no se pudo evaluar el tipo", location.first_line, location.last_column);
+        }
+    };
+    Variable.prototype.agregarDimAHeapGLOBAL = function (variable, val, location) {
+        if (variable.simbolo.tam == 0) {
+            //OBTENGO LA POSICION
+            var temp = this.analizador.variable.obtenerDirVariable(variable.simbolo.getNombre(), 0, variable.simbolo.linea);
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.dir, "heap"), 0, variable.simbolo.linea);
+            this.analizador.agregarCodigo(this.analizador.siguiLibreHeap(), location.last_column, location.first_line);
+            //escribe el valor en el heap del primer tama;o
+            return this.dimension1(variable, val, location);
+        }
+        else {
+            return this.dimensionAny(variable, val, location);
+        }
     };
     return Variable;
 }());

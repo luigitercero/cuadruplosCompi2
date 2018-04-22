@@ -7,6 +7,7 @@ import Metodo from '../tablaSimbolos/metodo';
 import Cuerpo from './cuerpo'
 import Location from '../location';
 import Tabla from '../tablaSimbolos/tabla';
+import Salida from './control/nodoSalida';
 export default class metodo {
  public analizador: Analizador;
 
@@ -33,8 +34,8 @@ export default class metodo {
                 this.crearMetodo(nodo.childNode[1]));
                 return true;
             case "CrearMetodo":
-                this.analizador.log("sobrescrbir a crear metodo: "+ 
-                this.crearMetodo(nodo.childNode[0]));
+            this.crearMetodo(nodo.childNode[0])
+                
                 return true;
         }
         return false;
@@ -52,19 +53,20 @@ export default class metodo {
         let metodos
         let simtemp = this.analizador.claseA.tabla;
         this.analizador.claseA.tabla = new Tabla();
-        this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre);
-        this.analizador.claseA.tabla.aumetarAbmito();
-        
+        this.analizador.claseA.tabla.esto = simtemp.esto;
+       
+        let s= new Salida();
         switch(nombre){
             case "Visibilidad":
-                metodos= this.metodo(nodo.childNode[1],nodo.childNode[0].childNode[0].token);
-                this.endMetodo(metodos,nodo.childNode[2].location); 
+                metodos= this.metodo(nodo.childNode[1],nodo.childNode[0].childNode[0].token,s);
+                this.endMetodo(metodos,nodo.childNode[2].location,s); 
                 this.analizador.claseA.tabla.disminuirAmbito();
                 this.analizador.claseA.tabla =simtemp;
+            
                 return true;
             case "Metodo":  
-                metodos =this.metodo(nodo.childNode[0],this.analizador.PUBLICO);
-                this.endMetodo(metodos,nodo.childNode[1].location); 
+                metodos =this.metodo(nodo.childNode[0],this.analizador.PUBLICO,s);
+                this.endMetodo(metodos,nodo.childNode[1].location,s); 
                 this.analizador.claseA.tabla.disminuirAmbito();
                 this.analizador.claseA.tabla =simtemp;
                 return true;
@@ -72,12 +74,18 @@ export default class metodo {
         return false;
     }
 
-    endMetodo(metodos:Metodo,location:Location) {
+    endMetodo(metodos:Metodo,location:Location,s:Salida) {
         let coment = this.analizador.genComentario (metodos.nomMetodo+"");
         /*
         this.analizador.agregarCodigo(this.analizador.genOperacion("-","ptr",this.analizador.claseA.tabla.ptr+"","ptr"),
          location.last_column,location.first_line);
         */
+        if (s.etiquetaR.length > 0) {
+            this.analizador.agregarCodigo(
+                this.analizador.escribirEtiqueta(s.etiquetaR),location.last_column,location.first_line
+            )
+
+        }
         if (metodos.getNombre() == "Principal") {
             this.analizador.setFinal();
 
@@ -101,7 +109,7 @@ export default class metodo {
      *: ID '(' Parametros '{'
      *;
     */
-    public metodo (nodo:Nodo ,visi:string):Metodo{
+    public metodo (nodo:Nodo ,visi:string,s:Salida):Metodo{
         let nombre = nodo.childNode[0].term;
         let tipo:string =this.analizador.VACIO;
         let nombreMetodo:string;
@@ -119,28 +127,54 @@ export default class metodo {
                 metodo = this.metodoImp(name,nodo.childNode[0].location);
                 return metodo;
             case "Metodo":
-                metodo = this.metodo(nodo.childNode[0],visi);
-                this.analizador.cuerpo.cuerpoMetodo(nodo.childNode[1]);
+                metodo = this.metodo(nodo.childNode[0],visi,s);
+                this.analizador.cuerpo.cuerpoMetodo(nodo.childNode[1],s);
                 return metodo; 
             case "Constructor":
                 name = "constructor" + this.parametros(nodo.childNode[0].childNode[2]);
                 nombreMetodo = this.analizador.claseA.nombre+"_"+ name;
                 metodo = this.metodoImp(name,nodo.childNode[0].childNode[0].location);
+                this.nuevoThis(nodo.childNode[0].childNode[0].location);
+                this.callPreconstructor(nodo.childNode[0].childNode[0].location);
                 return metodo;
             case "Principal":
                 name = "Principal";
                 this.analizador.setStart();
                 metodo = this.metodoImp(name,nodo.childNode[0].childNode[0].location);
+                this.nuevoThis(nodo.childNode[0].childNode[0].location);
+                this.callPreconstructor(nodo.childNode[0].childNode[0].location);
                 return metodo;
         }
        throw this.analizador.newError("error al crear metodo",0,0);
 
     }
 
+    private callPreconstructor(location:Location) {
+        let _Preconstructor = this.analizador.claseA.buscarMetodo("preconstructor");
+        this.analizador.agregarCodigo(this.analizador.llamarMetodo("metodo"+_Preconstructor.id),location.last_column,location.first_line);
+
+    }
+    //solo se agrega una posicion ppara poder apuntar al this
+    private nuevoThis(location:Location) {
+        let t1 = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("+","ptr",1+"",t1),location.last_column,location.first_line
+        );
+        this.analizador.agregarCodigo(
+            this.analizador.saveEnPila(t1,"heap"),location.last_column,location.first_line
+        );
+        this.analizador.agregarCodigo(
+            this.analizador.siguiLibreHeap(),
+            location.last_column,location.first_line
+        );
+        
+    }
     private metodoImp(name:string, location:Location) {
         let metodo:Metodo = this.analizador.claseA.buscarMetodo(name);
+        this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre,metodo.getTipo());
+        this.analizador.claseA.tabla.aumetarAbmito();
+
         metodo.preFijo = this.analizador.claseA.nombre;
-        
         let comentario = this.analizador.genComentario (this.analizador.claseA.nombre+"_"+ name);
         this.analizador.agregarCodigo(this.analizador.metodoBegin(metodo.id) +comentario,location.last_column, location.first_line);
         for (let index = 0; index < metodo.parametro.length; index++) {

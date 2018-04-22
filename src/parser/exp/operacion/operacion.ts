@@ -293,8 +293,8 @@ protected  analizador: Analizador;
             case "Identi":
             //col = nodo.childNode[0].location.first_line;
             //fil = nodo.childNode[0].location.last_column;
-            let variable = this.analizador.variable.identi(nodo.childNode[0])
-            return this.gerVal (variable);
+            let valor:nodoOperacion = this.analizador.variable.identi(nodo.childNode[0])
+            return valor;
          
         }
       
@@ -328,11 +328,7 @@ protected  analizador: Analizador;
         nodo.valor = t1;
         return nodo;
     }
-    gerVal(variable:InfVarible) : nodoOperacion{
-        let val = this.analizador.variable.getValorVariable(variable);
-        return new nodoOperacion(val,variable.simbolo.getTipo(),variable.location.last_column,variable.location.first_line);
-    }
-
+  
     getValor(arg0:nodoOperacion){
         if (arg0.tipo == this.analizador.BOOLEANO) {
             let t0 = this.analizador.newTemporal();

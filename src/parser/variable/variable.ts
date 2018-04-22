@@ -8,6 +8,7 @@ import { error } from 'util';
 import Clase from '../tablaSimbolos/clase';
 import Dir from './obtenerDireccion'
 import Location from '../location';
+import Metodo from '../tablaSimbolos/metodo';
 export default class Variable{
       
     public analizador:Analizador;
@@ -27,19 +28,45 @@ export default class Variable{
      *| THIS '.' VAR
      *;   
      */
-    identi(nodo:Nodo):Dir {
+    identi(nodo:Nodo):nodoOperacion {
         let term = nodo.childNode[0].term
-        let variable;
+        let variable:Dir;
         let valor;
         switch(term) {
             case "var" :
             variable = this.analizador.variable.var(nodo.childNode[0]);
-            return variable;
+            return this.gerVal( variable);
              case "getMetodo" :
+             return this.getmetodo(nodo.childNode[0])
             case "Identi" :
             return this.identi(nodo.childNode[0]);
         } 
         throw this.analizador.newError("error en identi",0,0);
+    }
+
+
+    gerVal(variable:Dir) : nodoOperacion{
+        let val = this.analizador.variable.getValorVariable(variable);
+        return new nodoOperacion(val,variable.simbolo.getTipo(),variable.location.last_column,variable.location.first_line);
+    }
+
+
+    getmetodo(nodo:Nodo):nodoOperacion {
+        let l = nodo.childNode[0].location;
+        let metodo:Metodo = this.analizador.cuerpo.getMetodo(nodo);
+        let tam  = this.analizador.claseA.tabla.ptr;
+        let t1 = this.analizador.newTemporal();
+        let t2 = this.analizador.newTemporal();
+        let mov = this.analizador.genOperacion("+","ptr",tam+"",t1);
+        let getR = this.analizador.getEnPila(t1,t2);
+
+        this.analizador.agregarCodigo(mov,l.last_column,l.first_line);
+        this.analizador.agregarCodigo(getR,l.last_column,l.first_line);
+       
+        return  new nodoOperacion(t2,metodo.getTipo(),l.last_column,l.first_line);
+
+
+
     }
     /**
      * obtengo la direccion de la variable
@@ -197,7 +224,9 @@ export default class Variable{
          
         return temp2;
     }
-
+    /**
+     * AGREGANDO VALOR A VARIABLES DESPUES DE DECLARARSE
+     */
     public evaluarAsignacionasignarValor(simbolo:Simbolo){
         let nodo :Nodo = simbolo.valor.getNodo();
         let nombre = nodo.term;
@@ -407,6 +436,60 @@ export default class Variable{
     private defList(nodo:Nodo,simbolo:Simbolo){
 
     }
+
+    public agregarDimAHeap(variable:nodoOperacion,val:nodoOperacion,location:any){
+        if (variable.simbolo.tam == 0) {
+                this.analizador.salidaConsola("iniciado variable con tama;o 0");
+                this.analizador.agregarCodigo(this.analizador.saveEnPila(variable.simbolo.possAmbito + "","heap"),location.last_column,location.first_line);
+                this.analizador.agregarCodigo(this.analizador.genComentario("saltando la primera poscion"),location.last_column,location.first_line)
+                this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap","1","heap"),location.last_column,location.first_line);
+                //escribe el valor en el heap del primer tama;o
+                return this.dimension1(variable,val,location);
+            }else{
+
+                return this.dimensionAny(variable,val,location)
+        }      
+    }
+    private dimension1(variable:nodoOperacion,val:nodoOperacion,location:any) {
+        this.analizador.salidaConsola("escribe una dimension");
+        this.analizador.agregarCodigo(this.analizador.saveEnHeap("heap",val.valor),location.last_column,location.first_line);
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap","1","heap"),location.last_column,location.first_line); 
+        variable.temp = val.valor;
+        variable.simbolo.addTam(1);
+    }
+    private dimensionAny(variable:nodoOperacion,val:nodoOperacion,location:any) {
+
+        if (val.tipo == this.analizador.INT){
+            this.analizador.salidaConsola("agregando otro tama;");
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap("heap",val.valor),location.last_column,location.first_line); 
+            this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap","1","heap"),location.last_column,location.first_line);
+            let CrearTam = this.analizador.newTemporal();
+            //en esta etapa estoy reservando el tama;o real que estara tomando el arreglo en el futrua
+            this.analizador.agregarCodigo(this.analizador.genOperacion("*",variable.temp,val.valor,CrearTam),location.last_column,location.first_line);
+            variable.temp = CrearTam;
+            variable.simbolo.addTam(1);
+            return variable;
+        }else{
+            this.analizador.newError("no se pudo evaluar el tipo",location.first_line,location.last_column);   
+        }
+    }
     
+
+    public agregarDimAHeapGLOBAL(variable:nodoOperacion,val:nodoOperacion,location:any){
+        if (variable.simbolo.tam == 0) {
+
+              //OBTENGO LA POSICION
+                let temp = this.analizador.variable.obtenerDirVariable(variable.simbolo.getNombre(),
+                0,variable.simbolo.linea);
+                this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.dir,"heap"),
+                0,variable.simbolo.linea);
+                this.analizador.agregarCodigo(this.analizador.siguiLibreHeap(),location.last_column,location.first_line);
+                //escribe el valor en el heap del primer tama;o
+                return this.dimension1(variable,val,location);
+            }else{
+                return this.dimensionAny(variable,val,location)
+        }      
+    }
+
 
 }

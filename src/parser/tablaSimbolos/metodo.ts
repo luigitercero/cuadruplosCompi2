@@ -7,10 +7,10 @@ export default class Metodo extends Simbolo {
     public postFijo:string[];
     public nomMetodo:String;
     public preFijo:string
-    constructor(nombre: string, visibilidad: string, tipo: string, possAmbito: number){
-        super(nombre,visibilidad,tipo);
-        this.id = nombre;
-        this.nomMetodo = nombre;
+    constructor(nombre: string, visibilidad: string, tipo: string, possAmbito?: number){
+        super( nombre.toLocaleLowerCase(),visibilidad.toLowerCase(),tipo.toLocaleLowerCase());
+        this.id =  nombre.toLocaleLowerCase();
+        this.nomMetodo =  nombre.toLocaleLowerCase();
         this.parametro = new Array<Simbolo>();
         this.postFijo = new Array<string>() ;
         this.preFijo = "";
@@ -22,10 +22,10 @@ export default class Metodo extends Simbolo {
         this.parametro.push(simbolo);
     }
     setPrefijo (prefijo:string) {
-        this.preFijo = prefijo;
+        this.preFijo = prefijo.toLocaleLowerCase();
     }
     addPostFijo(tipo:string) {
-        this.postFijo.push(tipo);
+        this.postFijo.push(tipo.toLocaleLowerCase());
     }
 
     buscarSimbolo(nombre:string) { return false;}

@@ -12,7 +12,7 @@ export default class Clase{
     public importar:Clase[];
 
     constructor (nombre:string, poss:number) {
-        this.nombre = nombre;
+        this.nombre =  nombre.toLocaleLowerCase();
         this.poss = poss;
         this.tabla = new Tabla();
         this.crearEsto();
@@ -53,7 +53,7 @@ export default class Clase{
     public buscarMetodo(nombre:string):Metodo{
         for (let index = 0; index < this.metodo.length; index++) {
             const element = this.metodo[index];
-            if (element.nomMetodo == nombre){
+            if (element.nomMetodo ==  nombre.toLocaleLowerCase()){
                 return element;
             }
         }   
@@ -63,7 +63,7 @@ export default class Clase{
     public existeMetodo(nombre:string):boolean {
         for (let index = 0; index < this.metodo.length; index++) {
             const element = this.metodo[index];
-            if (element.nomMetodo == nombre){
+            if (element.nomMetodo ==  nombre.toLocaleLowerCase()){
                 return true;
             }
         }   
@@ -72,12 +72,12 @@ export default class Clase{
     }
 
     buscarSimbolo(nombre:string):Simbolo {
-        let simbolo:Simbolo|null = this.tabla.buscarEnPila(nombre);
+        let simbolo:Simbolo|null = this.tabla.buscarEnPila( nombre.toLocaleLowerCase());
         if (  simbolo != null){
             return simbolo
 
         }else {
-            simbolo =  this.tabla.buscarEnHeap(nombre);
+            simbolo =  this.tabla.buscarEnHeap( nombre.toLocaleLowerCase());
             if (simbolo != null) {
                 
               return simbolo
@@ -90,7 +90,7 @@ export default class Clase{
 
     buscarSimboloenEsto(nombre:string):Simbolo {
         let simbolo;
-            simbolo =  this.tabla.buscarEnHeap(nombre);
+            simbolo =  this.tabla.buscarEnHeap( nombre.toLocaleLowerCase());
             if (simbolo != null) {
                 
               return simbolo

@@ -22,9 +22,9 @@ var Tabla = /** @class */ (function () {
             this.ptr = 0;
         }
     }
-    Tabla.prototype.addReturnAndThis = function (estoTipo) {
-        var retorno = new simbolo_1.default("retorno", "", "");
-        var _esto = new simbolo_1.default("esto", "", estoTipo);
+    Tabla.prototype.addReturnAndThis = function (estoTipo, tipo) {
+        var retorno = new simbolo_1.default("retorno", "", tipo.toLocaleLowerCase());
+        var _esto = new simbolo_1.default("esto", "", estoTipo.toLocaleLowerCase());
         this.agregarSimboloApila(retorno);
         this.agregarSimboloApila(_esto);
     };
@@ -50,7 +50,7 @@ var Tabla = /** @class */ (function () {
         for (var index = 0; index < this.Lista.length; index++) {
             for (var index2 = 0; index2 < this.Lista[index].ambito.length; index2++) {
                 var simbolo = this.Lista[index].ambito[index2];
-                if (simbolo.getNombre() == nombre) {
+                if (simbolo.getNombre() == nombre.toLocaleLowerCase()) {
                     return simbolo;
                 }
             }
@@ -60,7 +60,7 @@ var Tabla = /** @class */ (function () {
     Tabla.prototype.buscarEnHeap = function (nombre) {
         for (var index = 0; index < this.esto.ambito.length; index++) {
             var simbolo = this.esto.ambito[index];
-            if (simbolo.getNombre() == nombre) {
+            if (simbolo.getNombre() == nombre.toLocaleLowerCase()) {
                 return simbolo;
             }
         }

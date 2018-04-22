@@ -26,9 +26,9 @@ export default class Tabla {
         
     }
 
-    addReturnAndThis(estoTipo:string){
-        let retorno = new Simbolo("retorno","","");
-        let _esto = new Simbolo("esto","",estoTipo);
+    addReturnAndThis(estoTipo:string,tipo:string){
+        let retorno = new Simbolo("retorno","",tipo.toLocaleLowerCase());
+        let _esto = new Simbolo("esto","",estoTipo.toLocaleLowerCase());
         this.agregarSimboloApila(retorno);
         this.agregarSimboloApila(_esto);
     }
@@ -60,7 +60,7 @@ export default class Tabla {
         for (let index = 0; index < this.Lista.length; index++) {
             for (let index2 = 0; index2 < this.Lista[index].ambito.length; index2++) {
                 let simbolo = this.Lista[index].ambito[index2]
-                if (simbolo.getNombre() == nombre) {
+                if (simbolo.getNombre() == nombre.toLocaleLowerCase()) {
                     return  simbolo
                 }   
             }
@@ -72,7 +72,7 @@ export default class Tabla {
         for (let index = 0; index < this.esto.ambito.length; index++) {
             let simbolo = this.esto.ambito[index]
             
-            if (simbolo.getNombre() == nombre) {
+            if (simbolo.getNombre() == nombre.toLocaleLowerCase()) {
                 return  simbolo
             }   
         }

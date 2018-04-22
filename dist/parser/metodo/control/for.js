@@ -42,7 +42,7 @@ var FOR = /** @class */ (function () {
         /*se escribe la etiqueta start*/
         this.escribirEtiquetaStart(ciclo, nodo.childNode[0].location);
         /*se obtiene el valor del contador*/
-        arg0 = this.control.analizador.exp.gerVal(dirID);
+        arg0 = this.control.analizador.variable.gerVal(dirID);
         /*si es igual debe salir del control */
         var igual = this.igual(arg0, arg1);
         ciclo.addEtiquetaSS(igual.etiquetaV);

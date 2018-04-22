@@ -279,8 +279,8 @@ var Operacion = /** @class */ (function () {
             case "Identi":
                 //col = nodo.childNode[0].location.first_line;
                 //fil = nodo.childNode[0].location.last_column;
-                var variable = this.analizador.variable.identi(nodo.childNode[0]);
-                return this.gerVal(variable);
+                var valor = this.analizador.variable.identi(nodo.childNode[0]);
+                return valor;
         }
         throw new Error("error en analizar");
     };
@@ -297,10 +297,6 @@ var Operacion = /** @class */ (function () {
         var nodo = new nodoOperacion_1.default(t1, this.analizador.STRING, location.last_column, location.first_line);
         nodo.valor = t1;
         return nodo;
-    };
-    Operacion.prototype.gerVal = function (variable) {
-        var val = this.analizador.variable.getValorVariable(variable);
-        return new nodoOperacion_2.default(val, variable.simbolo.getTipo(), variable.location.last_column, variable.location.first_line);
     };
     Operacion.prototype.getValor = function (arg0) {
         if (arg0.tipo == this.analizador.BOOLEANO) {

@@ -1,9 +1,13 @@
 import Simbolo from "../tablaSimbolos/simbolo";
 import Location from "../location";
 
+
 export default class InfVarible {
+    /*temporal */
     public temporal:string;
+    /*mira si esta en this o pila */
     public done:string;
+    /*simbolo */
     public simbolo:Simbolo
     public location:Location|any
     public tam:number;

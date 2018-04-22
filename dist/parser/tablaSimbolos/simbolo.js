@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var util_1 = require("util");
 var Simbolo = /** @class */ (function () {
     function Simbolo(nombre, visibilidad, tipo) {
-        this.nombre = nombre;
-        this.visibilidad = visibilidad;
-        this.tipo = this.filtro(tipo);
+        this.nombre = nombre.toLocaleLowerCase();
+        this.visibilidad = visibilidad.toLocaleLowerCase();
+        this.tipo = this.filtro(tipo.toLocaleLowerCase());
         this.linea = -1;
         this.possAmbito = -1;
         /**
@@ -15,6 +15,12 @@ var Simbolo = /** @class */ (function () {
         this.tam = 0;
         this.valor = new Valor();
     }
+    Simbolo.prototype.setLocacion_declaracion = function (location) {
+        this.location = location;
+    };
+    Simbolo.prototype.getLocacion_de_declaracion = function () {
+        return this.location;
+    };
     Simbolo.prototype.getDim = function (number) {
         return this.dim[number];
     };
@@ -38,7 +44,7 @@ var Simbolo = /** @class */ (function () {
     };
     Simbolo.prototype.addDimension = function (tam) {
         this.dim.push(tam);
-        this.tam = this.tam * tam;
+        //this.tam = this.tam *tam;
     };
     Simbolo.prototype.getTamanio = function () {
         return this.tam;

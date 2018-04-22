@@ -18,7 +18,7 @@ export default class Ambito{
     buscarVariable(nombre:string):boolean {
         for (let index = 0; index < this.ambito.length; index++) {
             const element = this.ambito[index];
-            if (element.getNombre() == nombre){
+            if (element.getNombre() == nombre.toLocaleLowerCase()){
                 return true;
             }
             
@@ -28,7 +28,7 @@ export default class Ambito{
     getVariable(nombre:string):Simbolo {
         for (let index = 0; index < this.ambito.length; index++) {
             const element = this.ambito[index];
-            if (element.getNombre() == nombre){
+            if (element.getNombre() ==  nombre.toLocaleLowerCase()){
                 return element;
             }
             
@@ -36,7 +36,7 @@ export default class Ambito{
         return new Simbolo("","","");
     }
     agregarVariable(nombre:string,visibilidad:string,tipo:string) {
-        let simbolo = new Simbolo(nombre,visibilidad,tipo);
+        let simbolo = new Simbolo( nombre.toLocaleLowerCase(),visibilidad,tipo);
         this.ambito.push(simbolo);
         simbolo.possAmbito = this.ptr
         this.siguietePosicionLibre(simbolo);
@@ -53,7 +53,7 @@ export default class Ambito{
     }
     existeVariable(nombre:string) :boolean {
         for (let index = 0; index < this.ambito.length; index++) {
-            if (this.ambito[index].getNombre() == (nombre)){
+            if (this.ambito[index].getNombre() == ( nombre.toLocaleLowerCase())){
                 return true;
             }
             

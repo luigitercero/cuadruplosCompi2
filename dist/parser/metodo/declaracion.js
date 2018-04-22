@@ -99,7 +99,7 @@ var Declaracion = /** @class */ (function (_super) {
         }
         return false;
     };
-    /**SE FILTRA EL HEAP A LAS SIGUIENTE POSICION LIBRE DEPENDIENDO SE SE USO UN ARREGLO */
+    /**SE FILTRA EL HEAP A LAS SIGUIENTE POSICION LIBRE DEPENDIENDO SE SE USO UN ARREGLO este es solo para arreglos locales*/
     Declaracion.prototype.filtrarVariable = function (variable) {
         if (variable.simbolo.tam > 0) {
             this.analizador.agregarCodigo(this.analizador.genComentario("desplazamiento de variable a psoicion de valores"), variable.column, variable.fila);
