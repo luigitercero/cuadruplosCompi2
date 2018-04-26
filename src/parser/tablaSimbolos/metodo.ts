@@ -7,6 +7,7 @@ export default class Metodo extends Simbolo {
     public postFijo:string[];
     public nomMetodo:String;
     public preFijo:string
+    public escrito:boolean =false;
     constructor(nombre: string, visibilidad: string, tipo: string, possAmbito?: number){
         super( nombre.toLocaleLowerCase(),visibilidad.toLowerCase(),tipo.toLocaleLowerCase());
         this.id =  nombre.toLocaleLowerCase();

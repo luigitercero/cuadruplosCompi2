@@ -1,8 +1,8 @@
-import Variable from './variable';
+
 import Analizador from '../analizador';
-import Asignacion from './asignacion'
+import Asignacion from '../variable/asignacion'
 import Nodo from '../nodo';
-import Declaracion from './declaracion';
+import Declaracion from '../variable/declaracion';
 import Control from './control/control';
 import Metodo from '../tablaSimbolos/metodo';
 import Salida from './control/nodoSalida';
@@ -15,13 +15,13 @@ export default class cuerpo {
     public asignar:Asignacion;
     public declarar:Declaracion;
     public control:Control;
-    public variable:Variable;
+    
     private analizador:Analizador;
     private primitivas:Primitivas;
     constructor(analizador:Analizador) {
         this.analizador = analizador;
         this.asignar = new Asignacion(analizador);
-        this.variable = new Variable(analizador);
+        
         this.declarar = new Declaracion(analizador);
         this.control = new Control(analizador);
         this.primitivas  = new Primitivas(analizador);
@@ -129,13 +129,13 @@ export default class cuerpo {
      * ;
      * @param nodo 
      */
-    public getMetodo (nodo:Nodo):any {
+    public getMetodo (nodo:Nodo,esto?:nodoOperacion):any {
         let term = nodo.childNode[0].term
         let nombre;
         switch(term) {
             case "ID" :
             nombre = nodo.childNode[0].token;
-            return this.metodoID(nombre,this.getParametro(nodo.childNode[2]),nodo.childNode[0].location);
+            return this.metodoID2(nombre,this.getParametro(nodo.childNode[2]),nodo.childNode[0].location,esto);
            
             case "Primitivas" :
             nombre = nodo.childNode[0].childNode[0].term;
@@ -186,12 +186,34 @@ export default class cuerpo {
             parametro.push(this.analizador.exp.analizar(nodo.childNode[0]));
             return true;
         }   
+        throw this.analizador.newError("error parametros",0,0);
     }
     
+    public nuevoObjeto (nodo:Nodo) :nodoOperacion{
+        let objeto = nodo.childNode[1].childNode[0].token
+        let location = nodo.childNode[0].location;
+        let tam=this.analizador.claseA.tabla.ptr;
+        let metodo;
+        let comenario = this.analizador.genComentario("aumentando ambito para "+ this.analizador.claseA.nombre +"");
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("+","ptr",tam+"","ptr")+comenario,location.last_column,location.first_line
+        );
+        this.analizador.claseA = this.analizador.buscarClase(objeto);//esto no genera ningucodigo 3d
+        this.analizador.metodoA.nuevoThis(location);
+        metodo = this.analizador.variable.getmetodo(nodo.childNode[1]);
+         comenario = this.analizador.genComentario("disminuyendo ambito para "+ this.analizador.claseA.nombre +"");
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("-","ptr",tam+"","ptr")+comenario,location.last_column,location.first_line
+        );
+
+        return metodo;
+        
+   }
+    /* metodo ID ya no se utiliza
     private metodoID(nombre:string, parametoM:nodoOperacion[],location:Location):Metodo {
         let tam=this.analizador.claseA.tabla.ptr
         //obtengo la direccion donde esta this o esto  
-        let esto = this.analizador.variable.obtenerValorVariable("esto",location.first_line,location.last_column);
+        let esto = this.analizador.variable.obtenerValorVariable("este",location.first_line,location.last_column);
         //aqui empiza el ambito simulado
         let temp = this.analizador.claseA.tabla.ptr;//en esta posicion se encuentra el retorno
         temp ++; //en esta posicion se guarda this
@@ -207,6 +229,10 @@ export default class cuerpo {
         temp ++;//siguiete posicionlibre
 
         let param = "";
+
+        this.analizador.agregarCodigo(
+            this.analizador.genComentario("agregando parametros"),location.last_column,location.first_line
+        );
         for (let index = 0; index < parametoM.length; index++) {
             let t1 = this.analizador.newTemporal();
             
@@ -221,21 +247,99 @@ export default class cuerpo {
             temp ++;
         }
 
-       
+        let coment = this.analizador.genComentario("aumentando de ambito para " + this.analizador.claseA.nombre)
         let metodoNombre = nombre+param;
         let metodo:Metodo = this.analizador.claseA.buscarMetodo(metodoNombre);
         this.analizador.agregarCodigo(
-            this.analizador.genOperacion("+","ptr",tam+"","ptr"),location.last_column,location.first_line
+            this.analizador.genOperacion("+","ptr",tam+"","ptr")+coment,location.last_column,location.first_line
         );
-       
+        coment = this.analizador.genComentario("llamando metodo " + metodoNombre);
         this.analizador.agregarCodigo(
-            this.analizador.llamarMetodo("metodo"+metodo.id),location.last_column,location.first_line
+            this.analizador.llamarMetodo("metodo"+metodo.id)+coment,location.last_column,location.first_line
         );
+        coment = this.analizador.genComentario("disminyendo de ambito para " + this.analizador.claseA.nombre)
         this.analizador.agregarCodigo(
-            this.analizador.genOperacion("-","ptr",tam+"","ptr"),location.last_column,location.first_line
+            this.analizador.genOperacion("-","ptr",tam+"","ptr")+coment,location.last_column,location.first_line
         );
 
         return metodo;
+    }
+     */
+    private ejecutarMetodo(nombre:string, param:string,tam:number,location:Location,esto?:nodoOperacion): Metodo{
+        let coment = this.analizador.genComentario("aumentando de ambito para " + this.analizador.claseA.nombre)
+        let metodoNombre = nombre+param;
+        let ambitotemporal = this.analizador.claseA;
+        if (esto !== undefined ) {
+            this.analizador.claseA = this.analizador.buscarClase(esto.tipo);
+        }
+        let metodo:Metodo = this.analizador.claseA.buscarMetodo(metodoNombre);
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("+","ptr",tam+"","ptr")+coment,location.last_column,location.first_line
+        );
+        coment = this.analizador.genComentario("llamando metodo " + metodoNombre);
+        this.analizador.agregarCodigo(
+            this.analizador.llamarMetodo("metodo"+metodo.id)+coment,location.last_column,location.first_line
+        );
+        this.analizador.claseA = ambitotemporal;
+        coment = this.analizador.genComentario("disminyendo de ambito para " + this.analizador.claseA.nombre)
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("-","ptr",tam+"","ptr")+coment,location.last_column,location.first_line
+        );
+
+        return metodo;
+
+    }
+
+    private metodoID2(nombre:string, parametoM:nodoOperacion[],location:Location,esto?:nodoOperacion):Metodo {
+        let tam=this.analizador.claseA.tabla.ptr
+        let dir;
+        if (esto === undefined){
+            dir = this.analizador.variable.obtenerValorVariable("este",location.first_line,location.last_column).done;
+        }else {
+            dir = esto.valor;
+        }
+         let temp = this.escribirEstoAnuevoAmbito(dir,location);
+
+        let param = this.escribirParametrosApila(temp,parametoM);
+    
+        temp  = temp + parametoM.length;
+        return this.ejecutarMetodo(nombre,param,tam,location,esto);
+    }
+    
+    private escribirParametrosApila (temp:number,parametoM:nodoOperacion[]) {
+        let param = "";
+        for (let index = 0; index < parametoM.length; index++) {
+            let t1 = this.analizador.newTemporal();
+            
+            this.analizador.agregarCodigo(
+                this.analizador.genOperacion("+","ptr",temp+"",t1),parametoM[index].column,parametoM[index].fila
+            );
+
+            this.analizador.agregarCodigo(
+                this.analizador.saveEnPila(t1,parametoM[index].valor),parametoM[index].column,parametoM[index].fila
+            );
+            param = param + "_" + parametoM[index].tipo;
+            temp ++;
+        }
+        return param;
+    }
+    private escribirEstoAnuevoAmbito(esto:string,location:Location):number {
+        let temp = this.analizador.claseA.tabla.ptr;//en esta posicion se encuentra el retorno
+        temp ++; //en esta posicion se guarda this
+        let t2 = this.analizador.newTemporal()
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("+","ptr",temp+"",t2),location.last_column,location.first_line
+        );
+
+        this.analizador.agregarCodigo(
+            this.analizador.saveEnPila(t2,esto),location.last_column,location.first_line
+        );
+        temp ++;//siguiete posicionlibre
+
+        this.analizador.agregarCodigo(
+            this.analizador.genComentario("agregando parametros"),location.last_column,location.first_line
+        );
+        return temp;
     }
 
 }

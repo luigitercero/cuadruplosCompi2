@@ -52,6 +52,7 @@ export default class Metodo {
             case "Metodo":
                 this.recoleccion.analizador.log("crear metodo a metodo: " +
                 this.metodo(nodo.childNode[0],visibilidad));
+                
                 return true;
         }
         this.recoleccion.analizador.newError("error al crear metodo",0,0);
@@ -100,8 +101,8 @@ export default class Metodo {
                 this.metodo(nodo.childNode[0],visi);
                 return true;
             case "Constructor":
-                tipo = "constructor"
-                nombreMetodo = "constructor";
+                tipo =  this.recoleccion.analizador.claseA.nombre;
+                nombreMetodo = this.recoleccion.analizador.claseA.nombre;
                 metodo = new MetodoS(nombreMetodo,visi,tipo,nodo.childNode[0].childNode[0].location.first_line)
                 metodo.id = this.recoleccion.analizador.getContador() +"";
                 this.parametros(nodo.childNode[0].childNode[2],metodo);
@@ -205,7 +206,7 @@ export default class Metodo {
      * var  
      *: ID
      *| var '[' e ']' 
-     *| ESTE '.'  ID
+    
      * ;
      * @param nodo 
      * @param tipo 
@@ -226,13 +227,7 @@ export default class Metodo {
                 throw this.recoleccion.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column,nodo.childNode[0].location.first_line)
             case "var":
                 let variable:Simbolo = this.var(nodo.childNode[0],tipo,visibilidad,metodo);
-                let val:nodoOperacion = this.recoleccion.analizador.exp.analizar(nodo.childNode[2]);
-                if (val.tipo == this.recoleccion.analizador.INT){
-                    variable.addDimension( + val.valor);
-                    return variable;
-                }else{
-                    this.recoleccion.analizador.newError("no se pudo evaluar el tipo",nodo.childNode[1].location.first_line,nodo.childNode[1].location.last_column);   
-                }
+                variable.addDimension( nodo.childNode[2]);
             default:
             throw this.recoleccion.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column,nodo.childNode[0].location.first_line)
 

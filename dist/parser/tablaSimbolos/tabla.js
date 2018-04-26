@@ -24,7 +24,7 @@ var Tabla = /** @class */ (function () {
     }
     Tabla.prototype.addReturnAndThis = function (estoTipo, tipo) {
         var retorno = new simbolo_1.default("retorno", "", tipo.toLocaleLowerCase());
-        var _esto = new simbolo_1.default("esto", "", estoTipo.toLocaleLowerCase());
+        var _esto = new simbolo_1.default("este", "", estoTipo.toLocaleLowerCase());
         this.agregarSimboloApila(retorno);
         this.agregarSimboloApila(_esto);
     };

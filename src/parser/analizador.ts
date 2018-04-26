@@ -49,8 +49,8 @@ buscarClase(nombre:string):Clase{
         
         }
     }
-    this.newError("no se pudo encontrar la clase con el nombre de "+nombre,0,0)
-    return new Clase("",0);
+    throw this.newError("no se pudo encontrar la clase con el nombre de "+nombre,0,0)
+   
 }   
 verClaseA(){
     console.log("---------Obeservando ClaseA-----------")

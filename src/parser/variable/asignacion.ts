@@ -4,6 +4,7 @@ import nodoOperacion from '../exp/operacion/nodoOperacion';
 
 import Simbolo from '../tablaSimbolos/simbolo';
 import Location from '../location';
+import NodoNavegar from './nodoNavegar';
 import Dir from '../variable/obtenerDireccion'
 export default class Asignacion  {
     protected analizador:Analizador;
@@ -73,53 +74,15 @@ export default class Asignacion  {
             }
             
             case "Nuevo":
-            //throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas",location.first_line,location.last_column)
-            return true;
+            throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas",location.first_line,location.last_column)
+           
             case "Lista":
-            //throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas",location.first_line,location.last_column)
-            return true;
+            throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas",location.first_line,location.last_column)
+    
         }
         this.analizador.newError("asinganr valor",location.first_line,location.last_column);
         return false;
     }
-
-
-    /**
-     * Asignacion
-     * Asignacion
-     * : var Asignar ';'
-     * | Navegar var Asignar ';'
-     * ;
-     * 
-     *  
-     * @param nodo 
-     */
-    public asignacion(nodo:Nodo):boolean{
-        let term = nodo.childNode[0].term;
-        let variable:Dir;
-        let resultado:nodoOperacion;
-        let location ;
-        switch (term) {
-            case "var":
-             variable = this.analizador.variable.var(nodo.childNode[0]);
-             resultado = this.asignar( nodo.childNode[1],variable);
-             location = variable.location;
-             this.analizador.variable.setValVariable(variable,resultado,location);
-            
-             return true;
-            case "Navegar":
-                this.navegar(nodo.childNode[0]);
-        }
-        this.analizador.newError("error algo esta mal",nodo.childNode[2].location.first_line,nodo.childNode[2].location.last_column);
-        return false;
-    }
-
-    public navegar(nodo:Nodo) {
-
-    }
-
-
-   
 /**
    Asignar
     :'+=' e 
@@ -129,7 +92,6 @@ export default class Asignacion  {
     | '--'  
     | '=' Nuevo 
     | '=' e     | '=' e 
-
     ;
      */
    private asignar(nodo:Nodo, variable:Dir) :nodoOperacion{
@@ -156,14 +118,101 @@ export default class Asignacion  {
         let term = nodo.term;
         switch(term) {
             case "Nuevo":
+                let temClase = this.analizador.claseA;
+                let retornarValor = this.analizador.cuerpo.nuevoObjeto(nodo);
+                this.analizador.claseA = temClase;
+            return retornarValor;
             case "e":
             return this.analizador.exp.analizar(nodo);
         }
         throw this.analizador.newError("error al asignar",0,0)
    }
+   
 
+    /**
+     * Asignacion
+     * Asignacion
+     * : var Asignar ';'
+     * | Navegar var Asignar ';'
+     * ;
+     * @param nodo 
+     */
+    public asignacion(nodo:Nodo):boolean{
+        let term = nodo.childNode[0].term;
+        let variable:Dir;
+        let resultado:nodoOperacion;
+        let location ;
+        switch (term) {
+            case "var":
+             variable = this.analizador.variable.var(nodo.childNode[0]);
+             resultado = this.asignar( nodo.childNode[1],variable);
+             location = variable.location;
+             this.analizador.variable.setValVariable(variable,resultado,location);
+             return true;
+            case "Navegar":
+             let temp = this.analizador.claseA;
+             let navegar = this.navegar(nodo.childNode[0]);
+             this.analizador.claseA = this.analizador.buscarClase(navegar.tipo);
+             variable = this.analizador.variable.var(nodo.childNode[1]);
+             resultado = this.asignar( nodo.childNode[2],variable);
+             location = variable.location;
+             this.analizador.variable.setValVariable(variable,resultado,location,navegar.valor);
+             this.analizador.claseA = temp;
+             return true;
+        }
+        throw this.analizador.newError("error algo esta mal",nodo.childNode[2].location.first_line,nodo.childNode[2].location.last_column);       
+    }
 
-  
+    private getHeap (navegar:NodoNavegar,variable:Dir){
+        if (navegar.tipo == "'.'") {
+        
+        }
+    }
+ 
+    /**
+     *Navegar
+     *: var '.'
+     *| var '->'
+     *| this .
+     *| getMetodo '.'
+     *| getMetodo '->'
+     *| Navegar var '.'
+     *| Navegar  getMetodo '.'
+     *| Navegar var '->'
+     *| Navegar  getMetodo '->'
+     *| 
+     *;
+    */
+    public navegar(nodo:Nodo):nodoOperacion {
+        let term = nodo.childNode[0].term
+        let variable:Dir;
+        let navegarNodo:NodoNavegar;
+        let op;
+        let valor;
+        let location;
+        let navegar;
+        switch (term) {
+            case "var":
+            variable = this.analizador.variable.var(nodo.childNode[0]);
+            return this.analizador.variable.gerVal( variable);
+            case "ESTE":
+            variable = this.analizador.variable.obtenerValorVariable("este",nodo.childNode[0].location.first_line,nodo.childNode[0].location.last_column);
+            location = nodo.childNode[1].location;
+            variable.addLocation(nodo.childNode[0].location);
+            return this.analizador.variable.gerVal( variable);
+            case "getMetodo":
+            return this.analizador.variable.getmetodo(nodo.childNode[0])
+            case "Navegar":
+            let temp = this.analizador.claseA;
+            let identi = this.navegar(nodo.childNode[0]);
+            let op = this.analizador.variable.identiObjec(nodo.childNode[1],identi,nodo.childNode[2].location);
+            this.analizador.claseA = temp;
+            return op;
+            
+        }
 
+        throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas",0,0);
+    }
     
 }
+

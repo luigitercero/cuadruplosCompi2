@@ -5,13 +5,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var nodoOperacion_1 = __importDefault(require("../exp/operacion/nodoOperacion"));
 var obtenerDireccion_1 = __importDefault(require("./obtenerDireccion"));
+var nodoNavegar_1 = __importDefault(require("./nodoNavegar"));
 var Variable = /** @class */ (function () {
     function Variable(analizdor) {
         this.analizador = analizdor;
     }
     /**
         *
-        * @param nodo Identi
+        * @param nodo
+        * Identi
         *:var
         *|getMetodo
         *|Identi '->' var
@@ -25,6 +27,8 @@ var Variable = /** @class */ (function () {
         var term = nodo.childNode[0].term;
         var variable;
         var valor;
+        var location;
+        var navegar;
         switch (term) {
             case "var":
                 variable = this.analizador.variable.var(nodo.childNode[0]);
@@ -32,17 +36,53 @@ var Variable = /** @class */ (function () {
             case "getMetodo":
                 return this.getmetodo(nodo.childNode[0]);
             case "Identi":
-                return this.identi(nodo.childNode[0]);
+                var temp = this.analizador.claseA;
+                var identi = this.identi(nodo.childNode[0]);
+                var op = this.identiObjec(nodo.childNode[2], identi, nodo.childNode[1].location);
+                this.analizador.claseA = temp;
+                return op;
+            case "ESTE":
+                variable = this.analizador.variable.obtenerValorVariable("este", nodo.childNode[0].location.first_line, nodo.childNode[0].location.last_column);
+                navegar = new nodoNavegar_1.default(variable, nodo.childNode[1].term);
+                location = nodo.childNode[0].location;
+                variable.addLocation(nodo.childNode[0].location);
+                variable = this.analizador.variable.var(nodo.childNode[2], navegar.variable.val);
+                return this.gerVal(variable);
         }
         throw this.analizador.newError("error en identi", 0, 0);
+    };
+    /**
+     * verifica que en identi venga un va o un object
+     * @param nodo
+     * @param identi
+     */
+    Variable.prototype.identiObjec = function (nodo, identi, location) {
+        if (nodo.term == "var") {
+            this.analizador.claseA = this.analizador.buscarClase(identi.tipo);
+            return this.gerVal(this.analizador.variable.var(nodo, identi.valor));
+        }
+        else {
+            if (nodo.term == "getMetodo") {
+                var t1 = this.analizador.newTemporal();
+                var temp = this.analizador.claseA.tabla.ptr;
+                temp++;
+                var colocarse_this = this.analizador.genOperacion("+", "ptr", temp + "", t1);
+                var guardar_aputandor_This = this.analizador.saveEnPila(t1, identi.valor);
+                this.analizador.agregarCodigo(colocarse_this, location.last_column, location.first_line);
+                this.analizador.agregarCodigo(colocarse_this, location.last_column, location.first_line);
+                return this.getmetodo(nodo, identi);
+            }
+        }
+        throw this.analizador.newError("no se si es variable o metodo", 0, 0);
     };
     Variable.prototype.gerVal = function (variable) {
         var val = this.analizador.variable.getValorVariable(variable);
         return new nodoOperacion_1.default(val, variable.simbolo.getTipo(), variable.location.last_column, variable.location.first_line);
     };
-    Variable.prototype.getmetodo = function (nodo) {
+    /**este deberia jalar retotno */
+    Variable.prototype.getmetodo = function (nodo, esto) {
         var l = nodo.childNode[0].location;
-        var metodo = this.analizador.cuerpo.getMetodo(nodo);
+        var metodo = this.analizador.cuerpo.getMetodo(nodo, esto); //aqui es donde escribe el codigo
         var tam = this.analizador.claseA.tabla.ptr;
         var t1 = this.analizador.newTemporal();
         var t2 = this.analizador.newTemporal();
@@ -62,7 +102,7 @@ var Variable = /** @class */ (function () {
      * @param tipo //tipo
      * @param visibilidad  "visibilidad"
      */
-    Variable.prototype.var = function (nodo) {
+    Variable.prototype.var = function (nodo, inicio) {
         var term = nodo.childNode[0].term;
         var nombre;
         var location;
@@ -73,13 +113,13 @@ var Variable = /** @class */ (function () {
             case "ID":
                 nombre = nodo.childNode[0].token;
                 location = nodo.childNode[0].location;
-                simbolo = this.analizador.claseA.buscarSimbolo(nombre);
+                simbolo = this.analizador.claseA.buscarSimbolo(nombre, inicio);
                 //Obtener direccion de la variable
-                variable = this.analizador.variable.obtenerDirVariable(nombre, location.first_line, location.last_column);
+                variable = this.analizador.variable.obtenerDirVariable(nombre, location.first_line, location.last_column, inicio);
                 variable.addLocation(location);
                 return variable;
             case "var":
-                variable = this.var(nodo.childNode[0]);
+                variable = this.var(nodo.childNode[0], inicio);
                 variable.tam = variable.tam + 1;
                 valor = this.analizador.exp.analizar(nodo.childNode[2]);
                 this.validarArreglo(variable, valor);
@@ -88,10 +128,10 @@ var Variable = /** @class */ (function () {
         throw this.analizador.newError("error al intetar recorrer var en operaciones", 0, 0);
     };
     /**
-        * esto se usa cuando se esta declarando un arreglo
-        * @param variable es un nodo temporal para evaluar la variable
-        * @param possArreglo contienen la posicion para poder escribir el arreglo
-        */
+     * esto se usa cuando se esta declarando un arreglo
+     * @param variable es un nodo temporal para evaluar la variable
+     * @param possArreglo contienen la posicion para poder escribir el arreglo
+     */
     Variable.prototype.validarArreglo = function (variable, possArreglo) {
         var fila = variable.location.first_line;
         var column = variable.location.last_column;
@@ -147,6 +187,7 @@ var Variable = /** @class */ (function () {
             var temp1 = this.analizador.newTemporal();
             cuadruplo = this.analizador.genOperacion('+', temp, varibale.tam + 1 + "", temp1);
             varibale.temporal = temp1;
+            varibale.val = temp1;
             this.analizador.agregarCodigo(cuadruplo, varibale.location.last_column, varibale.location.first_line);
         }
         return this.getVAlorD(varibale);
@@ -214,16 +255,26 @@ var Variable = /** @class */ (function () {
      * @param linea linea donde se llama
      * @param columna columna donde se llama
      */
-    Variable.prototype.obtenerDirVariable = function (nombre, linea, columna) {
-        var simbolo = this.analizador.claseA.tabla.buscarEnPila(nombre);
-        if (simbolo != null) {
-            var temp = this.getDirEnPila(nombre, linea, columna, simbolo);
-            return new obtenerDireccion_1.default(temp, "pila", simbolo);
+    Variable.prototype.obtenerDirVariable = function (nombre, linea, columna, inicio) {
+        if (inicio === undefined) {
+            var simbolo = this.analizador.claseA.tabla.buscarEnPila(nombre);
+            if (simbolo != null) {
+                var temp = this.getDirEnPila(nombre, linea, columna, simbolo);
+                return new obtenerDireccion_1.default(temp, "pila", simbolo);
+            }
+            else {
+                simbolo = this.analizador.claseA.tabla.buscarEnHeap(nombre);
+                if (simbolo != null) {
+                    var temp = this.getDirEnHeap(nombre, linea, columna, simbolo);
+                    return new obtenerDireccion_1.default(temp, "heap", simbolo);
+                }
+            }
         }
         else {
+            var simbolo = void 0;
             simbolo = this.analizador.claseA.tabla.buscarEnHeap(nombre);
             if (simbolo != null) {
-                var temp = this.getDirEnHeap(nombre, linea, columna, simbolo);
+                var temp = this.getDirRelativo(nombre, linea, columna, simbolo, inicio);
                 return new obtenerDireccion_1.default(temp, "heap", simbolo);
             }
         }
@@ -235,18 +286,28 @@ var Variable = /** @class */ (function () {
      * @param resultado  es el valor que se quiere ene el simbolo
      * @param location  en donde se declaro
      */
-    Variable.prototype.setValVariable = function (simbolo, resultado, location) {
+    Variable.prototype.setValVariable = function (simbolo, resultado, location, inicio) {
         var val = this.analizador.exp.getValor(resultado);
-        if (simbolo.done == "pila") {
-            this.analizador.agregarCodigo(this.analizador.saveEnPila(simbolo.dir, val), location.last_column, location.first_line);
-            return true;
-        }
-        else {
-            if (simbolo.done == "heap") {
-                var t = this.validarPossdeArreglo(simbolo, location);
-                this.analizador.agregarCodigo(this.analizador.saveEnHeap(t, val), location.last_column, location.first_line);
+        var comentario = this.analizador.genComentario("se gurdara un valor a la variable " + simbolo.simbolo.getNombre());
+        if (inicio === undefined) {
+            if (simbolo.done == "pila") {
+                this.analizador.agregarCodigo(this.analizador.saveEnPila(simbolo.dir, val) + comentario, location.last_column, location.first_line);
                 return true;
             }
+            else {
+                if (simbolo.done == "heap") {
+                    var t = this.validarPossdeArreglo(simbolo, location);
+                    this.analizador.agregarCodigo(this.analizador.saveEnHeap(t, val) + comentario, location.last_column, location.first_line);
+                    return true;
+                }
+            }
+        }
+        else {
+            var t = this.validarPossdeArreglo(simbolo, location);
+            var temp = this.analizador.newTemporal();
+            this.analizador.agregarCodigo(this.analizador.genOperacion('+', inicio, t, temp) + comentario, location.last_column, location.first_line);
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp, val) + comentario, location.last_column, location.first_line);
+            return true;
         }
         throw this.analizador.newError("error al cambiar variables " + simbolo.simbolo.getNombre() + " ", location.first_line, location.last_column);
     };
@@ -276,49 +337,68 @@ var Variable = /** @class */ (function () {
      * @param linea linea donde se llama
      * @param columna columna donde se llamanombre
      */
-    Variable.prototype.obtenerValorVariable = function (nombre, linea, columna) {
-        var simbolo = this.analizador.claseA.tabla.buscarEnPila(nombre);
-        var dir;
-        if (simbolo != null) {
-            dir = this.getDirEnPila(nombre, linea, columna, simbolo);
-            var temp = this.analizador.newTemporal();
-            this.analizador.agregarCodigo(this.analizador.getEnPila(dir, temp), columna, linea);
-            var v = new obtenerDireccion_1.default(dir, "pila", simbolo);
-            v.done = temp;
-            return v;
-        }
-        else {
-            simbolo = this.analizador.claseA.tabla.buscarEnHeap(nombre);
+    Variable.prototype.obtenerValorVariable = function (nombre, linea, columna, inicio) {
+        var comentario = this.analizador.genComentario("obteniendo valor de " + nombre);
+        if (inicio !== null) {
+            var simbolo = this.analizador.claseA.tabla.buscarEnPila(nombre);
+            var dir = void 0;
             if (simbolo != null) {
-                dir = this.getDirEnHeap(nombre, linea, columna, simbolo);
+                dir = this.getDirEnPila(nombre, linea, columna, simbolo);
                 var temp = this.analizador.newTemporal();
-                this.analizador.agregarCodigo(this.analizador.getEnHeap(dir, temp), columna, linea);
-                new obtenerDireccion_1.default(dir, "heap", simbolo);
-                var v = new obtenerDireccion_1.default(dir, "heap", simbolo);
+                this.analizador.agregarCodigo(this.analizador.getEnPila(dir, temp) + comentario, columna, linea);
+                var v = new obtenerDireccion_1.default(dir, "pila", simbolo);
                 v.done = temp;
+                v.val = temp;
                 return v;
             }
+            else {
+                simbolo = this.analizador.claseA.tabla.buscarEnHeap(nombre);
+                if (simbolo != null) {
+                    dir = this.getDirEnHeap(nombre, linea, columna, simbolo);
+                    var temp = this.analizador.newTemporal();
+                    this.analizador.agregarCodigo(this.analizador.getEnHeap(dir, temp) + comentario, columna, linea);
+                    new obtenerDireccion_1.default(dir, "heap", simbolo);
+                    var v = new obtenerDireccion_1.default(dir, "heap", simbolo);
+                    v.done = temp;
+                    v.val = temp;
+                    return v;
+                }
+            }
+        }
+        else {
         }
         throw this.analizador.newError("no es posible encontrar la variable", linea, columna);
     };
     Variable.prototype.getDirEnPila = function (nombre, linea, columna, simbolo) {
         var temp;
         var pos;
+        var comentario = this.analizador.genComentario("obteniendo en pila el sibolo de " + nombre);
         //escribir esto si no esta en ambito local pero si existe en heap
         pos = this.analizador.newTemporal();
-        this.analizador.agregarCodigo(this.analizador.genOperacion('+', "ptr", simbolo.possAmbito + "", pos), columna, linea); //buscar en pila el this
+        this.analizador.agregarCodigo(this.analizador.genOperacion('+', "ptr", simbolo.possAmbito + "", pos) + comentario, columna, linea); //buscar en pila el this
+        return pos;
+    };
+    Variable.prototype.getDirRelativo = function (nombre, linea, columna, simbolo, realitivo) {
+        var temp;
+        var pos;
+        //escribir esto si no esta en ambito local pero si existe en heap
+        var comentario = this.analizador.genComentario("obteniendo direccion de memoria de variable " + simbolo.getNombre());
+        pos = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(this.analizador.genOperacion('+', realitivo, simbolo.possAmbito + "", pos) + comentario, columna, linea); //buscar en pila el this
         return pos;
     };
     Variable.prototype.getDirEnHeap = function (nombre, linea, columna, simbolo) {
-        this.analizador.agregarCodigo(this.analizador.genComentario("obteniendo direccion de memoria de variable " + simbolo.getNombre()), columna, linea); // es un comentario
+        this.analizador.agregarCodigo(this.analizador.genComentario("obteniendo direccion de memoria de variable en heap " + simbolo.getNombre()), columna, linea); // es un comentario
         var temp;
         var pos;
         //escribir esto si no esta en ambito local pero si existe en heap
         pos = this.analizador.newTemporal();
+        var comentario = this.analizador.genComentario("obteniendo en la pila this ");
         this.analizador.agregarCodigo(this.analizador.genOperacion('+', "ptr", "1", pos), columna, linea); //buscar en pila el this
         temp = this.analizador.newTemporal(); //temp contiene el dato en heap
-        this.analizador.agregarCodigo(this.analizador.getEnPila(pos, temp), columna, linea); // valor en la pila en this
+        this.analizador.agregarCodigo(this.analizador.getEnPila(pos, temp) + comentario, columna, linea); // valor en la pila en this
         var temp1 = this.analizador.newTemporal();
+        comentario = this.analizador.genComentario("obteniendo valor de  " + nombre);
         this.analizador.agregarCodigo(this.analizador.genOperacion('+', temp, simbolo.possAmbito + "", temp1), columna, linea); //moverse en heap
         return temp1;
     };
@@ -366,6 +446,12 @@ var Variable = /** @class */ (function () {
             return this.dimensionAny(variable, val, location);
         }
     };
+    /**
+     * esto funciona para la primera dimension
+     * @param variable
+     * @param val
+     * @param location
+     */
     Variable.prototype.dimension1 = function (variable, val, location) {
         this.analizador.salidaConsola("escribe una dimension");
         this.analizador.agregarCodigo(this.analizador.saveEnHeap("heap", val.valor), location.last_column, location.first_line);
@@ -373,6 +459,12 @@ var Variable = /** @class */ (function () {
         variable.temp = val.valor;
         variable.simbolo.addTam(1);
     };
+    /**
+     * esto fucniona para el resto dde fudimensiones
+     * @param variable
+     * @param val
+     * @param location
+     */
     Variable.prototype.dimensionAny = function (variable, val, location) {
         if (val.tipo == this.analizador.INT) {
             this.analizador.salidaConsola("agregando otro tama;");
@@ -392,7 +484,7 @@ var Variable = /** @class */ (function () {
     Variable.prototype.agregarDimAHeapGLOBAL = function (variable, val, location) {
         if (variable.simbolo.tam == 0) {
             //OBTENGO LA POSICION
-            var temp = this.analizador.variable.obtenerDirVariable(variable.simbolo.getNombre(), 0, variable.simbolo.linea);
+            var temp = this.analizador.variable.obtenerDirVariable(variable.simbolo.getNombre(), variable.simbolo.linea, 0);
             this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.dir, "heap"), 0, variable.simbolo.linea);
             this.analizador.agregarCodigo(this.analizador.siguiLibreHeap(), location.last_column, location.first_line);
             //escribe el valor en el heap del primer tama;o

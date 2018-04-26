@@ -3,9 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-var variable_1 = __importDefault(require("./variable"));
-var asignacion_1 = __importDefault(require("./asignacion"));
-var declaracion_1 = __importDefault(require("./declaracion"));
+var asignacion_1 = __importDefault(require("../variable/asignacion"));
+var declaracion_1 = __importDefault(require("../variable/declaracion"));
 var control_1 = __importDefault(require("./control/control"));
 var nodoSalida_1 = __importDefault(require("./control/nodoSalida"));
 var primitivas_1 = __importDefault(require("./primitivas/primitivas"));
@@ -13,7 +12,6 @@ var cuerpo = /** @class */ (function () {
     function cuerpo(analizador) {
         this.analizador = analizador;
         this.asignar = new asignacion_1.default(analizador);
-        this.variable = new variable_1.default(analizador);
         this.declarar = new declaracion_1.default(analizador);
         this.control = new control_1.default(analizador);
         this.primitivas = new primitivas_1.default(analizador);
@@ -118,13 +116,13 @@ var cuerpo = /** @class */ (function () {
      * ;
      * @param nodo
      */
-    cuerpo.prototype.getMetodo = function (nodo) {
+    cuerpo.prototype.getMetodo = function (nodo, esto) {
         var term = nodo.childNode[0].term;
         var nombre;
         switch (term) {
             case "ID":
                 nombre = nodo.childNode[0].token;
-                return this.metodoID(nombre, this.getParametro(nodo.childNode[2]), nodo.childNode[0].location);
+                return this.metodoID2(nombre, this.getParametro(nodo.childNode[2]), nodo.childNode[0].location, esto);
             case "Primitivas":
                 nombre = nodo.childNode[0].childNode[0].term;
                 this.primitivas.analizar(nombre, this.getParametro(nodo.childNode[2]));
@@ -169,18 +167,109 @@ var cuerpo = /** @class */ (function () {
                 parametro.push(this.analizador.exp.analizar(nodo.childNode[0]));
                 return true;
         }
+        throw this.analizador.newError("error parametros", 0, 0);
     };
-    cuerpo.prototype.metodoID = function (nombre, parametoM, location) {
+    cuerpo.prototype.nuevoObjeto = function (nodo) {
+        var objeto = nodo.childNode[1].childNode[0].token;
+        var location = nodo.childNode[0].location;
         var tam = this.analizador.claseA.tabla.ptr;
-        //obtengo la direccion donde esta this o esto  
-        var esto = this.analizador.variable.obtenerValorVariable("esto", location.first_line, location.last_column);
+        var metodo;
+        var comenario = this.analizador.genComentario("aumentando ambito para " + this.analizador.claseA.nombre + "");
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", tam + "", "ptr") + comenario, location.last_column, location.first_line);
+        this.analizador.claseA = this.analizador.buscarClase(objeto); //esto no genera ningucodigo 3d
+        this.analizador.metodoA.nuevoThis(location);
+        metodo = this.analizador.variable.getmetodo(nodo.childNode[1]);
+        comenario = this.analizador.genComentario("disminuyendo ambito para " + this.analizador.claseA.nombre + "");
+        this.analizador.agregarCodigo(this.analizador.genOperacion("-", "ptr", tam + "", "ptr") + comenario, location.last_column, location.first_line);
+        return metodo;
+    };
+    /* metodo ID ya no se utiliza
+    private metodoID(nombre:string, parametoM:nodoOperacion[],location:Location):Metodo {
+        let tam=this.analizador.claseA.tabla.ptr
+        //obtengo la direccion donde esta this o esto
+        let esto = this.analizador.variable.obtenerValorVariable("este",location.first_line,location.last_column);
         //aqui empiza el ambito simulado
-        var temp = this.analizador.claseA.tabla.ptr; //en esta posicion se encuentra el retorno
-        temp++; //en esta posicion se guarda this
-        var t2 = this.analizador.newTemporal();
-        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", temp + "", t2), location.last_column, location.first_line);
-        this.analizador.agregarCodigo(this.analizador.saveEnPila(t2, esto.done), location.last_column, location.first_line);
-        temp++; //siguiete posicionlibre
+        let temp = this.analizador.claseA.tabla.ptr;//en esta posicion se encuentra el retorno
+        temp ++; //en esta posicion se guarda this
+        
+        let t2 = this.analizador.newTemporal()
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("+","ptr",temp+"",t2),location.last_column,location.first_line
+        );
+
+        this.analizador.agregarCodigo(
+            this.analizador.saveEnPila(t2,esto.done),location.last_column,location.first_line
+        );
+        temp ++;//siguiete posicionlibre
+
+        let param = "";
+
+        this.analizador.agregarCodigo(
+            this.analizador.genComentario("agregando parametros"),location.last_column,location.first_line
+        );
+        for (let index = 0; index < parametoM.length; index++) {
+            let t1 = this.analizador.newTemporal();
+            
+            this.analizador.agregarCodigo(
+                this.analizador.genOperacion("+","ptr",temp+"",t1),parametoM[index].column,parametoM[index].fila
+            );
+
+            this.analizador.agregarCodigo(
+                this.analizador.saveEnPila(t1,parametoM[index].valor),parametoM[index].column,parametoM[index].fila
+            );
+            param = param + "_" + parametoM[index].tipo;
+            temp ++;
+        }
+
+        let coment = this.analizador.genComentario("aumentando de ambito para " + this.analizador.claseA.nombre)
+        let metodoNombre = nombre+param;
+        let metodo:Metodo = this.analizador.claseA.buscarMetodo(metodoNombre);
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("+","ptr",tam+"","ptr")+coment,location.last_column,location.first_line
+        );
+        coment = this.analizador.genComentario("llamando metodo " + metodoNombre);
+        this.analizador.agregarCodigo(
+            this.analizador.llamarMetodo("metodo"+metodo.id)+coment,location.last_column,location.first_line
+        );
+        coment = this.analizador.genComentario("disminyendo de ambito para " + this.analizador.claseA.nombre)
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("-","ptr",tam+"","ptr")+coment,location.last_column,location.first_line
+        );
+
+        return metodo;
+    }
+     */
+    cuerpo.prototype.ejecutarMetodo = function (nombre, param, tam, location, esto) {
+        var coment = this.analizador.genComentario("aumentando de ambito para " + this.analizador.claseA.nombre);
+        var metodoNombre = nombre + param;
+        var ambitotemporal = this.analizador.claseA;
+        if (esto !== undefined) {
+            this.analizador.claseA = this.analizador.buscarClase(esto.tipo);
+        }
+        var metodo = this.analizador.claseA.buscarMetodo(metodoNombre);
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", tam + "", "ptr") + coment, location.last_column, location.first_line);
+        coment = this.analizador.genComentario("llamando metodo " + metodoNombre);
+        this.analizador.agregarCodigo(this.analizador.llamarMetodo("metodo" + metodo.id) + coment, location.last_column, location.first_line);
+        this.analizador.claseA = ambitotemporal;
+        coment = this.analizador.genComentario("disminyendo de ambito para " + this.analizador.claseA.nombre);
+        this.analizador.agregarCodigo(this.analizador.genOperacion("-", "ptr", tam + "", "ptr") + coment, location.last_column, location.first_line);
+        return metodo;
+    };
+    cuerpo.prototype.metodoID2 = function (nombre, parametoM, location, esto) {
+        var tam = this.analizador.claseA.tabla.ptr;
+        var dir;
+        if (esto === undefined) {
+            dir = this.analizador.variable.obtenerValorVariable("este", location.first_line, location.last_column).done;
+        }
+        else {
+            dir = esto.valor;
+        }
+        var temp = this.escribirEstoAnuevoAmbito(dir, location);
+        var param = this.escribirParametrosApila(temp, parametoM);
+        temp = temp + parametoM.length;
+        return this.ejecutarMetodo(nombre, param, tam, location, esto);
+    };
+    cuerpo.prototype.escribirParametrosApila = function (temp, parametoM) {
         var param = "";
         for (var index = 0; index < parametoM.length; index++) {
             var t1 = this.analizador.newTemporal();
@@ -189,12 +278,17 @@ var cuerpo = /** @class */ (function () {
             param = param + "_" + parametoM[index].tipo;
             temp++;
         }
-        var metodoNombre = nombre + param;
-        var metodo = this.analizador.claseA.buscarMetodo(metodoNombre);
-        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", tam + "", "ptr"), location.last_column, location.first_line);
-        this.analizador.agregarCodigo(this.analizador.llamarMetodo("metodo" + metodo.id), location.last_column, location.first_line);
-        this.analizador.agregarCodigo(this.analizador.genOperacion("-", "ptr", tam + "", "ptr"), location.last_column, location.first_line);
-        return metodo;
+        return param;
+    };
+    cuerpo.prototype.escribirEstoAnuevoAmbito = function (esto, location) {
+        var temp = this.analizador.claseA.tabla.ptr; //en esta posicion se encuentra el retorno
+        temp++; //en esta posicion se guarda this
+        var t2 = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", temp + "", t2), location.last_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.saveEnPila(t2, esto), location.last_column, location.first_line);
+        temp++; //siguiete posicionlibre
+        this.analizador.agregarCodigo(this.analizador.genComentario("agregando parametros"), location.last_column, location.first_line);
+        return temp;
     };
     return cuerpo;
 }());

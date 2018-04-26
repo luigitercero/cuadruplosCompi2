@@ -57,7 +57,6 @@ export default class Operacion{
 
     mayorque(arg0:number,etiqueta:string,arg1:number,linea:number) {
         if (arg0 > arg1) {
-
             return this.eitqueta(etiqueta)
         }else {
             return linea

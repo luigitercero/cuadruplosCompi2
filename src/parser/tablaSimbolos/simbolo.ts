@@ -11,7 +11,7 @@ export default class Simbolo {
     public possAmbito:number;
     public tam:number;
     public valor:Valor;
-    private location:Location;
+    private location:Location|any;
     
     setLocacion_declaracion(location:Location){
         this.location = location;

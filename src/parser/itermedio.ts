@@ -31,11 +31,11 @@ export default class FormatoItermedio{
         this.codigo4D.metodo.push({'metodo':"metodo"+this.contador,'poss':this.poss});
         return this.contador;
     }
-    public agregarCodigo(codigo:string,column:number|-1,line:number|-1){
+    public agregarCodigo(codigo:string,column:number|-1,linea:number|-1){
         this.codigoIntermedio  = this.codigoIntermedio + codigo+"\n";
-        this.codigo4D.C4D.push({'poss':this.poss,'codigo':codigo,'columna':column,'linea':line});
+        this.codigo4D.C4D.push({'poss':this.poss,'codigo':codigo,'columna':column,'linea':linea});
         this.poss ++;
-        console.log("#"+codigo,' columna: '+column +' linea: ' +line );
+        console.log("#"+codigo,' columna: '+column +' linea: ' +linea );
     }
 
     public siguiLibreHeap() {

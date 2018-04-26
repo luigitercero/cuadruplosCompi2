@@ -93,7 +93,7 @@ var Declaracion = /** @class */ (function (_super) {
                     this.asignarValor(nodo.childNode[2], variable.simbolo);
                 }
                 catch (error) {
-                    this.analizador.newError("error al delcarar variable", nodo.childNode[0].childNode[0].location.first_line, 0);
+                    this.analizador.newError("error al delcarar variable", nodo.childNode[0].location.first_line, 0);
                 }
                 return true;
         }

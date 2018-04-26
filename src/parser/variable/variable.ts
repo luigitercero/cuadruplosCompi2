@@ -9,6 +9,7 @@ import Clase from '../tablaSimbolos/clase';
 import Dir from './obtenerDireccion'
 import Location from '../location';
 import Metodo from '../tablaSimbolos/metodo';
+import NodoNavegar from './nodoNavegar';
 export default class Variable{
       
     public analizador:Analizador;
@@ -18,7 +19,8 @@ export default class Variable{
 
  /**
      * 
-     * @param nodo Identi
+     * @param nodo 
+     * Identi
      *:var
      *|getMetodo
      *|Identi '->' var
@@ -32,6 +34,8 @@ export default class Variable{
         let term = nodo.childNode[0].term
         let variable:Dir;
         let valor;
+        let location;
+        let navegar;
         switch(term) {
             case "var" :
             variable = this.analizador.variable.var(nodo.childNode[0]);
@@ -39,21 +43,62 @@ export default class Variable{
              case "getMetodo" :
              return this.getmetodo(nodo.childNode[0])
             case "Identi" :
-            return this.identi(nodo.childNode[0]);
+            let temp = this.analizador.claseA;
+            let identi = this.identi(nodo.childNode[0]);
+        
+            let op = this.identiObjec(nodo.childNode[2],identi,nodo.childNode[1].location);
+            this.analizador.claseA = temp;
+        
+             return op;
+            case "ESTE" :
+            variable = this.analizador.variable.obtenerValorVariable("este",nodo.childNode[0].location.first_line,nodo.childNode[0].location.last_column);
+            navegar = new NodoNavegar(variable,nodo.childNode[1].term);
+            location = nodo.childNode[0].location;
+            variable.addLocation(nodo.childNode[0].location);
+            variable = this.analizador.variable.var(nodo.childNode[2],navegar.variable.val);
+            return this.gerVal( variable);
         } 
         throw this.analizador.newError("error en identi",0,0);
     }
 
+  
 
+
+    /**
+     * verifica que en identi venga un va o un object
+     * @param nodo 
+     * @param identi 
+     */
+    public identiObjec (nodo:Nodo,identi:nodoOperacion,location:Location):nodoOperacion {
+        if (nodo.term == "var") {
+            this.analizador.claseA = this.analizador.buscarClase(identi.tipo);
+            return this.gerVal(this.analizador.variable.var(nodo,identi.valor));
+             
+        } else {
+            if (nodo.term == "getMetodo") {
+                let t1 = this.analizador.newTemporal();
+                let temp = this.analizador.claseA.tabla.ptr;
+                temp ++ ;
+                let colocarse_this =   this.analizador.genOperacion("+","ptr",temp+"",t1);
+                let guardar_aputandor_This = this.analizador.saveEnPila(t1,identi.valor);
+                this.analizador.agregarCodigo(colocarse_this,location.last_column,location.first_line);
+                this.analizador.agregarCodigo(colocarse_this,location.last_column,location.first_line);
+               return this.getmetodo(nodo,identi);
+            }
+
+        }
+        throw this.analizador.newError("no se si es variable o metodo",0,0)
+
+    }
     gerVal(variable:Dir) : nodoOperacion{
         let val = this.analizador.variable.getValorVariable(variable);
         return new nodoOperacion(val,variable.simbolo.getTipo(),variable.location.last_column,variable.location.first_line);
     }
 
-
-    getmetodo(nodo:Nodo):nodoOperacion {
+    /**este deberia jalar retotno */
+    getmetodo(nodo:Nodo,esto?:nodoOperacion):nodoOperacion {
         let l = nodo.childNode[0].location;
-        let metodo:Metodo = this.analizador.cuerpo.getMetodo(nodo);
+        let metodo:Metodo = this.analizador.cuerpo.getMetodo(nodo,esto);//aqui es donde escribe el codigo
         let tam  = this.analizador.claseA.tabla.ptr;
         let t1 = this.analizador.newTemporal();
         let t2 = this.analizador.newTemporal();
@@ -64,9 +109,6 @@ export default class Variable{
         this.analizador.agregarCodigo(getR,l.last_column,l.first_line);
        
         return  new nodoOperacion(t2,metodo.getTipo(),l.last_column,l.first_line);
-
-
-
     }
     /**
      * obtengo la direccion de la variable
@@ -78,7 +120,7 @@ export default class Variable{
      * @param tipo //tipo
      * @param visibilidad  "visibilidad"
      */
-    var(nodo:Nodo) :Dir {
+    var(nodo:Nodo,inicio?:string) :Dir {
         let term = nodo.childNode[0].term;
         let nombre:string;
         let location;
@@ -89,13 +131,13 @@ export default class Variable{
             case "ID":
                 nombre = nodo.childNode[0].token;
                 location = nodo.childNode[0].location;
-                simbolo  = this.analizador.claseA.buscarSimbolo(nombre);
+                simbolo  = this.analizador.claseA.buscarSimbolo(nombre,inicio);
                 //Obtener direccion de la variable
-                variable = this.analizador.variable.obtenerDirVariable(nombre,location.first_line,location.last_column);
+                variable = this.analizador.variable.obtenerDirVariable(nombre,location.first_line,location.last_column,inicio);
                 variable.addLocation(location);
             return variable;
             case "var":
-                variable = this.var(nodo.childNode[0]);
+                variable = this.var(nodo.childNode[0],inicio);
                 variable.tam = variable.tam +1;
                 valor = this.analizador.exp.analizar(nodo.childNode[2]);
                 this.validarArreglo(variable,valor);
@@ -104,7 +146,7 @@ export default class Variable{
         throw this.analizador.newError("error al intetar recorrer var en operaciones",0,0);
     }
 
- /**
+    /**
      * esto se usa cuando se esta declarando un arreglo
      * @param variable es un nodo temporal para evaluar la variable
      * @param possArreglo contienen la posicion para poder escribir el arreglo
@@ -182,6 +224,7 @@ export default class Variable{
             let temp1 = this.analizador.newTemporal();
             cuadruplo = this.analizador.genOperacion('+',temp,varibale.tam+1+"",temp1);
             varibale.temporal = temp1;
+            varibale.val = temp1;
             this.analizador.agregarCodigo(cuadruplo,varibale.location.last_column, varibale.location.first_line);
 
         }
@@ -274,17 +317,27 @@ export default class Variable{
      * @param linea linea donde se llama 
      * @param columna columna donde se llama
      */
-    obtenerDirVariable(nombre:string,linea:number,columna:number):Dir{
-        let simbolo:Simbolo|null = this.analizador.claseA.tabla.buscarEnPila(nombre);
-        if (  simbolo != null){
-            let temp =  this.getDirEnPila(nombre,linea,columna,simbolo);
-            return new Dir(temp,"pila",simbolo);
+    obtenerDirVariable(nombre:string,linea:number,columna:number,inicio?:string):Dir{
+        if (inicio === undefined){
+            let simbolo:Simbolo|null = this.analizador.claseA.tabla.buscarEnPila(nombre);
+            if (  simbolo != null){
+                let temp =  this.getDirEnPila(nombre,linea,columna,simbolo);
+                return new Dir(temp,"pila",simbolo);
+            }else {
+                simbolo =  this.analizador.claseA.tabla.buscarEnHeap(nombre);
+                if (simbolo != null) {
+                    let temp = this.getDirEnHeap(nombre,linea,columna,simbolo);
+                    return new Dir(temp,"heap",simbolo);
+                }
+            }
         }else {
+            let simbolo;
             simbolo =  this.analizador.claseA.tabla.buscarEnHeap(nombre);
             if (simbolo != null) {
-                let temp = this.getDirEnHeap(nombre,linea,columna,simbolo);
+                let temp = this.getDirRelativo(nombre,linea,columna,simbolo,inicio);
                 return new Dir(temp,"heap",simbolo);
             }
+           
         }
        throw this.analizador.newError("no es posible encontrar la variable " +nombre +" ",linea,columna);
     }
@@ -295,18 +348,30 @@ export default class Variable{
      * @param resultado  es el valor que se quiere ene el simbolo
      * @param location  en donde se declaro 
      */
-    setValVariable(simbolo:Dir,resultado:nodoOperacion,location:Location){
+    setValVariable(simbolo:Dir,resultado:nodoOperacion,location:Location,inicio?:string){
         let val = this.analizador.exp.getValor(resultado);
-        if (  simbolo.done == "pila"){
-            this.analizador.agregarCodigo(this.analizador.saveEnPila(simbolo.dir,val),location.last_column,location.first_line);
-            return true;
-        }else {
-       
-            if (simbolo.done == "heap") {
-                let t = this.validarPossdeArreglo(simbolo,location);
-                this.analizador.agregarCodigo(this.analizador.saveEnHeap(t,val),location.last_column,location.first_line);
+        let comentario  =this.analizador.genComentario("se gurdara un valor a la variable " + simbolo.simbolo.getNombre() )
+        if (inicio === undefined){
+            if (  simbolo.done == "pila"){
+                this.analizador.agregarCodigo(this.analizador.saveEnPila(simbolo.dir,val)+comentario,location.last_column,location.first_line);
                 return true;
+            }else {
+            
+                if (simbolo.done == "heap") {
+                    let t = this.validarPossdeArreglo(simbolo,location);
+                    this.analizador.agregarCodigo(this.analizador.saveEnHeap(t,val)+comentario,location.last_column,location.first_line);
+                    return true;
+                }
             }
+        } else {
+                let t = this.validarPossdeArreglo(simbolo,location);
+                let temp = this.analizador.newTemporal();
+                this.analizador.agregarCodigo(
+                    this.analizador.genOperacion('+',inicio,t,temp)+comentario,
+                     location.last_column,location.first_line
+                );
+                this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp,val)+comentario,location.last_column,location.first_line);
+                return true;
         }
        throw this.analizador.newError("error al cambiar variables " +simbolo.simbolo.getNombre() +" ",location.first_line,location.last_column);
     }
@@ -337,63 +402,84 @@ export default class Variable{
      * @param linea linea donde se llama 
      * @param columna columna donde se llamanombre
      */
-    obtenerValorVariable(nombre:string,linea:number,columna:number):Dir{
-        let simbolo:Simbolo|null = this.analizador.claseA.tabla.buscarEnPila(nombre);
-        let dir
-        if (  simbolo != null){
-                dir= this.getDirEnPila(nombre,linea,columna,simbolo);
-                let temp=this.analizador.newTemporal();
-                this.analizador.agregarCodigo(this.analizador.getEnPila(dir,temp),columna,linea);
-                let v = new Dir(dir,"pila",simbolo);
-                v.done = temp;
-                return v;
-        }else {
-            simbolo =  this.analizador.claseA.tabla.buscarEnHeap(nombre);
-            if (simbolo != null) {
-               dir=  this.getDirEnHeap(nombre,linea,columna,simbolo);
-               let temp=this.analizador.newTemporal();
-                this.analizador.agregarCodigo(this.analizador.getEnHeap(dir,temp),columna,linea);
-                new Dir(dir,"heap",simbolo);
-                let v = new Dir(dir,"heap",simbolo);
-                v.done = temp;
-                return v;
+    obtenerValorVariable(nombre:string,linea:number,columna:number,inicio?:string):Dir{
+        let comentario = this.analizador.genComentario("obteniendo valor de "+nombre);
+        if(inicio!==null){
+            let simbolo:Simbolo|null = this.analizador.claseA.tabla.buscarEnPila(nombre);
+            let dir
+            if (  simbolo != null){
+                    dir= this.getDirEnPila(nombre,linea,columna,simbolo);
+                    let temp=this.analizador.newTemporal();
+                    this.analizador.agregarCodigo(this.analizador.getEnPila(dir,temp)+comentario,columna,linea);
+                    let v = new Dir(dir,"pila",simbolo);
+                    v.done = temp;
+                    v.val = temp
+                    return v;
+            }else {
+                simbolo =  this.analizador.claseA.tabla.buscarEnHeap(nombre);
+                if (simbolo != null) {
+                   dir=  this.getDirEnHeap(nombre,linea,columna,simbolo);
+                   let temp=this.analizador.newTemporal();
+                    this.analizador.agregarCodigo(this.analizador.getEnHeap(dir,temp)+comentario,columna,linea);
+                    new Dir(dir,"heap",simbolo);
+                    let v = new Dir(dir,"heap",simbolo);
+                    v.done = temp;
+                    v.val = temp
+                    return v;
+                }
             }
-        }
-       throw this.analizador.newError("no es posible encontrar la variable",linea,columna);
-       
+        }else {
 
+        }
+
+       throw this.analizador.newError("no es posible encontrar la variable",linea,columna);
     }
 
 
     private getDirEnPila(nombre:string,linea:number,columna:number,simbolo:Simbolo){
         let temp: string;
         let pos: string
+        let comentario = this.analizador.genComentario("obteniendo en pila el sibolo de " + nombre);
         //escribir esto si no esta en ambito local pero si existe en heap
         pos = this.analizador.newTemporal();
         this.analizador.agregarCodigo(
-            this.analizador.genOperacion('+',"ptr", simbolo.possAmbito+"", pos),
+            this.analizador.genOperacion('+',"ptr", simbolo.possAmbito+"", pos)+comentario,
              columna,linea);//buscar en pila el this
             return pos
     }
 
+    private getDirRelativo(nombre:string,linea:number,columna:number,simbolo:Simbolo,realitivo:string){
+        let temp: string;
+        let pos: string
+        //escribir esto si no esta en ambito local pero si existe en heap
+        let comentario = this.analizador.genComentario
+        ("obteniendo direccion de memoria de variable "+ simbolo.getNombre())
+        pos = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion('+',realitivo, simbolo.possAmbito+"", pos)+comentario,
+             columna,linea);//buscar en pila el this
+            return pos
+    }
     private getDirEnHeap(nombre:string,linea:number,columna:number,simbolo:Simbolo){
+       
         this.analizador.agregarCodigo(this.analizador.genComentario
-            ("obteniendo direccion de memoria de variable "+ simbolo.getNombre())
+            ("obteniendo direccion de memoria de variable en heap "+ simbolo.getNombre())
             ,columna,linea);// es un comentario
         
         let temp: string;
         let pos: string
         //escribir esto si no esta en ambito local pero si existe en heap
         pos = this.analizador.newTemporal();
+        let comentario = this.analizador.genComentario("obteniendo en la pila this ");
         this.analizador.agregarCodigo(
             this.analizador.genOperacion('+',"ptr","1",pos),
              columna,linea);//buscar en pila el this
        
         temp = this.analizador.newTemporal();//temp contiene el dato en heap
-        this.analizador.agregarCodigo(this.analizador.getEnPila(pos,temp),
+        this.analizador.agregarCodigo(this.analizador.getEnPila(pos,temp)+comentario,
         columna,linea);// valor en la pila en this
         let temp1 = this.analizador.newTemporal();
-        
+        comentario = this.analizador.genComentario("obteniendo valor de  " + nombre);
         this.analizador.agregarCodigo(
             this.analizador.genOperacion('+',temp,simbolo.possAmbito+"",temp1),
              columna,linea);//moverse en heap
@@ -450,6 +536,13 @@ export default class Variable{
                 return this.dimensionAny(variable,val,location)
         }      
     }
+
+    /**
+     * esto funciona para la primera dimension
+     * @param variable 
+     * @param val 
+     * @param location 
+     */
     private dimension1(variable:nodoOperacion,val:nodoOperacion,location:any) {
         this.analizador.salidaConsola("escribe una dimension");
         this.analizador.agregarCodigo(this.analizador.saveEnHeap("heap",val.valor),location.last_column,location.first_line);
@@ -457,6 +550,12 @@ export default class Variable{
         variable.temp = val.valor;
         variable.simbolo.addTam(1);
     }
+    /**
+     * esto fucniona para el resto dde fudimensiones
+     * @param variable 
+     * @param val 
+     * @param location 
+     */
     private dimensionAny(variable:nodoOperacion,val:nodoOperacion,location:any) {
 
         if (val.tipo == this.analizador.INT){
@@ -480,7 +579,7 @@ export default class Variable{
 
               //OBTENGO LA POSICION
                 let temp = this.analizador.variable.obtenerDirVariable(variable.simbolo.getNombre(),
-                0,variable.simbolo.linea);
+                variable.simbolo.linea,0);
                 this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.dir,"heap"),
                 0,variable.simbolo.linea);
                 this.analizador.agregarCodigo(this.analizador.siguiLibreHeap(),location.last_column,location.first_line);

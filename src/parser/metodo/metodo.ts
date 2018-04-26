@@ -1,7 +1,7 @@
 import Analizador from '../analizador';
-import Asignacion from './asignacion'
+import Asignacion from '../variable/asignacion'
 import Nodo from '../nodo';
-import Declaracion from './declaracion';
+import Declaracion from '../variable/declaracion';
 import Metodo from '../tablaSimbolos/metodo';
 
 import Cuerpo from './cuerpo'
@@ -54,15 +54,13 @@ export default class metodo {
         let simtemp = this.analizador.claseA.tabla;
         this.analizador.claseA.tabla = new Tabla();
         this.analizador.claseA.tabla.esto = simtemp.esto;
-       
-        let s= new Salida();
+        let s = new Salida();
         switch(nombre){
             case "Visibilidad":
                 metodos= this.metodo(nodo.childNode[1],nodo.childNode[0].childNode[0].token,s);
                 this.endMetodo(metodos,nodo.childNode[2].location,s); 
                 this.analizador.claseA.tabla.disminuirAmbito();
                 this.analizador.claseA.tabla =simtemp;
-            
                 return true;
             case "Metodo":  
                 metodos =this.metodo(nodo.childNode[0],this.analizador.PUBLICO,s);
@@ -84,15 +82,12 @@ export default class metodo {
             this.analizador.agregarCodigo(
                 this.analizador.escribirEtiqueta(s.etiquetaR),location.last_column,location.first_line
             )
-
         }
         if (metodos.getNombre() == "Principal") {
             this.analizador.setFinal();
-
         }
         this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo"+metodos.id)+coment,
          location.last_column,location.first_line);
-
     }
 
     /**
@@ -129,13 +124,15 @@ export default class metodo {
             case "Metodo":
                 metodo = this.metodo(nodo.childNode[0],visi,s);
                 this.analizador.cuerpo.cuerpoMetodo(nodo.childNode[1],s);
+                metodo.escrito = true;
                 return metodo; 
             case "Constructor":
-                name = "constructor" + this.parametros(nodo.childNode[0].childNode[2]);
+                name = this.analizador.claseA.nombre + this.parametros(nodo.childNode[0].childNode[2]);
                 nombreMetodo = this.analizador.claseA.nombre+"_"+ name;
                 metodo = this.metodoImp(name,nodo.childNode[0].childNode[0].location);
-                this.nuevoThis(nodo.childNode[0].childNode[0].location);
+                //this.nuevoThis(nodo.childNode[0].childNode[0].location);
                 this.callPreconstructor(nodo.childNode[0].childNode[0].location);
+                metodo.escrito = true;
                 return metodo;
             case "Principal":
                 name = "Principal";
@@ -143,31 +140,50 @@ export default class metodo {
                 metodo = this.metodoImp(name,nodo.childNode[0].childNode[0].location);
                 this.nuevoThis(nodo.childNode[0].childNode[0].location);
                 this.callPreconstructor(nodo.childNode[0].childNode[0].location);
+                metodo.escrito = true;
                 return metodo;
         }
        throw this.analizador.newError("error al crear metodo",0,0);
 
     }
 
+    public constructorDefault (location:Location) {
+        let metodos = this.metodoImp(this.analizador.claseA.nombre,location);
+        this.nuevoThis(location);
+        this.callPreconstructor(location);
+        this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo"+metodos.id),
+         location.last_column,location.first_line);
+         this.analizador.claseA.tabla.disminuirAmbito();
+    }
     private callPreconstructor(location:Location) {
         let _Preconstructor = this.analizador.claseA.buscarMetodo("preconstructor");
         this.analizador.agregarCodigo(this.analizador.llamarMetodo("metodo"+_Preconstructor.id),location.last_column,location.first_line);
 
     }
     //solo se agrega una posicion ppara poder apuntar al this
-    private nuevoThis(location:Location) {
+    public nuevoThis(location:Location) {
         let t1 = this.analizador.newTemporal();
+        let t2 = this.analizador.newTemporal();
+        let coment = this.analizador.genComentario("guardar this en retorno de metodo "+ this.analizador.claseA.nombre)
         this.analizador.agregarCodigo(
-            this.analizador.genOperacion("+","ptr",1+"",t1),location.last_column,location.first_line
+            this.analizador.genOperacion("+","ptr",0+"",t1),location.last_column,location.first_line
         );
         this.analizador.agregarCodigo(
-            this.analizador.saveEnPila(t1,"heap"),location.last_column,location.first_line
+            this.analizador.saveEnPila(t1,"heap")+coment,location.last_column,location.first_line 
         );
+         coment = this.analizador.genComentario("guardar this en this de metodo "+ this.analizador.claseA.nombre)
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("+","ptr",1+"",t2),location.last_column,location.first_line
+        );
+        this.analizador.agregarCodigo(
+            this.analizador.saveEnPila(t2,"heap")+coment,location.last_column,location.first_line
+        );
+        /*
         this.analizador.agregarCodigo(
             this.analizador.siguiLibreHeap(),
             location.last_column,location.first_line
         );
-        
+        */
     }
     private metodoImp(name:string, location:Location) {
         let metodo:Metodo = this.analizador.claseA.buscarMetodo(name);
@@ -249,10 +265,5 @@ export default class metodo {
         this.analizador.newError("error al crear parametro",0,0);
         return "";
     }
-
-
-    
-    
-    
 
 }

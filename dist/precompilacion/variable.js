@@ -72,7 +72,7 @@ var Variable = /** @class */ (function () {
      * var
      *: ID
      *| var '[' e ']'
-     *| ESTE '.'  ID
+     *
      * ;
      * @param nodo
      * @param tipo

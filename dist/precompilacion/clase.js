@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 var clase_1 = __importDefault(require("../parser/tablaSimbolos/clase"));
+var metodo_1 = __importDefault(require("../parser/tablaSimbolos/metodo"));
 var Clase = /** @class */ (function () {
     function Clase(recoleccion) {
         this.recoleccion = recoleccion;
@@ -24,9 +25,26 @@ var Clase = /** @class */ (function () {
             case "Clase":
                 this.recoleccion.analizador.log("crearClase a Clase: " +
                     this.clase(nodo.childNode[0]));
+                this.exixteContructor(nodo.childNode[1].location);
                 return true;
         }
         return false;
+    };
+    Clase.prototype.exixteContructor = function (location) {
+        try {
+            this.recoleccion.analizador.claseA.buscarMetodo(this.recoleccion.analizador.claseA.nombre);
+        }
+        catch (error) {
+            this.escribirContructor(location);
+        }
+    };
+    Clase.prototype.escribirContructor = function (location) {
+        var tipo = this.recoleccion.analizador.claseA.nombre;
+        var nombreMetodo = this.recoleccion.analizador.claseA.nombre;
+        var visi = this.recoleccion.analizador.PUBLICO;
+        var metodo = new metodo_1.default(nombreMetodo, visi, tipo);
+        metodo.id = this.recoleccion.analizador.getContador() + "";
+        this.recoleccion.analizador.claseA.agregarMetodo(metodo);
     };
     /**
      * Clase

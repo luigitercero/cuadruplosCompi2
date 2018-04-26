@@ -96,8 +96,8 @@ var Metodo = /** @class */ (function () {
                 this.metodo(nodo.childNode[0], visi);
                 return true;
             case "Constructor":
-                tipo = "constructor";
-                nombreMetodo = "constructor";
+                tipo = this.recoleccion.analizador.claseA.nombre;
+                nombreMetodo = this.recoleccion.analizador.claseA.nombre;
                 metodo = new metodo_1.default(nombreMetodo, visi, tipo, nodo.childNode[0].childNode[0].location.first_line);
                 metodo.id = this.recoleccion.analizador.getContador() + "";
                 this.parametros(nodo.childNode[0].childNode[2], metodo);
@@ -191,7 +191,7 @@ var Metodo = /** @class */ (function () {
   * var
   *: ID
   *| var '[' e ']'
-  *| ESTE '.'  ID
+ 
   * ;
   * @param nodo
   * @param tipo
@@ -211,14 +211,7 @@ var Metodo = /** @class */ (function () {
                 throw this.recoleccion.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
             case "var":
                 var variable = this.var(nodo.childNode[0], tipo, visibilidad, metodo);
-                var val = this.recoleccion.analizador.exp.analizar(nodo.childNode[2]);
-                if (val.tipo == this.recoleccion.analizador.INT) {
-                    variable.addDimension(+val.valor);
-                    return variable;
-                }
-                else {
-                    this.recoleccion.analizador.newError("no se pudo evaluar el tipo", nodo.childNode[1].location.first_line, nodo.childNode[1].location.last_column);
-                }
+                variable.addDimension(nodo.childNode[2]);
             default:
                 throw this.recoleccion.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
         }

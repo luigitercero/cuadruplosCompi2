@@ -2,6 +2,8 @@
 import Recoleccion from "./recoleccion";
 import Nodo from '../parser/nodo'
 import ClaseT from '../parser/tablaSimbolos/clase'
+import Location from "../parser/location";
+import Metodo from "../parser/tablaSimbolos/metodo";
 export default class Clase{
   public recoleccion: Recoleccion;
 
@@ -24,9 +26,27 @@ export default class Clase{
             case "Clase":
                 this.recoleccion.analizador.log("crearClase a Clase: "+ 
                 this.clase(nodo.childNode[0]));
+                this.exixteContructor (nodo.childNode[1].location);
                 return true;
         }
         return false;
+    }
+
+    private exixteContructor(location:Location) {
+        try {
+            this.recoleccion.analizador.claseA.buscarMetodo(this.recoleccion.analizador.claseA.nombre)
+        } catch (error) {
+            this.escribirContructor(location)
+        }
+    }
+
+    private escribirContructor(location:Location) {
+        let tipo = this.recoleccion.analizador.claseA.nombre;
+        let nombreMetodo = this.recoleccion.analizador.claseA.nombre;
+        let visi =this.recoleccion.analizador.PUBLICO;
+        let metodo = new Metodo(nombreMetodo,visi,tipo);
+        metodo.id = this.recoleccion.analizador.getContador() +"";
+        this.recoleccion.analizador.claseA.agregarMetodo(metodo);
     }
     /**
      * Clase

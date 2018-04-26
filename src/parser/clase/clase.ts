@@ -4,6 +4,7 @@ import Class from '../tablaSimbolos/clase'
 import Simbolo from "../tablaSimbolos/simbolo";
 import nodoOperacion from "../exp/operacion/nodoOperacion";
 import Metodo from "../tablaSimbolos/metodo";
+import Location from "../location";
 export default class Clase{
 
     private analizador:Analizador
@@ -23,6 +24,7 @@ export default class Clase{
             case "Clase":
                 this.analizador.log("crearClase a Clase: "+ 
                 this.clase(nodo.childNode[0]));
+                this.exixteContructor (nodo.childNode[1].location);
                 return true;
         }
         this.analizador.newError("no se pudo encontrar la clase con el nombre de "+nombre,0,0)
@@ -49,11 +51,25 @@ export default class Clase{
                 this.analizador.log("clase a clase: " +
                 this.clase(nodo.childNode[0]));
                 this.cuerpoClase(nodo.childNode[1]);
+                
                 return true;
         }
       
         this.analizador.newError("no se pudo encontrar la clase con el nombre de "+nombre,0,0)
         return false;
+    }
+    private exixteContructor(location:Location) {
+        
+        let metodo = this.analizador.claseA.buscarMetodo(this.analizador.claseA.nombre)
+        if ( metodo.escrito === false) {
+            this.escribirContructor(location)
+        }else {
+
+        }
+    }
+
+    private escribirContructor(location:Location) {
+        this.analizador.metodoA.constructorDefault(location);
     }
     /**
      * Herencia
@@ -122,17 +138,24 @@ export default class Clase{
         let id = this.analizador.getContador();
         _Precontructor.id = id+"";
         this.analizador.agregarCodigo(this.analizador.metodoBegin(id+"")+coment,0,poss);
+        coment = this.analizador.genComentario("desplazar tama;o de heap para variables de this" );
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap",this.analizador.claseA.tabla.esto.ambito.length+"","heap")+coment,0,poss);
+        
+        
         for (let index = 0; index < this.analizador.claseA.tabla.esto.ambito.length; index++) {
             const element = this.analizador.claseA.tabla.esto.ambito[index];
             let sim:Simbolo = element; 
             if (sim.dim.length > 0) {
                 this.agregarDimGlobal(sim);
+            
+                
             }
             if (element.valor.valor!= null){
                 
                 this.analizador.variable.evaluarAsignacionasignarValor(sim);
             }
         }
+        coment = this.analizador.genComentario("fin de metodo preconstructor para " + nombreClase );
         this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo"+id)+coment,0,poss);
     }
     /**
@@ -154,11 +177,11 @@ export default class Clase{
         }
         if (op.simbolo.tam > 0) {
             this.analizador.agregarCodigo(this.analizador.genComentario("desplazamiento de variable a psoicion de valores"),op.column,op.fila);
-            let temp =  this.analizador.variable.obtenerValorVariable(op.simbolo.getNombre(),op.column,op.fila);
+            let temp =  this.analizador.variable.obtenerValorVariable(op.simbolo.getNombre(),op.fila,op.column,);
             
-            this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.done,op.temp),op.column,op.fila);
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.val,op.temp),op.column,op.fila);
             this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap",op.temp,"heap"),op.column,op.fila);
-            this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap",1+"","heap"),op.column,op.fila);
+            //this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap",1+"","heap"),op.column,op.fila);
         }
     }
 

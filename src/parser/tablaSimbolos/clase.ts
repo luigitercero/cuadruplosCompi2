@@ -3,6 +3,7 @@ import Metodo from "./metodo";
 import Ambito from "./ambito";
 import Simbolo from "./simbolo";
 import { text } from "body-parser";
+import { error } from "util";
 
 export default class Clase{
     public nombre :string;
@@ -29,7 +30,7 @@ export default class Clase{
         let global = new Ambito();
         global.prefijo = this.nombre;
         global.agregarSimbolo(new Simbolo("retorno","publico","todo"));
-        global.agregarSimbolo(new Simbolo("esto","publico",this.nombre));
+        global.agregarSimbolo(new Simbolo("este","publico",this.nombre));
         this.tabla.Lista.push(global);
     }
     public agregarMetodo(metodo:Metodo){
@@ -71,21 +72,31 @@ export default class Clase{
 
     }
 
-    buscarSimbolo(nombre:string):Simbolo {
-        let simbolo:Simbolo|null = this.tabla.buscarEnPila( nombre.toLocaleLowerCase());
-        if (  simbolo != null){
-            return simbolo
+    buscarSimbolo(nombre:string, inicio?:string):Simbolo {
 
+        if (inicio === undefined){
+            let simbolo:Simbolo|null = this.tabla.buscarEnPila( nombre.toLocaleLowerCase());
+            if (  simbolo != null){
+                return simbolo
+
+            }else {
+                simbolo =  this.tabla.buscarEnHeap( nombre.toLocaleLowerCase());
+                if (simbolo != null) {
+
+                  return simbolo
+
+                }
+            }
         }else {
-            simbolo =  this.tabla.buscarEnHeap( nombre.toLocaleLowerCase());
+            let simbolo =  this.tabla.buscarEnHeap( nombre.toLocaleLowerCase());
             if (simbolo != null) {
-                
+
               return simbolo
-                
+
             }
         }
        
-       return new Simbolo("","","3517442");
+       throw  error("no es posible encontrar variable")
     }
 
     buscarSimboloenEsto(nombre:string):Simbolo {

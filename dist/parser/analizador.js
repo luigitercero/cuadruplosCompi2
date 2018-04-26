@@ -51,8 +51,7 @@ var Analizador = /** @class */ (function (_super) {
                 return element;
             }
         }
-        this.newError("no se pudo encontrar la clase con el nombre de " + nombre, 0, 0);
-        return new clase_1.default("", 0);
+        throw this.newError("no se pudo encontrar la clase con el nombre de " + nombre, 0, 0);
     };
     Analizador.prototype.verClaseA = function () {
         console.log("---------Obeservando ClaseA-----------");

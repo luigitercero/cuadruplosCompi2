@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tabla_1 = __importDefault(require("./tabla"));
 var ambito_1 = __importDefault(require("./ambito"));
 var simbolo_1 = __importDefault(require("./simbolo"));
+var util_1 = require("util");
 var Clase = /** @class */ (function () {
     function Clase(nombre, poss) {
         this.nombre = nombre.toLocaleLowerCase();
@@ -23,7 +24,7 @@ var Clase = /** @class */ (function () {
         var global = new ambito_1.default();
         global.prefijo = this.nombre;
         global.agregarSimbolo(new simbolo_1.default("retorno", "publico", "todo"));
-        global.agregarSimbolo(new simbolo_1.default("esto", "publico", this.nombre));
+        global.agregarSimbolo(new simbolo_1.default("este", "publico", this.nombre));
         this.tabla.Lista.push(global);
     };
     Clase.prototype.agregarMetodo = function (metodo) {
@@ -60,18 +61,26 @@ var Clase = /** @class */ (function () {
         }
         return false;
     };
-    Clase.prototype.buscarSimbolo = function (nombre) {
-        var simbolo = this.tabla.buscarEnPila(nombre.toLocaleLowerCase());
-        if (simbolo != null) {
-            return simbolo;
+    Clase.prototype.buscarSimbolo = function (nombre, inicio) {
+        if (inicio === undefined) {
+            var simbolo = this.tabla.buscarEnPila(nombre.toLocaleLowerCase());
+            if (simbolo != null) {
+                return simbolo;
+            }
+            else {
+                simbolo = this.tabla.buscarEnHeap(nombre.toLocaleLowerCase());
+                if (simbolo != null) {
+                    return simbolo;
+                }
+            }
         }
         else {
-            simbolo = this.tabla.buscarEnHeap(nombre.toLocaleLowerCase());
+            var simbolo = this.tabla.buscarEnHeap(nombre.toLocaleLowerCase());
             if (simbolo != null) {
                 return simbolo;
             }
         }
-        return new simbolo_1.default("", "", "3517442");
+        throw util_1.error("no es posible encontrar variable");
     };
     Clase.prototype.buscarSimboloenEsto = function (nombre) {
         var simbolo;

@@ -77,7 +77,7 @@ export default class Variable {
      * var  
      *: ID
      *| var '[' e ']' 
-     *| ESTE '.'  ID
+     *
      * ;
      * @param nodo 
      * @param tipo 

@@ -42,11 +42,11 @@ var FormatoItermedio = /** @class */ (function () {
         this.codigo4D.metodo.push({ 'metodo': "metodo" + this.contador, 'poss': this.poss });
         return this.contador;
     };
-    FormatoItermedio.prototype.agregarCodigo = function (codigo, column, line) {
+    FormatoItermedio.prototype.agregarCodigo = function (codigo, column, linea) {
         this.codigoIntermedio = this.codigoIntermedio + codigo + "\n";
-        this.codigo4D.C4D.push({ 'poss': this.poss, 'codigo': codigo, 'columna': column, 'linea': line });
+        this.codigo4D.C4D.push({ 'poss': this.poss, 'codigo': codigo, 'columna': column, 'linea': linea });
         this.poss++;
-        console.log("#" + codigo, ' columna: ' + column + ' linea: ' + line);
+        console.log("#" + codigo, ' columna: ' + column + ' linea: ' + linea);
     };
     FormatoItermedio.prototype.siguiLibreHeap = function () {
         return this.genOperacion("+", "heap", 1 + "", "heap");

@@ -12,12 +12,14 @@ export default class InfVarible {
     public location:Location|any
     public tam:number;
     public dir:string;
+    public val:string|any;
     constructor(temporal:string, done:string,simbolo:Simbolo) {
         this.temporal = temporal;
         this.done = done;
         this.simbolo = simbolo;
         this.tam = 0;
         this.dir = temporal;
+        
 
     }
     addLocation(locatio:Location){

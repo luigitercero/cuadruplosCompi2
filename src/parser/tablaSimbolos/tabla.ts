@@ -28,7 +28,7 @@ export default class Tabla {
 
     addReturnAndThis(estoTipo:string,tipo:string){
         let retorno = new Simbolo("retorno","",tipo.toLocaleLowerCase());
-        let _esto = new Simbolo("esto","",estoTipo.toLocaleLowerCase());
+        let _esto = new Simbolo("este","",estoTipo.toLocaleLowerCase());
         this.agregarSimboloApila(retorno);
         this.agregarSimboloApila(_esto);
     }

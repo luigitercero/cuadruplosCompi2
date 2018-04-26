@@ -18,6 +18,7 @@ var Metodo = /** @class */ (function (_super) {
     __extends(Metodo, _super);
     function Metodo(nombre, visibilidad, tipo, possAmbito) {
         var _this = _super.call(this, nombre.toLocaleLowerCase(), visibilidad.toLowerCase(), tipo.toLocaleLowerCase()) || this;
+        _this.escrito = false;
         _this.id = nombre.toLocaleLowerCase();
         _this.nomMetodo = nombre.toLocaleLowerCase();
         _this.parametro = new Array();
