@@ -4,6 +4,7 @@ import Ambito from "./ambito";
 import Simbolo from "./simbolo";
 import { text } from "body-parser";
 import { error } from "util";
+import Location from "../location";
 
 export default class Clase{
     public nombre :string;
@@ -51,14 +52,20 @@ export default class Clase{
         console.log("/*****terminal las variables de la clase "  +this.nombre + "*****/");
     }
     
-    public buscarMetodo(nombre:string):Metodo{
+    public buscarMetodo(nombre:string,location?:Location):Metodo{
         for (let index = 0; index < this.metodo.length; index++) {
             const element = this.metodo[index];
             if (element.nomMetodo ==  nombre.toLocaleLowerCase()){
                 return element;
             }
         }   
-        throw new Error("error al querer obterner el metodo");
+        if (location == undefined){
+            throw new Error("error al querer obterner el metodo");
+        }else 
+        {
+            throw new Error("error al querer obterner el metodo " +" columna "+location.last_column + " line " +location.first_line);
+        }
+        
     }
 
     public existeMetodo(nombre:string):boolean {
@@ -72,7 +79,7 @@ export default class Clase{
 
     }
 
-    buscarSimbolo(nombre:string, inicio?:string):Simbolo {
+    buscarSimbolo(nombre:string, inicio?:string,location?:Location):Simbolo {
 
         if (inicio === undefined){
             let simbolo:Simbolo|null = this.tabla.buscarEnPila( nombre.toLocaleLowerCase());
@@ -95,8 +102,11 @@ export default class Clase{
 
             }
         }
+        if (location!=null) {
+            throw new Error("no es posible encontrar la variable " + nombre +" linea : "+ location.first_line+" columna: "+location.last_column)
+        }
        
-       throw  error("no es posible encontrar variable")
+       throw  new Error("no es posible encontrar variable")
     }
 
     buscarSimboloenEsto(nombre:string):Simbolo {

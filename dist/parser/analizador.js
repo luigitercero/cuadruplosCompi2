@@ -34,6 +34,37 @@ var Analizador = /** @class */ (function (_super) {
         _this.clas = new clase_2.default(_this);
         return _this;
     }
+    Analizador.prototype.getAmbito = function () {
+        var ambito = [];
+        for (var index = 0; index < this.claseA.tabla.Lista.length; index++) {
+            var element = this.claseA.tabla.Lista[index];
+            for (var index_1 = 0; index_1 < element.ambito.length; index_1++) {
+                var datos = [];
+                var simbolo = element.ambito[index_1];
+                datos.push(simbolo.getNombre());
+                datos.push(simbolo.getTipo());
+                datos.push(simbolo.getVisibilidad());
+                datos.push(simbolo.getTamanio());
+                datos.push(simbolo.possAmbito);
+                datos.push(simbolo.linea);
+                datos.push("ptr");
+                ambito.push(datos);
+            }
+        }
+        for (var index = 0; index < this.claseA.tabla.esto.ambito.length; index++) {
+            var simbolo = this.claseA.tabla.esto.ambito[index];
+            var datos = [];
+            datos.push(simbolo.getNombre());
+            datos.push(simbolo.getTipo());
+            datos.push(simbolo.getVisibilidad());
+            datos.push(simbolo.getTamanio());
+            datos.push(simbolo.possAmbito);
+            datos.push(simbolo.linea);
+            datos.push("heap");
+            ambito.push(datos);
+        }
+        return ambito;
+    };
     Analizador.prototype.verTodasLasClases = function () {
         console.log("---------Obeservando clasese-----------");
         for (var index = 0; index < this.clases.length; index++) {
@@ -43,7 +74,7 @@ var Analizador = /** @class */ (function (_super) {
         }
         console.log("---------Fin Obeservando clasese-----------");
     };
-    Analizador.prototype.buscarClase = function (nombre) {
+    Analizador.prototype.buscarClase = function (nombre, navegar) {
         for (var index = 0; index < this.clases.length; index++) {
             var element = this.clases[index];
             if (element.nombre == nombre) {
@@ -51,7 +82,12 @@ var Analizador = /** @class */ (function (_super) {
                 return element;
             }
         }
-        throw this.newError("no se pudo encontrar la clase con el nombre de " + nombre, 0, 0);
+        if (navegar == null) {
+            throw this.newError("no se pudo encontrar la clase con el nombre de " + nombre, 0, 0);
+        }
+        else {
+            throw this.newError("no se pudo encontrar la clase con el nombre de " + nombre + "variable", navegar.fila, navegar.column);
+        }
     };
     Analizador.prototype.verClaseA = function () {
         console.log("---------Obeservando ClaseA-----------");

@@ -8,6 +8,7 @@ import Cuerpo from './cuerpo'
 import Location from '../location';
 import Tabla from '../tablaSimbolos/tabla';
 import Salida from './control/nodoSalida';
+import nodoOperacion from '../exp/operacion/nodoOperacion';
 export default class metodo {
  public analizador: Analizador;
 
@@ -127,18 +128,29 @@ export default class metodo {
                 metodo.escrito = true;
                 return metodo; 
             case "Constructor":
-                name = this.analizador.claseA.nombre + this.parametros(nodo.childNode[0].childNode[2]);
-                nombreMetodo = this.analizador.claseA.nombre+"_"+ name;
-                metodo = this.metodoImp(name,nodo.childNode[0].childNode[0].location);
-                //this.nuevoThis(nodo.childNode[0].childNode[0].location);
-                this.callPreconstructor(nodo.childNode[0].childNode[0].location);
-                metodo.escrito = true;
-                return metodo;
+                let cons = nodo.childNode[0].childNode[0].token.toLowerCase()
+                if (cons == this.analizador.claseA.nombre){
+                    name = this.analizador.claseA.nombre + this.parametros(nodo.childNode[0].childNode[2]);
+                    nombreMetodo = this.analizador.claseA.nombre+"_"+ name;
+                    metodo = this.metodoImp(name,nodo.childNode[0].childNode[0].location);
+                    //this.nuevoThis(nodo.childNode[0].childNode[0].location);
+                    this.callPreconstructor(nodo.childNode[0].childNode[0].location);
+                    metodo.escrito = true;
+                    return metodo;
+                }else {
+                    this.analizador.newError("error esto no es un contructor",
+                    nodo.childNode[0].childNode[0].location.first_line,
+                    nodo.childNode[0].childNode[0].location.last_column
+                );
+                }
+               break;
+                
             case "Principal":
                 name = "Principal";
+
                 this.analizador.setStart();
                 metodo = this.metodoImp(name,nodo.childNode[0].childNode[0].location);
-                this.nuevoThis(nodo.childNode[0].childNode[0].location);
+                this.nuevoThis(nodo.childNode[0].childNode[0].location,this.analizador.claseA.nombre,0);
                 this.callPreconstructor(nodo.childNode[0].childNode[0].location);
                 metodo.escrito = true;
                 return metodo;
@@ -149,7 +161,7 @@ export default class metodo {
 
     public constructorDefault (location:Location) {
         let metodos = this.metodoImp(this.analizador.claseA.nombre,location);
-        this.nuevoThis(location);
+        this.nuevoThis(location,this.analizador.claseA.nombre,0);
         this.callPreconstructor(location);
         this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo"+metodos.id),
          location.last_column,location.first_line);
@@ -161,19 +173,21 @@ export default class metodo {
 
     }
     //solo se agrega una posicion ppara poder apuntar al this
-    public nuevoThis(location:Location) {
+    public nuevoThis(location:Location,objeto:string,ptr:number) {
         let t1 = this.analizador.newTemporal();
         let t2 = this.analizador.newTemporal();
+    
         let coment = this.analizador.genComentario("guardar this en retorno de metodo "+ this.analizador.claseA.nombre)
         this.analizador.agregarCodigo(
-            this.analizador.genOperacion("+","ptr",0+"",t1),location.last_column,location.first_line
+            this.analizador.genOperacion("+","ptr",ptr+"",t1),location.last_column,location.first_line
         );
+        ptr++;
         this.analizador.agregarCodigo(
             this.analizador.saveEnPila(t1,"heap")+coment,location.last_column,location.first_line 
         );
          coment = this.analizador.genComentario("guardar this en this de metodo "+ this.analizador.claseA.nombre)
         this.analizador.agregarCodigo(
-            this.analizador.genOperacion("+","ptr",1+"",t2),location.last_column,location.first_line
+            this.analizador.genOperacion("+","ptr",ptr+"",t2),location.last_column,location.first_line
         );
         this.analizador.agregarCodigo(
             this.analizador.saveEnPila(t2,"heap")+coment,location.last_column,location.first_line
@@ -184,6 +198,8 @@ export default class metodo {
             location.last_column,location.first_line
         );
         */
+
+        return new nodoOperacion("heap",objeto,location.last_column,location.first_line)
     }
     private metodoImp(name:string, location:Location) {
         let metodo:Metodo = this.analizador.claseA.buscarMetodo(name);

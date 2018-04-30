@@ -224,7 +224,7 @@ var Operacion = /** @class */ (function () {
         var term = nodo.term;
         switch (term) {
             case "NULL":
-                return new nodoOperacion_2.default("nada", 35174492 + "", nodo.location.last_column, nodo.location.first_line);
+                return new nodoOperacion_2.default(this.analizador.NULL, this.analizador.NULL, nodo.location.last_column, nodo.location.first_line);
             case "Datos":
                 return this.resolverDatos(nodo);
         }

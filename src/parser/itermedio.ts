@@ -11,7 +11,7 @@ export default class FormatoItermedio{
     private poss:number;//cuenta por que linea voy escribiendo 
     private contador:number//cuenta los mentodos
     public codigo4D = {
-        'C4D':[{'poss':-1,'codigo':"",'columna':-1,'linea':-1,}],
+        'C4D':[{'poss':-1,'codigo':"",'columna':-1, 'linea':-1, 'ambito':""}],
         'state':true,
         'etiqueta':[{'etiqueta':"",'poss':-1}],
         'metodo' :[{'metodo':"",'poss':-1}],
@@ -21,6 +21,16 @@ export default class FormatoItermedio{
     };
     public get3D(){
         return this.codigo4D;
+    }
+
+    public gen3D() {
+        let salida = "";
+        for (let index = 1; index < this.codigo4D.C4D.length; index++) {
+            const element = this.codigo4D.C4D[index];
+            salida = salida + element.codigo + "\n";
+        }
+        return salida ;
+
     }
     setFinal() {
         this.codigo4D.end = this.poss;
@@ -33,11 +43,16 @@ export default class FormatoItermedio{
     }
     public agregarCodigo(codigo:string,column:number|-1,linea:number|-1){
         this.codigoIntermedio  = this.codigoIntermedio + codigo+"\n";
-        this.codigo4D.C4D.push({'poss':this.poss,'codigo':codigo,'columna':column,'linea':linea});
+        let a = this.getAmbito ();
+        this.codigo4D.C4D.push({'poss':this.poss,'codigo':codigo,'columna':column,'linea':linea,
+        'ambito':a
+        });
         this.poss ++;
         console.log("#"+codigo,' columna: '+column +' linea: ' +linea );
     }
-
+    protected getAmbito ():string {
+        return "";
+    }
     public siguiLibreHeap() {
         return this.genOperacion("+","heap",1+"","heap")
     }
@@ -144,13 +159,13 @@ export default class FormatoItermedio{
                 salida = element; 
                 let a =  element.replace("L","");
                 this.codigo4D.etiqueta[+a] ={"etiqueta":element,"poss":this.poss};
-               
                 }
             else {salida = salida + "," +element;
             let a =  element.replace("L","");
             this.codigo4D.etiqueta[+a] ={"etiqueta":element,"poss":this.poss};
             } 
-        }); if(salida != ""){
+        }); 
+        if(salida != ""){
             return (salida + ":");
         }else {return ""}
         

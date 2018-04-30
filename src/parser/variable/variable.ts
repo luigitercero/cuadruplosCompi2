@@ -38,6 +38,7 @@ export default class Variable{
         let navegar;
         switch(term) {
             case "var" :
+
             variable = this.analizador.variable.var(nodo.childNode[0]);
             return this.gerVal( variable);
              case "getMetodo" :
@@ -61,7 +62,52 @@ export default class Variable{
         throw this.analizador.newError("error en identi",0,0);
     }
 
-  
+      /**
+     *Navegar
+     *: var '.'
+     *| var '->'
+     *| this .
+     *| getMetodo '.'
+     *| getMetodo '->'
+     *| Navegar var '.'
+     *| Navegar  getMetodo '.'
+     *| Navegar var '->'
+     *| Navegar  getMetodo '->'
+     *| 
+     *;
+    */
+    public navegar(nodo:Nodo):nodoOperacion {
+        let term = nodo.childNode[0].term
+        let variable:Dir;
+        let navegarNodo:NodoNavegar;
+        let op;
+        let valor;
+        let location;
+        let navegar;
+        switch (term) {
+            case "var":
+            variable = this.analizador.variable.var(nodo.childNode[0]);
+            return this.analizador.variable.gerVal( variable);
+            case "ESTE":
+            variable = this.analizador.variable.obtenerDirVariable("este",nodo.childNode[0].location.first_line,nodo.childNode[0].location.last_column);
+            location = nodo.childNode[1].location;
+        
+            variable.addLocation(nodo.childNode[0].location);
+            return this.analizador.variable.gerVal( variable);
+            case "getMetodo":
+            return this.analizador.variable.getmetodo(nodo.childNode[0])
+            case "Navegar":
+            let temp = this.analizador.claseA;
+            let identi = this.navegar(nodo.childNode[0]);
+            let op = this.analizador.variable.identiObjec(nodo.childNode[1],identi,nodo.childNode[2].location);
+            this.analizador.claseA = temp;
+            return op;
+            
+        }
+
+        throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas",0,0);
+    }
+    
 
 
     /**
@@ -98,7 +144,9 @@ export default class Variable{
     /**este deberia jalar retotno */
     getmetodo(nodo:Nodo,esto?:nodoOperacion):nodoOperacion {
         let l = nodo.childNode[0].location;
+        let clase =  this.analizador.claseA
         let metodo:Metodo = this.analizador.cuerpo.getMetodo(nodo,esto);//aqui es donde escribe el codigo
+        this.analizador.claseA = clase;
         let tam  = this.analizador.claseA.tabla.ptr;
         let t1 = this.analizador.newTemporal();
         let t2 = this.analizador.newTemporal();
@@ -107,7 +155,7 @@ export default class Variable{
 
         this.analizador.agregarCodigo(mov,l.last_column,l.first_line);
         this.analizador.agregarCodigo(getR,l.last_column,l.first_line);
-       
+       this.analizador.claseA = clase;
         return  new nodoOperacion(t2,metodo.getTipo(),l.last_column,l.first_line);
     }
     /**
@@ -124,14 +172,14 @@ export default class Variable{
         let term = nodo.childNode[0].term;
         let nombre:string;
         let location;
-        let simbolo
+        //let simbolo
         let valor:nodoOperacion;
         let variable:Dir;
         switch(term) {
             case "ID":
                 nombre = nodo.childNode[0].token;
                 location = nodo.childNode[0].location;
-                simbolo  = this.analizador.claseA.buscarSimbolo(nombre,inicio);
+               // simbolo  = this.analizador.claseA.buscarSimbolo(nombre,inicio,location);
                 //Obtener direccion de la variable
                 variable = this.analizador.variable.obtenerDirVariable(nombre,location.first_line,location.last_column,inicio);
                 variable.addLocation(location);
@@ -248,6 +296,11 @@ export default class Variable{
             cuadruplo =  this.analizador.getEnPila(
                     varibale.temporal,temp
                 );
+        }else {
+            cuadruplo =  this.analizador.getEnHeap(
+                varibale.done,temp
+            );
+
         }
         this.analizador.agregarCodigo(cuadruplo,varibale.location.last_column, varibale.location.first_line);
         return temp;
@@ -270,6 +323,34 @@ export default class Variable{
     /**
      * AGREGANDO VALOR A VARIABLES DESPUES DE DECLARARSE
      */
+
+    public incializar(simbolo:Simbolo,location:Location,inicio?:string) {
+        let tipo = simbolo.getTipo();
+        let escritura = "";
+        let temp = this.obtenerDirVariable(simbolo.getNombre(),location.first_line,location.last_column,inicio);
+        if (simbolo.dim.length > 0){
+            return;
+        }
+        switch (tipo) {
+            case this.analizador.INT:
+                this.setValVariable(temp,new nodoOperacion("0",simbolo.getTipo(),
+                location.last_column,location.first_line),location,inicio);
+            break;
+            case this.analizador.DOUBLE:
+                this.setValVariable(temp,new nodoOperacion("0",simbolo.getTipo(),
+                location.last_column,location.first_line),location,inicio);
+                break;
+            case this.analizador.CARACTER:
+                this.setValVariable(temp,new nodoOperacion("0",simbolo.getTipo(),
+                location.last_column,location.first_line),location,inicio);
+                break;
+            default :
+                this.setValVariable(temp,new nodoOperacion(this.analizador.NULL,simbolo.getTipo(),
+                location.last_column,location.first_line),location,inicio);
+                break;
+        }
+
+    }
     public evaluarAsignacionasignarValor(simbolo:Simbolo){
         let nodo :Nodo = simbolo.valor.getNodo();
         let nombre = nodo.term;
@@ -365,12 +446,12 @@ export default class Variable{
             }
         } else {
                 let t = this.validarPossdeArreglo(simbolo,location);
-                let temp = this.analizador.newTemporal();
-                this.analizador.agregarCodigo(
+                //let temp = this.analizador.newTemporal();
+                /*this.analizador.agregarCodigo(
                     this.analizador.genOperacion('+',inicio,t,temp)+comentario,
                      location.last_column,location.first_line
-                );
-                this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp,val)+comentario,location.last_column,location.first_line);
+                );*/
+                this.analizador.agregarCodigo(this.analizador.saveEnHeap(t,val)+comentario,location.last_column,location.first_line);
                 return true;
         }
        throw this.analizador.newError("error al cambiar variables " +simbolo.simbolo.getNombre() +" ",location.first_line,location.last_column);

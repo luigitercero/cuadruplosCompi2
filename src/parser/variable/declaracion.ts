@@ -124,6 +124,7 @@ export default class Declaracion extends Asignacion{
                     this.analizador.claseA.tabla.agregarSimboloApila(s);
                     let op = new nodoOperacion("","",nodo.childNode[0].location.last_column,nodo.childNode[0].location.first_line);
                     op.simbolo = s;
+                    op.simbolo.setLocacion_declaracion(nodo.childNode[0].location);
                     return  op;
                 }
                 throw this.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column,nodo.childNode[0].location.first_line)

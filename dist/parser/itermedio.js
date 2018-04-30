@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var FormatoItermedio = /** @class */ (function () {
     function FormatoItermedio() {
         this.codigo4D = {
-            'C4D': [{ 'poss': -1, 'codigo': "", 'columna': -1, 'linea': -1, }],
+            'C4D': [{ 'poss': -1, 'codigo': "", 'columna': -1, 'linea': -1, 'ambito': "" }],
             'state': true,
             'etiqueta': [{ 'etiqueta': "", 'poss': -1 }],
             'metodo': [{ 'metodo': "", 'poss': -1 }],
@@ -33,6 +33,14 @@ var FormatoItermedio = /** @class */ (function () {
     FormatoItermedio.prototype.get3D = function () {
         return this.codigo4D;
     };
+    FormatoItermedio.prototype.gen3D = function () {
+        var salida = "";
+        for (var index = 1; index < this.codigo4D.C4D.length; index++) {
+            var element = this.codigo4D.C4D[index];
+            salida = salida + element.codigo + "\n";
+        }
+        return salida;
+    };
     FormatoItermedio.prototype.setFinal = function () {
         this.codigo4D.end = this.poss;
     };
@@ -44,9 +52,15 @@ var FormatoItermedio = /** @class */ (function () {
     };
     FormatoItermedio.prototype.agregarCodigo = function (codigo, column, linea) {
         this.codigoIntermedio = this.codigoIntermedio + codigo + "\n";
-        this.codigo4D.C4D.push({ 'poss': this.poss, 'codigo': codigo, 'columna': column, 'linea': linea });
+        var a = this.getAmbito();
+        this.codigo4D.C4D.push({ 'poss': this.poss, 'codigo': codigo, 'columna': column, 'linea': linea,
+            'ambito': a
+        });
         this.poss++;
         console.log("#" + codigo, ' columna: ' + column + ' linea: ' + linea);
+    };
+    FormatoItermedio.prototype.getAmbito = function () {
+        return "";
     };
     FormatoItermedio.prototype.siguiLibreHeap = function () {
         return this.genOperacion("+", "heap", 1 + "", "heap");

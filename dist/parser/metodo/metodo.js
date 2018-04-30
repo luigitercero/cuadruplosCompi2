@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var tabla_1 = __importDefault(require("../tablaSimbolos/tabla"));
 var nodoSalida_1 = __importDefault(require("./control/nodoSalida"));
+var nodoOperacion_1 = __importDefault(require("../exp/operacion/nodoOperacion"));
 var metodo = /** @class */ (function () {
     function metodo(analizador) {
         this.analizador = analizador;
@@ -111,18 +112,25 @@ var metodo = /** @class */ (function () {
                 metodo.escrito = true;
                 return metodo;
             case "Constructor":
-                name = this.analizador.claseA.nombre + this.parametros(nodo.childNode[0].childNode[2]);
-                nombreMetodo = this.analizador.claseA.nombre + "_" + name;
-                metodo = this.metodoImp(name, nodo.childNode[0].childNode[0].location);
-                //this.nuevoThis(nodo.childNode[0].childNode[0].location);
-                this.callPreconstructor(nodo.childNode[0].childNode[0].location);
-                metodo.escrito = true;
-                return metodo;
+                var cons = nodo.childNode[0].childNode[0].token.toLowerCase();
+                if (cons == this.analizador.claseA.nombre) {
+                    name = this.analizador.claseA.nombre + this.parametros(nodo.childNode[0].childNode[2]);
+                    nombreMetodo = this.analizador.claseA.nombre + "_" + name;
+                    metodo = this.metodoImp(name, nodo.childNode[0].childNode[0].location);
+                    //this.nuevoThis(nodo.childNode[0].childNode[0].location);
+                    this.callPreconstructor(nodo.childNode[0].childNode[0].location);
+                    metodo.escrito = true;
+                    return metodo;
+                }
+                else {
+                    this.analizador.newError("error esto no es un contructor", nodo.childNode[0].childNode[0].location.first_line, nodo.childNode[0].childNode[0].location.last_column);
+                }
+                break;
             case "Principal":
                 name = "Principal";
                 this.analizador.setStart();
                 metodo = this.metodoImp(name, nodo.childNode[0].childNode[0].location);
-                this.nuevoThis(nodo.childNode[0].childNode[0].location);
+                this.nuevoThis(nodo.childNode[0].childNode[0].location, this.analizador.claseA.nombre, 0);
                 this.callPreconstructor(nodo.childNode[0].childNode[0].location);
                 metodo.escrito = true;
                 return metodo;
@@ -131,7 +139,7 @@ var metodo = /** @class */ (function () {
     };
     metodo.prototype.constructorDefault = function (location) {
         var metodos = this.metodoImp(this.analizador.claseA.nombre, location);
-        this.nuevoThis(location);
+        this.nuevoThis(location, this.analizador.claseA.nombre, 0);
         this.callPreconstructor(location);
         this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo" + metodos.id), location.last_column, location.first_line);
         this.analizador.claseA.tabla.disminuirAmbito();
@@ -141,14 +149,15 @@ var metodo = /** @class */ (function () {
         this.analizador.agregarCodigo(this.analizador.llamarMetodo("metodo" + _Preconstructor.id), location.last_column, location.first_line);
     };
     //solo se agrega una posicion ppara poder apuntar al this
-    metodo.prototype.nuevoThis = function (location) {
+    metodo.prototype.nuevoThis = function (location, objeto, ptr) {
         var t1 = this.analizador.newTemporal();
         var t2 = this.analizador.newTemporal();
         var coment = this.analizador.genComentario("guardar this en retorno de metodo " + this.analizador.claseA.nombre);
-        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", 0 + "", t1), location.last_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", ptr + "", t1), location.last_column, location.first_line);
+        ptr++;
         this.analizador.agregarCodigo(this.analizador.saveEnPila(t1, "heap") + coment, location.last_column, location.first_line);
         coment = this.analizador.genComentario("guardar this en this de metodo " + this.analizador.claseA.nombre);
-        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", 1 + "", t2), location.last_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", ptr + "", t2), location.last_column, location.first_line);
         this.analizador.agregarCodigo(this.analizador.saveEnPila(t2, "heap") + coment, location.last_column, location.first_line);
         /*
         this.analizador.agregarCodigo(
@@ -156,6 +165,7 @@ var metodo = /** @class */ (function () {
             location.last_column,location.first_line
         );
         */
+        return new nodoOperacion_1.default("heap", objeto, location.last_column, location.first_line);
     };
     metodo.prototype.metodoImp = function (name, location) {
         var metodo = this.analizador.claseA.buscarMetodo(name);

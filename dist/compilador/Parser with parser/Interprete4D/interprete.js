@@ -15,6 +15,8 @@ var Interprete = /** @class */ (function () {
         this.p.parser.struct.temporal = inteprete.temporal;
         this.S = inteprete.start;
         this.end = inteprete.end;
+        this.index = this.S;
+        this.ambito = [];
     }
     Interprete.prototype.start = function () {
         console.log("Iniciando lectura de cuadruplo");
@@ -27,13 +29,73 @@ var Interprete = /** @class */ (function () {
                 this.p.parser.indice.valor = index;
                 this.p.parser.struct.op.linea = index;
                 this.p.parse(this.p.parser.struct.codigo[index].codigo);
-                index = this.p.parser.indice.valor;
-                if (index < 0) {
+                this.index = this.p.parser.indice.valor;
+                this.ambito = this.p.parser.struct.codigo[index].ambito;
+                if (this.index < 0) {
                     break;
                 }
+                console.log("#" + this.p.parser.struct.codigo[this.index].codigo, this.p.parser.struct.codigo[this.index].linea, this.p.parser.struct.codigo[this.index].columna);
             }
             console.log("felicidades a termindo la lectura de cuadruplo");
         }
+    };
+    Interprete.prototype.seguir = function (data) {
+        var tam = this.p.parser.struct.codigo.length;
+        while (this.index != -1) {
+            this.p.parser.indice.valor = this.index;
+            this.p.parser.struct.op.linea = this.index;
+            this.p.parse(this.p.parser.struct.codigo[this.index].codigo);
+            this.index = this.p.parser.indice.valor;
+            this.ambito = this.p.parser.struct.codigo[this.index].ambito;
+            if (this.index == -1) {
+                break;
+            }
+            console.log("#" + this.p.parser.struct.codigo[this.index].codigo, this.p.parser.struct.codigo[this.index].linea, this.p.parser.struct.codigo[this.index].columna);
+            var codigo = this.p.parser.struct.codigo[this.index];
+            for (var index2 = 0; index2 < data.length; index2++) {
+                var element = data[index2];
+                if (codigo.linea == element) {
+                    var arreglo_1 = [];
+                    arreglo_1.push(codigo.poss);
+                    arreglo_1.push(codigo.codigo);
+                    arreglo_1.push(codigo.columna);
+                    arreglo_1.push(codigo.linea);
+                    this.index++;
+                    return arreglo_1;
+                }
+            }
+            this.index++;
+        }
+        var linea = this.p.parser.struct.codigo[this.end];
+        var arreglo = [];
+        arreglo.push(linea.poss);
+        arreglo.push(linea.codigo);
+        arreglo.push(linea.columna);
+        arreglo.push(linea.linea);
+        this.index++;
+        console.log("felicidades a termindo la lectura de cuadruplo");
+        return arreglo;
+    };
+    Interprete.prototype.siguiente = function () {
+        if (this.index > 0) {
+            this.p.parser.indice.valor = this.index;
+            this.p.parser.struct.op.linea = this.index;
+            this.p.parse(this.p.parser.struct.codigo[this.index].codigo);
+            this.index = this.p.parser.indice.valor;
+            this.index++;
+            console.log(this.p.parser.struct.codigo[this.index].codigo, this.p.parser.struct.codigo[this.index].linea, this.p.parser.struct.codigo[this.index].columna);
+            this.ambito = this.p.parser.struct.codigo[this.index].ambito;
+        }
+        else {
+            console.log("fin de siguiente");
+        }
+        var linea = this.p.parser.struct.codigo[this.index];
+        var arreglo = [];
+        arreglo.push(linea.poss);
+        arreglo.push(linea.codigo);
+        arreglo.push(linea.columna);
+        arreglo.push(linea.linea);
+        return arreglo;
     };
     return Interprete;
 }());

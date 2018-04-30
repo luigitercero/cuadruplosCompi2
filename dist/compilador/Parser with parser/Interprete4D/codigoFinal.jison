@@ -103,9 +103,9 @@ Op
     |'-' ',' Dato ',' Dato ',' TEMPORAL{parser.struct.op.restar($3,$5,$7);}
     |'*' ',' Dato ',' Dato ',' TEMPORAL{parser.struct.op.multiplicar($3,$5,$7);}
     |'/' ',' Dato ',' Dato ',' TEMPORAL{parser.struct.op.dividir($3,$5,$7);}
-    |'+' ',' Dato ',' Dato ',' PTR {parser.struct.op.ptr = ($3+$5);}
-    |'+' ',' Dato ',' Dato ',' HEAP {parser.struct.op.pth = ($3+$5);}
-    |'-' ',' Dato ',' Dato ',' PTR {parser.struct.op.ptr = ($3-$5);}
+    |'+' ',' Dato ',' Dato ',' PTR {parser.struct.op.aumetarptr  ($3,$5);}
+    |'+' ',' Dato ',' Dato ',' HEAP {parser.struct.op.aumentarpth  ($3,$5);}
+    |'-' ',' Dato ',' Dato ',' PTR {parser.struct.op.disminuirptr ($3,$5);}
     ;
 
 Asignacion

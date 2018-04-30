@@ -134,6 +134,9 @@ var Clase = /** @class */ (function () {
             if (element.valor.valor != null) {
                 this.analizador.variable.evaluarAsignacionasignarValor(sim);
             }
+            else {
+                this.analizador.variable.incializar(sim, sim.getLocacion_de_declaracion());
+            }
         }
         coment = this.analizador.genComentario("fin de metodo preconstructor para " + nombreClase);
         this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo" + id) + coment, 0, poss);
@@ -157,6 +160,9 @@ var Clase = /** @class */ (function () {
             this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.val, op.temp), op.column, op.fila);
             this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", op.temp, "heap"), op.column, op.fila);
             //this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap",1+"","heap"),op.column,op.fila);
+        }
+        else {
+            this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", 1 + "", "heap"), op.column, op.fila);
         }
     };
     return Clase;

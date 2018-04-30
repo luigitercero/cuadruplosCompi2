@@ -31,6 +31,9 @@ var Comparacion = /** @class */ (function (_super) {
     Comparacion.prototype.doubleDouble = function () {
         return this.agregaretiqueta();
     };
+    Comparacion.prototype.evaluarObjeto = function () {
+        return this.agregaretiqueta();
+    };
     /**
      * funciona para las operaciones xor que se deba subir un atributo
      */

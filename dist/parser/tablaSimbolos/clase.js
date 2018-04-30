@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tabla_1 = __importDefault(require("./tabla"));
 var ambito_1 = __importDefault(require("./ambito"));
 var simbolo_1 = __importDefault(require("./simbolo"));
-var util_1 = require("util");
 var Clase = /** @class */ (function () {
     function Clase(nombre, poss) {
         this.nombre = nombre.toLocaleLowerCase();
@@ -43,14 +42,19 @@ var Clase = /** @class */ (function () {
         this.tabla.verVariables();
         console.log("/*****terminal las variables de la clase " + this.nombre + "*****/");
     };
-    Clase.prototype.buscarMetodo = function (nombre) {
+    Clase.prototype.buscarMetodo = function (nombre, location) {
         for (var index = 0; index < this.metodo.length; index++) {
             var element = this.metodo[index];
             if (element.nomMetodo == nombre.toLocaleLowerCase()) {
                 return element;
             }
         }
-        throw new Error("error al querer obterner el metodo");
+        if (location == undefined) {
+            throw new Error("error al querer obterner el metodo");
+        }
+        else {
+            throw new Error("error al querer obterner el metodo " + " columna " + location.last_column + " line " + location.first_line);
+        }
     };
     Clase.prototype.existeMetodo = function (nombre) {
         for (var index = 0; index < this.metodo.length; index++) {
@@ -61,7 +65,7 @@ var Clase = /** @class */ (function () {
         }
         return false;
     };
-    Clase.prototype.buscarSimbolo = function (nombre, inicio) {
+    Clase.prototype.buscarSimbolo = function (nombre, inicio, location) {
         if (inicio === undefined) {
             var simbolo = this.tabla.buscarEnPila(nombre.toLocaleLowerCase());
             if (simbolo != null) {
@@ -80,7 +84,10 @@ var Clase = /** @class */ (function () {
                 return simbolo;
             }
         }
-        throw util_1.error("no es posible encontrar variable");
+        if (location != null) {
+            throw new Error("no es posible encontrar la variable " + nombre + " linea : " + location.first_line + " columna: " + location.last_column);
+        }
+        throw new Error("no es posible encontrar variable");
     };
     Clase.prototype.buscarSimboloenEsto = function (nombre) {
         var simbolo;

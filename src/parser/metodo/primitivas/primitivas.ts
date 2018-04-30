@@ -1,8 +1,8 @@
-import Variable from '../variable';
+import Variable from '../../variable/variable';
 import Analizador from '../../analizador';
-import Asignacion from '../asignacion'
+import Asignacion from '../../variable/asignacion'
 import Nodo from '../../nodo';
-import Declaracion from '../declaracion';
+import Declaracion from '../../variable/declaracion';
 import Control from '../control/control';
 import Metodo from '../../tablaSimbolos/metodo';
 import Salida from '../control/nodoSalida';
@@ -17,7 +17,7 @@ export default class Primitivas {
         this.analizador = analizador
         this.imprimir = new Imprimir(analizador);
     }
- /**
+     /**
       * Primitivas
       * :IMPRIMIR
       * |CONCATENAR
@@ -30,7 +30,6 @@ export default class Primitivas {
       * |TECLADO
       * ;
       */
-
     analizar (metodo:string, varible:nodoOperacion[]) {
 
         switch (metodo) {

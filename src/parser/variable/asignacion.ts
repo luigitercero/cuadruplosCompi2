@@ -29,7 +29,7 @@ export default class Asignacion  {
         this.analizador.log("agregando valor"); 
         let location = nodo.childNode[0].location
         if(nombre == "';'"){
-
+            this.analizador.variable.incializar(simbolo,simbolo.getLocacion_de_declaracion())
         }else{
             
             this.analizador.agregarCodigo(this.analizador.genComentario
@@ -151,9 +151,9 @@ export default class Asignacion  {
              return true;
             case "Navegar":
              let temp = this.analizador.claseA;
-             let navegar = this.navegar(nodo.childNode[0]);
-             this.analizador.claseA = this.analizador.buscarClase(navegar.tipo);
-             variable = this.analizador.variable.var(nodo.childNode[1]);
+             let navegar = this.analizador.variable.navegar(nodo.childNode[0]);
+             this.analizador.claseA = this.analizador.buscarClase(navegar.tipo,navegar);
+             variable = this.analizador.variable.var(nodo.childNode[1],navegar.valor);
              resultado = this.asignar( nodo.childNode[2],variable);
              location = variable.location;
              this.analizador.variable.setValVariable(variable,resultado,location,navegar.valor);
@@ -168,51 +168,6 @@ export default class Asignacion  {
         
         }
     }
- 
-    /**
-     *Navegar
-     *: var '.'
-     *| var '->'
-     *| this .
-     *| getMetodo '.'
-     *| getMetodo '->'
-     *| Navegar var '.'
-     *| Navegar  getMetodo '.'
-     *| Navegar var '->'
-     *| Navegar  getMetodo '->'
-     *| 
-     *;
-    */
-    public navegar(nodo:Nodo):nodoOperacion {
-        let term = nodo.childNode[0].term
-        let variable:Dir;
-        let navegarNodo:NodoNavegar;
-        let op;
-        let valor;
-        let location;
-        let navegar;
-        switch (term) {
-            case "var":
-            variable = this.analizador.variable.var(nodo.childNode[0]);
-            return this.analizador.variable.gerVal( variable);
-            case "ESTE":
-            variable = this.analizador.variable.obtenerValorVariable("este",nodo.childNode[0].location.first_line,nodo.childNode[0].location.last_column);
-            location = nodo.childNode[1].location;
-            variable.addLocation(nodo.childNode[0].location);
-            return this.analizador.variable.gerVal( variable);
-            case "getMetodo":
-            return this.analizador.variable.getmetodo(nodo.childNode[0])
-            case "Navegar":
-            let temp = this.analizador.claseA;
-            let identi = this.navegar(nodo.childNode[0]);
-            let op = this.analizador.variable.identiObjec(nodo.childNode[1],identi,nodo.childNode[2].location);
-            this.analizador.claseA = temp;
-            return op;
-            
-        }
 
-        throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas",0,0);
-    }
-    
 }
 

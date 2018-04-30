@@ -131,6 +131,7 @@ var Declaracion = /** @class */ (function (_super) {
                     this.analizador.claseA.tabla.agregarSimboloApila(s);
                     var op = new nodoOperacion_1.default("", "", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
                     op.simbolo = s;
+                    op.simbolo.setLocacion_declaracion(nodo.childNode[0].location);
                     return op;
                 }
                 throw this.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);

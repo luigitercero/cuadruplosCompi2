@@ -237,7 +237,8 @@ protected  analizador: Analizador;
         let term = nodo.term
         switch(term){
             case "NULL":
-            return new nodoOperacion("nada",35174492+"",nodo.location.last_column,nodo.location.first_line);
+            
+            return new nodoOperacion(this.analizador.NULL,this.analizador.NULL,nodo.location.last_column,nodo.location.first_line);
             case "Datos":
             return this.resolverDatos(nodo);
         }

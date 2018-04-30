@@ -19,6 +19,7 @@ var Imprimir = /** @class */ (function () {
                     break;
                 case this.analizador.DOUBLE:
                     this.imprimirF(parametro[0]);
+                    break;
             }
         }
         else {
@@ -50,6 +51,7 @@ var Imprimir = /** @class */ (function () {
         this.analizador.agregarCodigo(this.analizador.genOperacion("+", arreglo.valor, 1 + "", arreglo.valor), arreglo.column, arreglo.fila);
         this.analizador.agregarCodigo(this.analizador.genSalto(ls), arreglo.column, arreglo.fila);
         this.analizador.agregarCodigo(this.analizador.escribirEtiquetaS(lf), arreglo.column, arreglo.fila);
+        this.analizador.agregarCodigo("print ( \"%c\" ," + this.analizador.NULL + ");", arreglo.column, arreglo.fila);
     };
     return Imprimir;
 }());

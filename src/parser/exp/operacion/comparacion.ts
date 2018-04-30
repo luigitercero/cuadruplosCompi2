@@ -19,6 +19,10 @@ export default class Comparacion extends Casteo {
     doubleDouble(){
         return  this.agregaretiqueta();
     }
+    evaluarObjeto() :nodoOperacion{
+
+        return this.agregaretiqueta();
+    }
   
     /**
      * funciona para las operaciones xor que se deba subir un atributo

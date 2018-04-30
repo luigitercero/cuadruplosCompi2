@@ -23,6 +23,7 @@ export default class Imprimir {
                 break;
                 case this.analizador.DOUBLE:
                 this.imprimirF(parametro[0]);
+                break;
             } 
 
         }else {
@@ -84,6 +85,10 @@ export default class Imprimir {
 
         this.analizador.agregarCodigo ( 
             this.analizador.escribirEtiquetaS(lf),arreglo.column,arreglo.fila
+        );
+        this.analizador.agregarCodigo ( 
+            
+            "print ( \"%c\" ," + this.analizador.NULL +");",arreglo.column,arreglo.fila
         );
        
 

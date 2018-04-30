@@ -21,7 +21,7 @@ export default class Casteo{
     }
     evaluar():nodoOperacion{
         if (this.arg0.tipo == 35174492+"" || this.arg1.tipo==35174492+"" ){
-            throw new Error("errro de nulo no es posible operar" )
+            return this.evaluarObjeto();
         }else if (this.arg0.tipo == this.analizador.BOOLEANO && this.arg1.tipo == this.analizador.INT){
             return this.boleanNumber();
         }else if (this.arg0.tipo == this.analizador.BOOLEANO && this.arg1.tipo == this.analizador.DOUBLE){
@@ -54,8 +54,10 @@ export default class Casteo{
         }else {
             return this.numberNumber();
         }
-       
-        
+         
+    }
+    evaluarObjeto() :nodoOperacion{
+        throw this.analizador.newError("errro de caseteo" , this.arg0.column,this.arg0.fila);
     }
     stringString():nodoOperacion{
         throw this.analizador.newError("errro de caseteo" , this.arg0.column,this.arg0.fila);

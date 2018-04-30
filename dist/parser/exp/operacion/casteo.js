@@ -14,7 +14,7 @@ var Casteo = /** @class */ (function () {
     };
     Casteo.prototype.evaluar = function () {
         if (this.arg0.tipo == 35174492 + "" || this.arg1.tipo == 35174492 + "") {
-            throw new Error("errro de nulo no es posible operar");
+            return this.evaluarObjeto();
         }
         else if (this.arg0.tipo == this.analizador.BOOLEANO && this.arg1.tipo == this.analizador.INT) {
             return this.boleanNumber();
@@ -58,6 +58,9 @@ var Casteo = /** @class */ (function () {
         else {
             return this.numberNumber();
         }
+    };
+    Casteo.prototype.evaluarObjeto = function () {
+        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.stringString = function () {
         throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);

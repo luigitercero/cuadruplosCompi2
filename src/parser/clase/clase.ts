@@ -153,6 +153,9 @@ export default class Clase{
             if (element.valor.valor!= null){
                 
                 this.analizador.variable.evaluarAsignacionasignarValor(sim);
+            }else {
+                
+                this.analizador.variable.incializar(sim,sim.getLocacion_de_declaracion());
             }
         }
         coment = this.analizador.genComentario("fin de metodo preconstructor para " + nombreClase );
@@ -182,6 +185,8 @@ export default class Clase{
             this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.val,op.temp),op.column,op.fila);
             this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap",op.temp,"heap"),op.column,op.fila);
             //this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap",1+"","heap"),op.column,op.fila);
+        }else{
+            this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap",1+"","heap"),op.column,op.fila);
         }
     }
 

@@ -120,7 +120,7 @@ frac                        (?:\.[0-9]+)
 "repetir"                   return 'REAPEAT'    
 "HASTA_QUE"                 return 'UNTIL'
 "estructura"                return 'ESTRUCTURA'
-"nada"                      return 'NULL'
+"nada"                      return 'NADA'
 
                                                      
 \"(?:{esc}["bfnrt/{esc}]|{esc}"u"[a-fA-F0-9]{4}|[^"{esc}])*\"  yytext = yytext.substr(1,yyleng-2); return 'STRINGLIST';
@@ -573,12 +573,16 @@ Control:If1
   ; 
 
 
-If1:IF Expresion '{' ESVERDADERO Cuerpo ESFALSO Cuerpo FINSI
+If1:IF Expresion '{' ESVERDADERO Cuerpo ESFALSO Cuerpo Finsi
      {nodo1= new Nodo ("IF", @1,$1, [] ); nodo2= new Nodo ("Expresion", @2,$2, [] ); nodo3= new Nodo ("'{'", @3,$3, [] ); nodo4= new Nodo ("ESVERDADERO", @4,$4, [] ); nodo5= new Nodo ("Cuerpo", @5,$5, [] ); nodo6= new Nodo ("ESFALSO", @6,$6, [] ); nodo7= new Nodo ("Cuerpo", @7,$7, [] ); nodo8= new Nodo ("FINSI", @8,$8, [] ); 
       nodo = new Nodo("If1",null,null,[nodo1,$2,nodo3,nodo4,$5,nodo6,$7,nodo8]);  
       $$ = nodo; }
-  ; 
-If2:IF Expresion '{' ESFALSO Cuerpo ESVERDADERO Cuerpo FINSI
+  ;
+Finsi:
+    FINSI {$$=$1}
+    | '}'{$$=$1}
+;
+If2:IF Expresion '{' ESFALSO Cuerpo ESVERDADERO Cuerpo Finsi
      {nodo1= new Nodo ("IF", @1,$1, [] ); nodo2= new Nodo ("Expresion", @2,$2, [] ); nodo3= new Nodo ("'{'", @3,$3, [] ); nodo4= new Nodo ("ESFALSO", @4,$4, [] ); nodo5= new Nodo ("Cuerpo", @5,$5, [] ); nodo6= new Nodo ("ESVERDADERO", @6,$6, [] ); nodo7= new Nodo ("Cuerpo", @7,$7, [] ); nodo8= new Nodo ("FINSI", @8,$8, [] ); 
       nodo = new Nodo("If2",null,null,[nodo1,$2,nodo3,nodo4,$5,nodo6,$7,nodo8]);  
       $$ = nodo; }
@@ -874,7 +878,7 @@ e:e '+' e
      {nodo1= new Nodo ("Datos", @1,$1, [] );
       nodo = new Nodo("e",null,null,[$1]); 
       $$ = nodo; }
-  | NULL
+  | NADA
      {nodo1= new Nodo ("NULL", @1,$1, [] );
       nodo = new Nodo("e",null,null,[nodo1]); 
       $$ = nodo; }

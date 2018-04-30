@@ -9,6 +9,7 @@ import Clase from './tablaSimbolos/clase'
 import Recoleccion from '../precompilacion/recoleccion'
 import Class from './clase/clase'
 import Cuerpo from './metodo/cuerpo'
+import nodoOperacion from './exp/operacion/nodoOperacion';
 export default class Analizador extends Inter {
     public exp:Exp;
     public variable:Variable;
@@ -27,6 +28,42 @@ export default class Analizador extends Inter {
         this.clases = new Array<Clase>();
         this.clas = new Class(this);
     }
+ getAmbito ()  {
+
+    let ambito:any = [];
+   
+    for (let index = 0; index < this.claseA.tabla.Lista.length; index++) {
+        const element = this.claseA.tabla.Lista[index];
+        for (let index = 0; index < element.ambito.length; index++) {
+            let datos = []
+            const simbolo = element.ambito[index];
+            datos.push(simbolo.getNombre());
+            datos.push(simbolo.getTipo());
+            datos.push(simbolo.getVisibilidad());
+            datos.push(simbolo.getTamanio()); 
+            datos.push(simbolo.possAmbito);
+            datos.push(simbolo.linea);
+            datos.push("ptr");
+            ambito.push(datos)
+        }
+    }
+
+    for (let index = 0; index < this.claseA.tabla.esto.ambito.length; index++) {
+        const simbolo = this.claseA.tabla.esto.ambito[index];
+        let datos = []
+            datos.push(simbolo.getNombre());
+            datos.push(simbolo.getTipo());
+            datos.push(simbolo.getVisibilidad());
+            datos.push(simbolo.getTamanio()); 
+            datos.push(simbolo.possAmbito);
+            datos.push(simbolo.linea);
+            datos.push("heap");
+            ambito.push(datos)
+        
+    }
+    
+    return ambito;
+}   
 verTodasLasClases(){
 
     console.log("---------Obeservando clasese-----------")
@@ -40,17 +77,20 @@ verTodasLasClases(){
     console.log("---------Fin Obeservando clasese-----------")
 
 }
-buscarClase(nombre:string):Clase{
+buscarClase(nombre:string,navegar?:nodoOperacion):Clase{
     for (let index = 0; index < this.clases.length; index++) {
         let element = this.clases[index];
         if (element.nombre == nombre){
             element.verVariable();
             return element;
-        
         }
     }
+    if (navegar == null){
     throw this.newError("no se pudo encontrar la clase con el nombre de "+nombre,0,0)
-   
+    }else{
+
+        throw this.newError("no se pudo encontrar la clase con el nombre de "+nombre +"variable",navegar.fila,navegar.column);
+    }
 }   
 verClaseA(){
     console.log("---------Obeservando ClaseA-----------")

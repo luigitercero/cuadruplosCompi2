@@ -96,13 +96,13 @@ case 18:
 parser.struct.op.dividir($$[$0-4],$$[$0-2],$$[$0]);
 break;
 case 19:
-parser.struct.op.ptr = ($$[$0-4]+$$[$0-2]);
+parser.struct.op.aumetarptr  ($$[$0-4],$$[$0-2]);
 break;
 case 20:
-parser.struct.op.pth = ($$[$0-4]+$$[$0-2]);
+parser.struct.op.aumentarpth  ($$[$0-4],$$[$0-2]);
 break;
 case 21:
-parser.struct.op.ptr = ($$[$0-4]-$$[$0-2]);
+parser.struct.op.disminuirptr ($$[$0-4],$$[$0-2]);
 break;
 case 22:
 parser.struct.op.setValTemp($$[$0],$$[$0-3]); console.log("Asignacion");

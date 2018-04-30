@@ -18,6 +18,7 @@ var Asignacion = /** @class */ (function () {
         this.analizador.log("agregando valor");
         var location = nodo.childNode[0].location;
         if (nombre == "';'") {
+            this.analizador.variable.incializar(simbolo, simbolo.getLocacion_de_declaracion());
         }
         else {
             this.analizador.agregarCodigo(this.analizador.genComentario("agregando valor a " + simbolo.getNombre()), location.last_column, location.first_line); // es un comentario
@@ -120,9 +121,9 @@ var Asignacion = /** @class */ (function () {
                 return true;
             case "Navegar":
                 var temp = this.analizador.claseA;
-                var navegar = this.navegar(nodo.childNode[0]);
-                this.analizador.claseA = this.analizador.buscarClase(navegar.tipo);
-                variable = this.analizador.variable.var(nodo.childNode[1]);
+                var navegar = this.analizador.variable.navegar(nodo.childNode[0]);
+                this.analizador.claseA = this.analizador.buscarClase(navegar.tipo, navegar);
+                variable = this.analizador.variable.var(nodo.childNode[1], navegar.valor);
                 resultado = this.asignar(nodo.childNode[2], variable);
                 location = variable.location;
                 this.analizador.variable.setValVariable(variable, resultado, location, navegar.valor);
@@ -134,48 +135,6 @@ var Asignacion = /** @class */ (function () {
     Asignacion.prototype.getHeap = function (navegar, variable) {
         if (navegar.tipo == "'.'") {
         }
-    };
-    /**
-     *Navegar
-     *: var '.'
-     *| var '->'
-     *| this .
-     *| getMetodo '.'
-     *| getMetodo '->'
-     *| Navegar var '.'
-     *| Navegar  getMetodo '.'
-     *| Navegar var '->'
-     *| Navegar  getMetodo '->'
-     *|
-     *;
-    */
-    Asignacion.prototype.navegar = function (nodo) {
-        var term = nodo.childNode[0].term;
-        var variable;
-        var navegarNodo;
-        var op;
-        var valor;
-        var location;
-        var navegar;
-        switch (term) {
-            case "var":
-                variable = this.analizador.variable.var(nodo.childNode[0]);
-                return this.analizador.variable.gerVal(variable);
-            case "ESTE":
-                variable = this.analizador.variable.obtenerValorVariable("este", nodo.childNode[0].location.first_line, nodo.childNode[0].location.last_column);
-                location = nodo.childNode[1].location;
-                variable.addLocation(nodo.childNode[0].location);
-                return this.analizador.variable.gerVal(variable);
-            case "getMetodo":
-                return this.analizador.variable.getmetodo(nodo.childNode[0]);
-            case "Navegar":
-                var temp = this.analizador.claseA;
-                var identi = this.navegar(nodo.childNode[0]);
-                var op_1 = this.analizador.variable.identiObjec(nodo.childNode[1], identi, nodo.childNode[2].location);
-                this.analizador.claseA = temp;
-                return op_1;
-        }
-        throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", 0, 0);
     };
     return Asignacion;
 }());

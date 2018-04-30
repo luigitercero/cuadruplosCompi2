@@ -4,14 +4,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
-var init_1 = __importDefault(require("../init"));
 var controlador_1 = __importDefault(require("../server/controller/controlador"));
 var path = require('path');
 var router = express_1.Router();
 var controller = new controlador_1.default();
 router.get('/', function (req, res) {
-    var d4 = new init_1.default();
-    res.send(d4.d4);
+    //let d4 =  new Init()
+    // res.send(d4.d4);
+    // new Saludo()
+    res.sendFile('/home/luigitercero/Documentos/Compi2/webpack_tutorial/index.html');
+});
+router.get('/principal', function (req, res) {
+    //let d4 =  new Init()
+    // res.send(d4.d4);
+    //new Saludo()
+    res.sendFile('/home/luigitercero/Documentos/Compi2/webpack_tutorial/principal.html');
+});
+router.get('/nuevaLeccion', function (req, res) {
+    //let d4 =  new Init()
+    // res.send(d4.d4);
+    //new Saludo()
+    res.sendFile('/home/luigitercero/Documentos/Compi2/webpack_tutorial/nuevaLeccion.html');
+});
+router.get('/practica', function (req, res) {
+    //let d4 =  new Init()
+    // res.send(d4.d4);
+    //new Saludo()
+    res.sendFile('/home/luigitercero/Documentos/Compi2/webpack_tutorial/practica.html');
 });
 /*
 router.get ('/i',(req: Request,res: Response)=>{

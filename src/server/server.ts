@@ -4,18 +4,16 @@ export default class Server{
 private port: number;
 
     public app:express.Application;
-    
+    public server:express.Application;
     constructor(port:number){
         this.port =port;
         this.app =express();
-        //server.app.set('views',path.join(__dirname,'views'))
-        //server.app.set('view engine','ejs');
-
+        this.server = require('http').createServer(this.app); 
     }
 
     start(callback?: Function){
 
-        this.app.listen(this.port,callback);
+        this.server.listen(this.port,callback);
     }
     static init(port:number):Server{
         return new Server(port);

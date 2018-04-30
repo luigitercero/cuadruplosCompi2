@@ -10,18 +10,18 @@ var Primitivas = /** @class */ (function () {
         this.imprimir = new imprimir_1.default(analizador);
     }
     /**
-         * Primitivas
-         * :IMPRIMIR
-         * |CONCATENAR
-         * |CONVERTIRCADENA
-         * |CONVERTIRENTERO
-         * |CREARPUNTERO
-         * |OBTERNERDIRECCION
-         * |RESERVAMEMORIA
-         * |CONSULTARTAMANIO
-         * |TECLADO
-         * ;
-         */
+     * Primitivas
+     * :IMPRIMIR
+     * |CONCATENAR
+     * |CONVERTIRCADENA
+     * |CONVERTIRENTERO
+     * |CREARPUNTERO
+     * |OBTERNERDIRECCION
+     * |RESERVAMEMORIA
+     * |CONSULTARTAMANIO
+     * |TECLADO
+     * ;
+     */
     Primitivas.prototype.analizar = function (metodo, varible) {
         switch (metodo) {
             case "IMPRIMIR":
