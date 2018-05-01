@@ -13,7 +13,6 @@ export default class IF1 {
     }
      
     if1(nodo:Nodo,ciclo:Salida) {
-        
         let exp:nodoOperacion = this.control.analizador.exp.analizar(nodo.childNode[1].childNode[1]);
         this.errorIf(exp);
         let cuerpoV = nodo.childNode[4];
@@ -36,8 +35,6 @@ export default class IF1 {
         this.control.analizador.claseA.tabla.disminuirAmbito();
 
         this.control.analizador.agregarCodigo(this.control.analizador.escribirEtiqueta(salida),exp.column,exp.fila);
-        
-        
     }
 
     public ifSimple(exp:nodoOperacion,cuerpo:Nodo,ciclo:Salida) {
@@ -46,15 +43,11 @@ export default class IF1 {
         let salida= [] ;
         salida.push(l);
         //sentecias verdaderas
-        
         this.control.analizador.agregarCodigo(this.control.analizador.escribirEtiqueta(exp.etiquetaV),exp.column,exp.fila);
         this.control.cuerpo(cuerpo,ciclo);
         this.control.analizador.agregarCodigo(this.control.analizador.genSalto(l),exp.column,exp.fila);
-    
-
         this.control.analizador.agregarCodigo(this.control.analizador.escribirEtiqueta(salida),exp.column,exp.fila);
         this.control.analizador.claseA.tabla.disminuirAmbito();
-
     }
 
 

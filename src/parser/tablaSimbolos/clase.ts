@@ -6,120 +6,114 @@ import { text } from "body-parser";
 import { error } from "util";
 import Location from "../location";
 
-export default class Clase{
-    public nombre :string;
-    public poss : number;
-    public tabla : Tabla;
-    public metodo:Metodo[];
-    public importar:Clase[];
+export default class Clase {
+    public nombre: string;
+    public poss: number;
+    public tabla: Tabla;
+    public metodo: Metodo[];
+    public importar: Clase[];
 
-    constructor (nombre:string, poss:number) {
-        this.nombre =  nombre.toLocaleLowerCase();
+    constructor(nombre: string, poss: number) {
+        this.nombre = nombre.toLocaleLowerCase();
         this.poss = poss;
         this.tabla = new Tabla();
         this.crearEsto();
         this.crearPila();
         this.metodo = new Array();
         this.importar = new Array<Clase>();
-    }    
+    }
 
-    private crearEsto () {
+    private crearEsto() {
         this.tabla.esto = new Ambito();
     }
 
-   private crearPila () {
+    private crearPila() {
         let global = new Ambito();
         global.prefijo = this.nombre;
-        global.agregarSimbolo(new Simbolo("retorno","publico","todo"));
-        global.agregarSimbolo(new Simbolo("este","publico",this.nombre));
+        global.agregarSimbolo(new Simbolo("retorno", "publico", "todo"));
+        global.agregarSimbolo(new Simbolo("este", "publico", this.nombre));
         this.tabla.Lista.push(global);
     }
-    public agregarMetodo(metodo:Metodo){
+
+    public agregarMetodo(metodo: Metodo) {
         this.metodo.push(metodo);
     }
-    public verMetodosDeClase(){
-        console.log("/*****esto son los metodos de la clase "  +this.nombre + "*****/");
+
+    public verMetodosDeClase() {
+        console.log("/*****esto son los metodos de la clase " + this.nombre + "*****/");
         for (let index = 0; index < this.metodo.length; index++) {
             const element = this.metodo[index];
-                console.log(element.nomMetodo + ", " + element.getTipo() );
+            console.log(element.nomMetodo + ", " + element.getTipo());
         }
-        console.log("/*****termina los metodos de la clase "  +this.nombre + "*****/");
+        console.log("/*****termina los metodos de la clase " + this.nombre + "*****/");
     }
 
-    public verVariable(){
-        console.log("/*****estas son los variablles de la clase "  +this.nombre + "*****/");
+    public verVariable() {
+        console.log("/*****estas son los variablles de la clase " + this.nombre + "*****/");
         this.tabla.verVariables();
-        console.log("/*****terminal las variables de la clase "  +this.nombre + "*****/");
+        console.log("/*****terminal las variables de la clase " + this.nombre + "*****/");
     }
-    
-    public buscarMetodo(nombre:string,location?:Location):Metodo{
+
+    public buscarMetodo(nombre: string, location?: Location): Metodo {
         for (let index = 0; index < this.metodo.length; index++) {
             const element = this.metodo[index];
-            if (element.nomMetodo ==  nombre.toLocaleLowerCase()){
+            if (element.nomMetodo == nombre.toLocaleLowerCase()) {
                 return element;
             }
-        }   
-        if (location == undefined){
-            throw new Error("error al querer obterner el metodo");
-        }else 
-        {
-            throw new Error("error al querer obterner el metodo " +" columna "+location.last_column + " line " +location.first_line);
         }
-        
+        if (location == undefined) {
+            throw new Error("error al querer obterner el metodo");
+        } else {
+            throw new Error("error al querer obterner el metodo " + " columna " + location.last_column + " line " + location.first_line);
+        }
+
     }
 
-    public existeMetodo(nombre:string):boolean {
+    public existeMetodo(nombre: string): boolean {
         for (let index = 0; index < this.metodo.length; index++) {
             const element = this.metodo[index];
-            if (element.nomMetodo ==  nombre.toLocaleLowerCase()){
+            if (element.nomMetodo == nombre.toLocaleLowerCase()) {
                 return true;
             }
-        }   
+        }
         return false;
 
     }
 
-    buscarSimbolo(nombre:string, inicio?:string,location?:Location):Simbolo {
+    buscarSimbolo(nombre: string, inicio?: string, location?: Location): Simbolo {
 
-        if (inicio === undefined){
-            let simbolo:Simbolo|null = this.tabla.buscarEnPila( nombre.toLocaleLowerCase());
-            if (  simbolo != null){
+        if (inicio === undefined) {
+            let simbolo: Simbolo | null = this.tabla.buscarEnPila(nombre.toLocaleLowerCase());
+            if (simbolo != null) {
                 return simbolo
 
-            }else {
-                simbolo =  this.tabla.buscarEnHeap( nombre.toLocaleLowerCase());
+            } else {
+                simbolo = this.tabla.buscarEnHeap(nombre.toLocaleLowerCase());
                 if (simbolo != null) {
 
-                  return simbolo
+                    return simbolo
 
                 }
             }
-        }else {
-            let simbolo =  this.tabla.buscarEnHeap( nombre.toLocaleLowerCase());
+        } else {
+            let simbolo = this.tabla.buscarEnHeap(nombre.toLocaleLowerCase());
             if (simbolo != null) {
-
-              return simbolo
-
+                return simbolo
             }
         }
-        if (location!=null) {
-            throw new Error("no es posible encontrar la variable " + nombre +" linea : "+ location.first_line+" columna: "+location.last_column)
+        if (location != null) {
+            throw new Error("no es posible encontrar la variable " + nombre + " linea : " + location.first_line + " columna: " + location.last_column)
         }
-       
-       throw  new Error("no es posible encontrar variable")
+
+        throw new Error("no es posible encontrar variable")
     }
 
-    buscarSimboloenEsto(nombre:string):Simbolo {
+    buscarSimboloenEsto(nombre: string): Simbolo {
         let simbolo;
-            simbolo =  this.tabla.buscarEnHeap( nombre.toLocaleLowerCase());
-            if (simbolo != null) {
-                
-              return simbolo
-                
-            }
-        
-       
-       return new Simbolo("","","3517442");
+        simbolo = this.tabla.buscarEnHeap(nombre.toLocaleLowerCase());
+        if (simbolo != null) {
+            return simbolo
+        }
+        return new Simbolo("", "", "3517442");
     }
-
 }

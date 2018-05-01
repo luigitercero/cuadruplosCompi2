@@ -11,32 +11,31 @@ import nodoOperacion from '../../exp/operacion/nodoOperacion';
 import Imprimir from './imprimir'
 export default class Primitivas {
 
-    private analizador:Analizador;
-    private imprimir:Imprimir
-    constructor(analizador:Analizador) {
+    private analizador: Analizador;
+    private imprimir: Imprimir
+    constructor(analizador: Analizador) {
         this.analizador = analizador
         this.imprimir = new Imprimir(analizador);
     }
-     /**
-      * Primitivas
-      * :IMPRIMIR
-      * |CONCATENAR
-      * |CONVERTIRCADENA
-      * |CONVERTIRENTERO
-      * |CREARPUNTERO
-      * |OBTERNERDIRECCION
-      * |RESERVAMEMORIA
-      * |CONSULTARTAMANIO
-      * |TECLADO
-      * ;
-      */
-    analizar (metodo:string, varible:nodoOperacion[]) {
-
+    /**
+     * Primitivas
+     * :IMPRIMIR
+     * |CONCATENAR
+     * |CONVERTIRCADENA
+     * |CONVERTIRENTERO
+     * |CREARPUNTERO
+     * |OBTERNERDIRECCION
+     * |RESERVAMEMORIA
+     * |CONSULTARTAMANIO
+     * |TECLADO
+     * ;
+     */
+    analizar(metodo: string, varible: nodoOperacion[]) {
         switch (metodo) {
-            case "IMPRIMIR" :
-            this.imprimir.imprimir(varible);
-            break;
-            case "CONCATENAR" :
+            case "IMPRIMIR":
+                this.imprimir.imprimir(varible);
+                break;
+            case "CONCATENAR":
             case "CONVERTIRCADENA":
             case "CONVERTIRENTERO":
             case "CREARPUNTERO":
@@ -44,7 +43,6 @@ export default class Primitivas {
             case "RESERVAMEMORIA":
             case "CONSULTARTAMANIO":
             case "TECLADO":
-
         }
     }
 }

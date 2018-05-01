@@ -159,12 +159,6 @@ var metodo = /** @class */ (function () {
         coment = this.analizador.genComentario("guardar this en this de metodo " + this.analizador.claseA.nombre);
         this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", ptr + "", t2), location.last_column, location.first_line);
         this.analizador.agregarCodigo(this.analizador.saveEnPila(t2, "heap") + coment, location.last_column, location.first_line);
-        /*
-        this.analizador.agregarCodigo(
-            this.analizador.siguiLibreHeap(),
-            location.last_column,location.first_line
-        );
-        */
         return new nodoOperacion_1.default("heap", objeto, location.last_column, location.first_line);
     };
     metodo.prototype.metodoImp = function (name, location) {

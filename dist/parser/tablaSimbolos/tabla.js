@@ -69,10 +69,6 @@ var Tabla = /** @class */ (function () {
     Tabla.prototype.siguietePosicionLibre = function (simbolo) {
         this.ptr++;
     };
-    /*
-    agregarVariable(nombre:string,visibilidad:string,tipo:string) {
-      
-    }*/
     Tabla.prototype.getActual = function () { };
     Tabla.prototype.existVarAmbitoActual = function (nombre) {
     };

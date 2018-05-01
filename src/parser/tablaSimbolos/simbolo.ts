@@ -3,27 +3,29 @@ import location from '../location'
 import { error } from "util";
 import Location from "../location";
 export default class Simbolo {
-    private nombre :string;
+    private nombre: string;
     private visibilidad: string;
-    private tipo : string;
-    public dim:Nodo[]
-    public linea:number;
-    public possAmbito:number;
-    public tam:number;
-    public valor:Valor;
-    private location:Location|any;
-    
-    setLocacion_declaracion(location:Location){
+    private tipo: string;
+    public dim: Nodo[]
+    public linea: number;
+    public possAmbito: number;
+    public tam: number;
+    public valor: Valor;
+    private location: Location | any;
+
+    setLocacion_declaracion(location: Location) {
         this.location = location;
     }
 
-    getLocacion_de_declaracion():Location {
+    getLocacion_de_declaracion(): Location {
         return this.location;
     }
-    getDim(number:number){
+
+    getDim(number: number) {
         return this.dim[number];
     }
-    constructor (nombre:string, visibilidad:string, tipo:string) {
+
+    constructor(nombre: string, visibilidad: string, tipo: string) {
         this.nombre = nombre.toLocaleLowerCase();
         this.visibilidad = visibilidad.toLocaleLowerCase();
         this.tipo = this.filtro(tipo.toLocaleLowerCase());
@@ -35,63 +37,64 @@ export default class Simbolo {
         this.dim = new Array();
         this.tam = 0;
         this.valor = new Valor();
-       
     }
-    private filtro(tipo:string) {
-        switch(tipo){
-            case "entero":return "entero";
-            case "decimal":return "decimal";
-            case "caracter":return "caracter";
-            case "booleano":return "booleano";
+
+    private filtro(tipo: string) {
+        switch (tipo) {
+            case "entero": return "entero";
+            case "decimal": return "decimal";
+            case "caracter": return "caracter";
+            case "booleano": return "booleano";
         }
         return tipo;
     }
-    getNombre () {
+
+    getNombre() {
         return this.nombre;
     }
 
-    getVisibilidad () {
+    getVisibilidad() {
         return this.visibilidad;
     }
-    
-    getTipo ():string {
+
+    getTipo(): string {
         return this.tipo;
     }
-    addDimension(tam:Nodo) {  
+
+    addDimension(tam: Nodo) {
         this.dim.push(tam);
         //this.tam = this.tam *tam;
     }
-    getTamanio ():number {
+
+    getTamanio(): number {
         return this.tam;
     }
 
-    addValor(nodo:Nodo,location:location){
-        this.valor = new Valor(nodo,location);
-    }
-    addTam(tam:number) {
-        this.tam = this.tam + tam;
-    }
-    
-}
-class Valor {
-    public valor:Nodo|null;
-    public location:location|any;
-    constructor(valor?:Nodo,location?:location){
-       if (valor!=null && location != null){
-        this.valor = valor;
-        this.location = location;
-       }else{
-           this.valor = null;
-           
-       }
+    addValor(nodo: Nodo, location: location) {
+        this.valor = new Valor(nodo, location);
     }
 
-    getNodo():Nodo {
-        if (this.valor!=null){
-            return this.valor;
-        }else{
-            throw  error("error no debi pasar por aqui");
+    addTam(tam: number) {
+        this.tam = this.tam + tam;
+    }
+}
+class Valor {
+    public valor: Nodo | null;
+    public location: location | any;
+    constructor(valor?: Nodo, location?: location) {
+        if (valor != null && location != null) {
+            this.valor = valor;
+            this.location = location;
+        } else {
+            this.valor = null;
         }
-       
+    }
+
+    getNodo(): Nodo {
+        if (this.valor != null) {
+            return this.valor;
+        } else {
+            throw error("error no debi pasar por aqui");
+        }
     }
 }

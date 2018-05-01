@@ -20,7 +20,6 @@ export default class DCONDICION {
      * @param ciclo 
      */
     ejecutar(nodo:Nodo,ciclo:Salida) {
-
         //escribimos un or
         this.control.analizador.claseA.tabla.aumetarAbmito();
         let start = this.control.analizador.newEtiqueta();
@@ -30,32 +29,19 @@ export default class DCONDICION {
         let et = this.control.analizador.exp.operarOr(arg0,arg1);
         ciclo.addEtiquetaSS(et.etiquetaF);
         this.escribirEtiquetaStart(ciclo,nodo.childNode[0].location);
-
         let et2 = this.control.analizador.exp.operarAnd(arg0,arg1);
-        ciclo.addEtiquetaSS(et2.etiquetaF);
-        
-        
+        ciclo.addEtiquetaSS(et2.etiquetaF);        
         this.control.analizador.agregarCodigo(this.control.analizador
             .escribirEtiqueta(et.etiquetaV),
             et.column,et.fila);
-
         this.control.analizador.agregarCodigo(this.control.analizador
             .escribirEtiqueta(et2.etiquetaV),
             et2.column,et2.fila);
-
-
         let cuerpo = nodo.childNode[6];
         this.control.cuerpo(cuerpo,ciclo);
-   
         this.escribirSaltoStart(ciclo,nodo.childNode[0].location);
-        
         this.escribirEtiquetaSalida(ciclo,nodo.childNode[0].location);
-        
         this.control.analizador.claseA.tabla.disminuirAmbito(); 
-        
-       
-        
-        
     }
 
     private escribirEtiquetaSalida(ciclo:Salida,location:Location) {
@@ -94,15 +80,11 @@ export default class DCONDICION {
 
     private ifSimple(exp:nodoOperacion,cuerpo:Nodo,ciclo:Salida) {
         this.errorIf(exp);
-    
-    
         //sentecias verdaderas
-        
         this.control.analizador.agregarCodigo(this.control.analizador
             .escribirEtiqueta(exp.etiquetaV),
             exp.column,exp.fila);
-        this.control.cuerpo(cuerpo,ciclo);
-        
+        this.control.cuerpo(cuerpo,ciclo);  
     }
 
     

@@ -25,24 +25,6 @@ var CONTADOR = /** @class */ (function () {
         //let t11 = this.control.analizador.newTemporal();
         ciclo.start.push(this.control.analizador.newEtiqueta());
         var cuerpo = nodo.childNode[2];
-        /*declarar variable de conteo en la poss
-        this.control.analizador.agregarCodigo(
-            this.control.analizador.saveEnPila(poss+"",0+""),location.last_column,location.first_line
-        );
-        escribir etiqueta start
-        this.escribirEtiquetaStart(ciclo,nodo.childNode[0].location);
-        obtener valor del contador
-        this.control.analizador.agregarCodigo(
-            this.control.analizador.getEnPila(poss+"",t0),location.last_column,location.first_line
-        );
-      sumar un uno al contador
-        this.control.analizador.agregarCodigo(
-            this.control.analizador.genOperacion("+",t0,1+"",t11),location.last_column,location.first_line
-        );
-        guardar la suma del contador
-        this.control.analizador.agregarCodigo(
-            this.control.analizador.saveEnPila(poss+"",t11),location.last_column,location.first_line
-        );*/
         /**valor del contador 0 */
         this.control.analizador.agregarCodigo(this.control.analizador.asignar(t0, "0"), location.last_column, location.first_line);
         /*escribir etiqueta start */

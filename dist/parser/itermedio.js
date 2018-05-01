@@ -53,7 +53,8 @@ var FormatoItermedio = /** @class */ (function () {
     FormatoItermedio.prototype.agregarCodigo = function (codigo, column, linea) {
         this.codigoIntermedio = this.codigoIntermedio + codigo + "\n";
         var a = this.getAmbito();
-        this.codigo4D.C4D.push({ 'poss': this.poss, 'codigo': codigo, 'columna': column, 'linea': linea,
+        this.codigo4D.C4D.push({
+            'poss': this.poss, 'codigo': codigo, 'columna': column, 'linea': linea,
             'ambito': a
         });
         this.poss++;

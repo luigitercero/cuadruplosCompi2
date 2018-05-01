@@ -10,8 +10,8 @@ import Simbolo from '../../tablaSimbolos/simbolo';
 
 
 export default class FOR {
-    private control:Control
-    constructor (control:Control) {
+    private control: Control
+    constructor(control: Control) {
         this.control = control;
     }
     /**
@@ -20,151 +20,140 @@ export default class FOR {
      * @param nodo 
      * @param ciclo 
      */
-    ejecutar(nodo:Nodo,ciclo:Salida) {
+    ejecutar(nodo: Nodo, ciclo: Salida) {
         /*se aumenta el ambito */
         this.control.analizador.claseA.tabla.aumetarAbmito();
         /*creo etiqueta start */
         let start = this.control.analizador.newEtiqueta();
-        /*etiqueta incio*/    
-            ciclo.start.push(start);
+        /*etiqueta incio*/
+        ciclo.start.push(start);
         /*saltos al cuerpo */
-        let ejecucion = [];ejecucion.push(this.control.analizador.newEtiqueta());
+        let ejecucion = []; ejecucion.push(this.control.analizador.newEtiqueta());
         /*nombrede la nueva vaiable que se crea */
         let ID = nodo.childNode[4].token;
         /*este el modo del cuerpo */
         let cuerpo = nodo.childNode[14];
         /*agregar variable a la tabla de simbolos */
-        this.control.analizador.claseA.tabla.agregarSimboloApila(new Simbolo(ID,"",this.control.analizador.INT));
+        this.control.analizador.claseA.tabla.agregarSimboloApila(new Simbolo(ID, "", this.control.analizador.INT));
         /*obtengo la direccion de la variable del contador */
-        let dirID = this.control.analizador.variable.obtenerDirVariable(ID,nodo.childNode[0].location.first_line,nodo.childNode[0].location.last_column);
+        let dirID = this.control.analizador.variable.obtenerDirVariable(ID, nodo.childNode[0].location.first_line, nodo.childNode[0].location.last_column);
         dirID.addLocation(nodo.childNode[0].location);
-       
+
         /**se evaluan los dos argumentos para determinas si se va a sumar o restar */
-        let arg0 =  this.control.analizador.exp.analizar(nodo.childNode[8]);
-        let arg1 =  this.control.analizador.exp.analizar(nodo.childNode[12]);
+        let arg0 = this.control.analizador.exp.analizar(nodo.childNode[8]);
+        let arg1 = this.control.analizador.exp.analizar(nodo.childNode[12]);
         /**agrego el argumento 0 a la variable contador ahi inicia */
-        this.control.analizador.agregarCodigo (
-            this.control.analizador.saveEnPila (
-                dirID.dir,arg0.valor),
-                nodo.childNode[0].location.last_column,nodo.childNode[0].location.first_line);
-         /*se escribe la etiqueta start*/       
-        this.escribirEtiquetaStart(ciclo,nodo.childNode[0].location);
-        /*se obtiene el valor del contador*/ 
-        arg0 =  this.control.analizador.variable.gerVal(dirID);    
+        this.control.analizador.agregarCodigo(
+            this.control.analizador.saveEnPila(
+                dirID.dir, arg0.valor),
+            nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
+        /*se escribe la etiqueta start*/
+        this.escribirEtiquetaStart(ciclo, nodo.childNode[0].location);
+        /*se obtiene el valor del contador*/
+        arg0 = this.control.analizador.variable.gerVal(dirID);
         /*si es igual debe salir del control */
-        let igual = this.igual(arg0,arg1);
-            ciclo.addEtiquetaSS(igual.etiquetaV);
-            this.escribirEtiqueta(igual.etiquetaF,nodo.childNode[0].location);
+        let igual = this.igual(arg0, arg1);
+        ciclo.addEtiquetaSS(igual.etiquetaV);
+        this.escribirEtiqueta(igual.etiquetaF, nodo.childNode[0].location);
         /*si es mayor debe disminuir */
-        let mayor = this.mayorque(arg0,arg1); 
-            this.escribirEtiqueta(mayor.etiquetaF,nodo.childNode[0].location);
-       /*si es menor debe sumar */
-            let menor = this.menorque(arg0,arg1);//ciclo.addEtiquetaSS(mayor.etiquetaF);ciclo.addEtiquetaSS(menor.etiquetaF)
-         /*etiqetas verdaderas si es menor */
-        this.escribirEtiqueta(mayor.etiquetaV,nodo.childNode[0].location);
+        let mayor = this.mayorque(arg0, arg1);
+        this.escribirEtiqueta(mayor.etiquetaF, nodo.childNode[0].location);
+        /*si es menor debe sumar */
+        let menor = this.menorque(arg0, arg1);//ciclo.addEtiquetaSS(mayor.etiquetaF);ciclo.addEtiquetaSS(menor.etiquetaF)
+        /*etiqetas verdaderas si es menor */
+        this.escribirEtiqueta(mayor.etiquetaV, nodo.childNode[0].location);
         let valorN = this.control.analizador
-            .exp.evaluarPP(dirID,"-");
+            .exp.evaluarPP(dirID, "-");
         /*guardar el nuevo valor al contador contador -1 */
-        this.control.analizador.agregarCodigo (
-            this.control.analizador.saveEnPila (
-                dirID.dir,valorN.valor),
-                nodo.childNode[0].location.last_column,nodo.childNode[0].location.first_line);
+        this.control.analizador.agregarCodigo(
+            this.control.analizador.saveEnPila(
+                dirID.dir, valorN.valor),
+            nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
         /*saltar a la ejecucion del cuerpo */
         this.control.analizador.agregarCodigo(
-            this.control.analizador.genSalto(ejecucion[0]),nodo.childNode[0].location.last_column,nodo.childNode[0].location.first_line
+            this.control.analizador.genSalto(ejecucion[0]), nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line
         );
         /*escribe etiquetas verdaderas se es menor*/
-        this.escribirEtiqueta(menor.etiquetaV,nodo.childNode[0].location);
+        this.escribirEtiqueta(menor.etiquetaV, nodo.childNode[0].location);
         valorN = this.control.analizador
-            .exp.evaluarPP(dirID,"+");
+            .exp.evaluarPP(dirID, "+");
         /*guardar el nuevo valor al contador contador +1 */
-        this.control.analizador.agregarCodigo (
-            this.control.analizador.saveEnPila (
-                dirID.dir,valorN.valor),
-                nodo.childNode[0].location.last_column,nodo.childNode[0].location.first_line);
+        this.control.analizador.agregarCodigo(
+            this.control.analizador.saveEnPila(
+                dirID.dir, valorN.valor),
+            nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
 
         /*saltar a la ejecucion del cuerpo */
         this.control.analizador.agregarCodigo(
-            this.control.analizador.genSalto(ejecucion[0]),nodo.childNode[0].location.last_column,nodo.childNode[0].location.first_line
+            this.control.analizador.genSalto(ejecucion[0]), nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line
         );
         /**escribe la etiqueta de ejecucion */
-        this.escribirEtiqueta(ejecucion,nodo.childNode[0].location);
+        this.escribirEtiqueta(ejecucion, nodo.childNode[0].location);
         /**ejecuta el cuerpo */
-        this.control.cuerpo(cuerpo,ciclo);
+        this.control.cuerpo(cuerpo, ciclo);
         /**regresa a start */
-        this.escribirSaltoStart(ciclo,nodo.childNode[0].location);
+        this.escribirSaltoStart(ciclo, nodo.childNode[0].location);
         /**sale de start */
-        this.escribirEtiquetaSalida(ciclo,nodo.childNode[0].location);
-        this.control.analizador.claseA.tabla.disminuirAmbito(); 
+        this.escribirEtiquetaSalida(ciclo, nodo.childNode[0].location);
+        this.control.analizador.claseA.tabla.disminuirAmbito();
     }
-
-
-    private escribirEtiqueta(etiqueta:string[],location:Location) {
-        if (etiqueta.length>0){
+    private escribirEtiqueta(etiqueta: string[], location: Location) {
+        if (etiqueta.length > 0) {
             this.control.analizador.agregarCodigo(this.control.analizador.escribirEtiqueta(
-                etiqueta),location.last_column,location.first_line
+                etiqueta), location.last_column, location.first_line
             );
         }
     }
-    private escribirEtiquetaSalida(ciclo:Salida,location:Location) {
-        if (ciclo.etiquetaS.length>0){
+    private escribirEtiquetaSalida(ciclo: Salida, location: Location) {
+        if (ciclo.etiquetaS.length > 0) {
             this.control.analizador.agregarCodigo(this.control.analizador.escribirEtiqueta(
-                ciclo.etiquetaS),location.last_column,location.first_line
+                ciclo.etiquetaS), location.last_column, location.first_line
             );
         }
     }
-    private escribirEtiquetaStart(ciclo:Salida,location:Location) {
-        if (ciclo.start.length>0){
+    private escribirEtiquetaStart(ciclo: Salida, location: Location) {
+        if (ciclo.start.length > 0) {
             this.control.analizador.agregarCodigo(this.control.analizador.escribirEtiqueta(
-                ciclo.start),location.last_column,location.first_line
+                ciclo.start), location.last_column, location.first_line
             );
         }
     }
-
-    private escribirSaltoStart(ciclo:Salida,location:Location) {
-        if (ciclo.etiquetaS.length>0){
+    private escribirSaltoStart(ciclo: Salida, location: Location) {
+        if (ciclo.etiquetaS.length > 0) {
             this.control.analizador.agregarCodigo(this.control.analizador.genSalto(
-                ciclo.start[0]),location.last_column,location.first_line
+                ciclo.start[0]), location.last_column, location.first_line
             );
         }
     }
+    private errorIf(exp: nodoOperacion) {
+        if (exp.tipo == this.control.analizador.BOOLEANO) {
 
-    private errorIf( exp:nodoOperacion) {
-        if ( exp.tipo == this.control.analizador.BOOLEANO){
-
-        }else {
-            this.control.analizador.newError("existe error al intentar operar el IF",exp.fila,exp.column);
+        } else {
+            this.control.analizador.newError("existe error al intentar operar el IF", exp.fila, exp.column);
         }
     }
-
-    private igual(arg0:nodoOperacion,arg1:nodoOperacion) {
+    private igual(arg0: nodoOperacion, arg1: nodoOperacion) {
         if (arg0.tipo == this.control.analizador.INT && arg1.tipo == this.control.analizador.INT) {
-            let a :Comparacion = new Comparacion(arg0,arg1,this.control.analizador,"==");
+            let a: Comparacion = new Comparacion(arg0, arg1, this.control.analizador, "==");
             return a.evaluar();
-        }else {
-            throw this.control.analizador.newError("error en un for nlos tipos estan mal", arg0.fila,arg0.column);
+        } else {
+            throw this.control.analizador.newError("error en un for nlos tipos estan mal", arg0.fila, arg0.column);
         }
     }
-
-    private mayorque(arg0:nodoOperacion,arg1:nodoOperacion) {
+    private mayorque(arg0: nodoOperacion, arg1: nodoOperacion) {
         if (arg0.tipo == this.control.analizador.INT && arg1.tipo == this.control.analizador.INT) {
-            let a :Comparacion = new Comparacion(arg0,arg1,this.control.analizador,">");
+            let a: Comparacion = new Comparacion(arg0, arg1, this.control.analizador, ">");
             return a.evaluar();
-        }else {
-            throw this.control.analizador.newError("error en un for nlos tipos estan mal", arg0.fila,arg0.column);
+        } else {
+            throw this.control.analizador.newError("error en un for nlos tipos estan mal", arg0.fila, arg0.column);
         }
     }
-    private menorque(arg0:nodoOperacion,arg1:nodoOperacion) {
+    private menorque(arg0: nodoOperacion, arg1: nodoOperacion) {
         if (arg0.tipo == this.control.analizador.INT && arg1.tipo == this.control.analizador.INT) {
-            let a :Comparacion = new Comparacion(arg0,arg1,this.control.analizador,"<");
+            let a: Comparacion = new Comparacion(arg0, arg1, this.control.analizador, "<");
             return a.evaluar();
-        }else {
-            throw this.control.analizador.newError("error en un for nlos tipos estan mal", arg0.fila,arg0.column);
+        } else {
+            throw this.control.analizador.newError("error en un for nlos tipos estan mal", arg0.fila, arg0.column);
         }
     }
-
-    
-
-
-    
 }

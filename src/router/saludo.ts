@@ -1,6 +1,6 @@
 export default class saludo {
 
-    constructor () {
+    constructor() {
         console.log("hola");
 
     }

@@ -65,9 +65,6 @@ export default class HACER {
         }
     }
 
-
-
-
     private ifSimple(exp:nodoOperacion,ciclo:Salida) {
         this.errorIf(exp);
         this.control.analizador.agregarCodigo(this.control.analizador
@@ -76,11 +73,5 @@ export default class HACER {
             this.control.analizador.agregarCodigo(this.control.analizador
                 .genSalto(ciclo.start[0]),
                 exp.column,exp.fila);
-        
-    }
-
-    
-
-
-    
+    }    
 }

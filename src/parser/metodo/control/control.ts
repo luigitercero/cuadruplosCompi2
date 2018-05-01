@@ -76,7 +76,6 @@ export default class control {
             case "Repetir":
             this.rm.ejecutar(nodo.childNode[0],new Salida(true))
             return ciclo;
-        
         }
     }
 
