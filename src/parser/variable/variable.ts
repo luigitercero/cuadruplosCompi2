@@ -38,7 +38,7 @@ export default class Variable{
         let navegar;
         switch(term) {
             case "var" :
-
+            
             variable = this.analizador.variable.var(nodo.childNode[0]);
             return this.gerVal( variable);
              case "getMetodo" :
@@ -155,7 +155,7 @@ export default class Variable{
 
         this.analizador.agregarCodigo(mov,l.last_column,l.first_line);
         this.analizador.agregarCodigo(getR,l.last_column,l.first_line);
-       this.analizador.claseA = clase;
+       
         return  new nodoOperacion(t2,metodo.getTipo(),l.last_column,l.first_line);
     }
     /**

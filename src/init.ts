@@ -9,7 +9,7 @@ export default class Init{
     public archivo:any;
     public d4:any;
     public analizador:Analizador;
-    private inter4D:Interprete|any;
+    private inter4D:Interprete;
     constructor(nombre:string){
        
       

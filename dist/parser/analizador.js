@@ -48,6 +48,7 @@ var Analizador = /** @class */ (function (_super) {
                 datos.push(simbolo.possAmbito);
                 datos.push(simbolo.linea);
                 datos.push("ptr");
+                datos.push(this.claseA.nombre);
                 ambito.push(datos);
             }
         }
@@ -61,6 +62,7 @@ var Analizador = /** @class */ (function (_super) {
             datos.push(simbolo.possAmbito);
             datos.push(simbolo.linea);
             datos.push("heap");
+            datos.push(this.claseA.nombre);
             ambito.push(datos);
         }
         return ambito;

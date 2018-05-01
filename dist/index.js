@@ -41,15 +41,15 @@ io.on('connection', function (client) {
         }
     });
     client.on('generar', function (data) {
-        siguiente = 0;
-        compilador.analizar(data);
-        var codigo = compilador.analizador.gen3D();
-        console.log(codigo);
-        console.log("fin");
-        client.emit('generar', codigo);
-        client.broadcast.emit('generar', codigo);
-        client.emit('salidaerror', "sin errores");
         try {
+            siguiente = 0;
+            compilador.analizar(data);
+            var codigo = compilador.analizador.gen3D();
+            console.log(codigo);
+            console.log("fin");
+            client.emit('generar', codigo);
+            client.broadcast.emit('generar', codigo);
+            client.emit('salidaerror', "sin errores");
         }
         catch (error) {
             client.emit('salidaerror', error.message);
@@ -123,6 +123,9 @@ io.on('connection', function (client) {
         }
     });
     client.on('siguiente', function (data) {
+        sigue(client);
+    });
+    function sigue(client) {
         try {
             var arreglo = compilador.siguiente();
             client.emit('nuevaPoss', arreglo);
@@ -138,6 +141,29 @@ io.on('connection', function (client) {
         catch (error) {
             client.emit('salidaerror', error.message);
             client.broadcast.emit('salidaerror', error.message);
+        }
+    }
+    var salida = true;
+    client.on('alto', function (data) {
+        salida = true;
+    });
+    client.on('auto', function (data) {
+        if (salida) {
+            salida = false;
+            try {
+                var count = 0;
+                var intervalObject = setInterval(function () {
+                    count++;
+                    console.log(count, 'seconds passed');
+                    sigue(client);
+                    if (salida) {
+                        console.log('exiting');
+                        clearInterval(intervalObject);
+                    }
+                }, 500);
+            }
+            catch (error) {
+            }
         }
     });
 });

@@ -124,6 +124,7 @@ var Asignacion = /** @class */ (function () {
                 var navegar = this.analizador.variable.navegar(nodo.childNode[0]);
                 this.analizador.claseA = this.analizador.buscarClase(navegar.tipo, navegar);
                 variable = this.analizador.variable.var(nodo.childNode[1], navegar.valor);
+                this.analizador.claseA = temp;
                 resultado = this.asignar(nodo.childNode[2], variable);
                 location = variable.location;
                 this.analizador.variable.setValVariable(variable, resultado, location, navegar.valor);

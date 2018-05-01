@@ -134,7 +134,6 @@ var Variable = /** @class */ (function () {
         var getR = this.analizador.getEnPila(t1, t2);
         this.analizador.agregarCodigo(mov, l.last_column, l.first_line);
         this.analizador.agregarCodigo(getR, l.last_column, l.first_line);
-        this.analizador.claseA = clase;
         return new nodoOperacion_1.default(t2, metodo.getTipo(), l.last_column, l.first_line);
     };
     /**

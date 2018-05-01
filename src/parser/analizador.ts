@@ -44,6 +44,7 @@ export default class Analizador extends Inter {
             datos.push(simbolo.possAmbito);
             datos.push(simbolo.linea);
             datos.push("ptr");
+            datos.push(this.claseA.nombre);
             ambito.push(datos)
         }
     }
@@ -58,6 +59,7 @@ export default class Analizador extends Inter {
             datos.push(simbolo.possAmbito);
             datos.push(simbolo.linea);
             datos.push("heap");
+            datos.push(this.claseA.nombre);
             ambito.push(datos)
         
     }

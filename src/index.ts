@@ -20,6 +20,7 @@ app.get('/', function(req:any, res:any,next:any) {
 });
 */
 
+
 var compilador:Compilador;
 
 
@@ -47,22 +48,22 @@ io.on('connection', function(client:any) {
         }
      });
 
-     client.on('generar', function(data:any) {
-        siguiente = 0;
-        compilador.analizar(data);
-        let codigo =compilador.analizador.gen3D()
-        console.log(codigo);
-        console.log("fin");
-        client.emit('generar',codigo );
-        client.broadcast.emit('generar',codigo);
-        client.emit('salidaerror',"sin errores" );
+    client.on('generar', function(data:any) {
+      
         try {
-
+            siguiente = 0;
+            compilador.analizar(data);
+            let codigo =compilador.analizador.gen3D()
+            console.log(codigo);
+            console.log("fin");
+            client.emit('generar',codigo );
+            client.broadcast.emit('generar',codigo);
+            client.emit('salidaerror',"sin errores" );
         } catch (error) {
             client.emit('salidaerror', error.message);
             client.broadcast.emit('salidaerror',error.message);   
         }
-      });
+    });
       
     function sendPila(client:any) {
         let pila = compilador.getPila();
@@ -116,27 +117,30 @@ io.on('connection', function(client:any) {
             client.broadcast.emit('ambito',element);
         }
     }
-     client.on('debuguear', function(data:any) {
-          try {
-            let arreglo = compilador.debuguear(data); 
-            client.emit('nuevaPoss',arreglo );
-            client.broadcast.emit('nuevaPoss',arreglo);
-            sendPila(client);
-            sendHeap(client);
-            sendPtr(client);    
-            sendPth(client);
-            sendConsola(client);
-            operacion(client);
-            sendAmbito(client);
-          } catch (error) {
-            client.emit('salidaerror', error);
-            client.broadcast.emit('salidaerror',error.message);
-          }
-       
-      });
+    client.on('debuguear', function(data:any) {
+        try {
+          let arreglo = compilador.debuguear(data); 
+          client.emit('nuevaPoss',arreglo );
+          client.broadcast.emit('nuevaPoss',arreglo);
+          sendPila(client);
+          sendHeap(client);
+          sendPtr(client);    
+          sendPth(client);
+          sendConsola(client);
+          operacion(client);
+          sendAmbito(client);
+        } catch (error) {
+          client.emit('salidaerror', error);
+          client.broadcast.emit('salidaerror',error.message);
+        }
+     
+    });
+    client.on('siguiente', function(data:any) {
+        sigue(client);
+    });
 
-      client.on('siguiente', function(data:any) {
-          try {
+    function sigue(client:any){
+        try {
             let arreglo = compilador.siguiente();
             client.emit('nuevaPoss',arreglo );
             client.broadcast.emit('nuevaPoss',arreglo);
@@ -151,7 +155,32 @@ io.on('connection', function(client:any) {
             client.emit('salidaerror', error.message);
             client.broadcast.emit('salidaerror',error.message);
           }    
-      });
+    }
+
+    let salida =true;
+    client.on('alto',function(data:any){
+        salida = true;
+    })
+
+    client.on('auto',function(data:any){
+            if (salida) {
+            salida = false;
+            try {
+                var count = 0; 
+                var intervalObject = setInterval(function () { 
+                    count++; 
+                    console.log(count, 'seconds passed');
+                    sigue(client); 
+                    if (salida) { 
+                        console.log('exiting'); 
+                        clearInterval(intervalObject); 
+                    } 
+                }, 500); 
+            } catch (error) {
+
+            }
+        }
+    })
 });
 server.listen(8080);   
 
