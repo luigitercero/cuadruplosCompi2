@@ -18,6 +18,9 @@ var Interprete = /** @class */ (function () {
         this.index = this.S;
         this.ambito = [];
     }
+    Interprete.prototype.getIndex = function () {
+        return this.index;
+    };
     Interprete.prototype.start = function () {
         console.log("Iniciando lectura de cuadruplo");
         this.leer4D(this.S);
@@ -45,8 +48,8 @@ var Interprete = /** @class */ (function () {
             this.p.parser.indice.valor = this.index;
             this.p.parser.struct.op.linea = this.index;
             this.p.parse(this.p.parser.struct.codigo[this.index].codigo);
-            this.index = this.p.parser.indice.valor;
             this.ambito = this.p.parser.struct.codigo[this.index].ambito;
+            this.index = this.p.parser.indice.valor;
             if (this.index == -1) {
                 break;
             }
@@ -64,6 +67,8 @@ var Interprete = /** @class */ (function () {
                     return arreglo_1;
                 }
             }
+            this.ambito = this.p.parser.struct.codigo[this.index].ambito;
+            this.index = this.p.parser.indice.valor;
             this.index++;
         }
         var linea = this.p.parser.struct.codigo[this.end];
@@ -81,8 +86,6 @@ var Interprete = /** @class */ (function () {
             this.p.parser.indice.valor = this.index;
             this.p.parser.struct.op.linea = this.index;
             this.p.parse(this.p.parser.struct.codigo[this.index].codigo);
-            this.index = this.p.parser.indice.valor;
-            this.index++;
             console.log(this.p.parser.struct.codigo[this.index].codigo, this.p.parser.struct.codigo[this.index].linea, this.p.parser.struct.codigo[this.index].columna);
             this.ambito = this.p.parser.struct.codigo[this.index].ambito;
         }
@@ -90,6 +93,8 @@ var Interprete = /** @class */ (function () {
             console.log("fin de siguiente");
         }
         var linea = this.p.parser.struct.codigo[this.index];
+        this.index = this.p.parser.indice.valor;
+        this.index++;
         var arreglo = [];
         arreglo.push(linea.poss);
         arreglo.push(linea.codigo);

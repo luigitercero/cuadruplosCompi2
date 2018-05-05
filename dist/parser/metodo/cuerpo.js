@@ -166,10 +166,23 @@ var cuerpo = /** @class */ (function () {
         switch (term) {
             case "ParametroM":
                 this.parametroM(nodo.childNode[0], parametro);
-                this.parametroM(nodo.childNode[1], parametro);
+                this.privateParmetroM2(nodo.childNode[2], parametro);
                 return true;
             case "e":
-                parametro.push(this.analizador.exp.analizar(nodo.childNode[0]));
+                this.privateParmetroM2(nodo.childNode[0], parametro);
+                return true;
+        }
+        throw this.analizador.newError("error parametros", 0, 0);
+    };
+    cuerpo.prototype.privateParmetroM2 = function (nodo, parametro) {
+        var term = nodo.term;
+        switch (term) {
+            case "Tipo":
+                return true;
+            case "Nuevo":
+                return true;
+            case "e":
+                parametro.push(this.analizador.exp.analizar(nodo));
                 return true;
         }
         throw this.analizador.newError("error parametros", 0, 0);

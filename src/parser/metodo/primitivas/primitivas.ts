@@ -9,13 +9,16 @@ import Salida from '../control/nodoSalida';
 import { error } from 'util';
 import nodoOperacion from '../../exp/operacion/nodoOperacion';
 import Imprimir from './imprimir'
+import Concatenar from './concatenar'
 export default class Primitivas {
 
     private analizador: Analizador;
     private imprimir: Imprimir
+    private concatenar: Concatenar;
     constructor(analizador: Analizador) {
         this.analizador = analizador
         this.imprimir = new Imprimir(analizador);
+        this.concatenar = new Concatenar(analizador);
     }
     /**
      * Primitivas
@@ -36,6 +39,8 @@ export default class Primitivas {
                 this.imprimir.imprimir(varible);
                 break;
             case "CONCATENAR":
+                this.concatenar.ejecutar(varible);
+                break;
             case "CONVERTIRCADENA":
             case "CONVERTIRENTERO":
             case "CREARPUNTERO":

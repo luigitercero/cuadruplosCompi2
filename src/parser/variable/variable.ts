@@ -38,7 +38,6 @@ export default class Variable {
         let navegar;
         switch (term) {
             case "var":
-
                 variable = this.analizador.variable.var(nodo.childNode[0]);
                 return this.gerVal(variable);
             case "getMetodo":
@@ -46,10 +45,8 @@ export default class Variable {
             case "Identi":
                 let temp = this.analizador.claseA;
                 let identi = this.identi(nodo.childNode[0]);
-
                 let op = this.identiObjec(nodo.childNode[2], identi, nodo.childNode[1].location);
                 this.analizador.claseA = temp;
-
                 return op;
             case "ESTE":
                 variable = this.analizador.variable.obtenerValorVariable("este", nodo.childNode[0].location.first_line, nodo.childNode[0].location.last_column);
@@ -107,8 +104,14 @@ export default class Variable {
 
         throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", 0, 0);
     }
-
-
+    calcularTamanio(identi: nodoOperacion, location: Location): nodoOperacion {
+        let t1 = this.analizador.newTemporal()
+        this.analizador.agregarCodigo(
+            this.analizador.getEnHeap(identi.valor, t1), location.last_column, location.first_line
+        );
+        let resultado = new nodoOperacion(t1, this.analizador.INT, location.last_column, location.first_line);
+        return resultado;
+    }
 
     /**
      * verifica que en identi venga un va o un object
@@ -116,29 +119,35 @@ export default class Variable {
      * @param identi 
      */
     public identiObjec(nodo: Nodo, identi: nodoOperacion, location: Location): nodoOperacion {
-        if (nodo.term == "var") {
-            this.analizador.claseA = this.analizador.buscarClase(identi.tipo);
-            return this.gerVal(this.analizador.variable.var(nodo, identi.valor));
-
+        if (nodo.childNode[0].token.toLowerCase() == "tamanio" && identi.simbolo.tam > 0) {
+            return this.calcularTamanio(identi, location);
         } else {
-            if (nodo.term == "getMetodo") {
-                let t1 = this.analizador.newTemporal();
-                let temp = this.analizador.claseA.tabla.ptr;
-                temp++;
-                let colocarse_this = this.analizador.genOperacion("+", "ptr", temp + "", t1);
-                let guardar_aputandor_This = this.analizador.saveEnPila(t1, identi.valor);
-                this.analizador.agregarCodigo(colocarse_this, location.last_column, location.first_line);
-                this.analizador.agregarCodigo(colocarse_this, location.last_column, location.first_line);
-                return this.getmetodo(nodo, identi);
+            if (nodo.term == "var") {
+                this.analizador.claseA = this.analizador.buscarClase(identi.tipo);
+                return this.gerVal(this.analizador.variable.var(nodo, identi.valor));
             }
+            else {
+                if (nodo.term == "getMetodo") {
+                    let t1 = this.analizador.newTemporal();
+                    let temp = this.analizador.claseA.tabla.ptr;
+                    temp++;
+                    let colocarse_this = this.analizador.genOperacion("+", "ptr", temp + "", t1);
+                    let guardar_aputandor_This = this.analizador.saveEnPila(t1, identi.valor);
+                    this.analizador.agregarCodigo(colocarse_this, location.last_column, location.first_line);
+                    this.analizador.agregarCodigo(colocarse_this, location.last_column, location.first_line);
+                    return this.getmetodo(nodo, identi);
+                }
 
+            }
         }
         throw this.analizador.newError("no se si es variable o metodo", 0, 0)
 
     }
     gerVal(variable: Dir): nodoOperacion {
         let val = this.analizador.variable.getValorVariable(variable);
-        return new nodoOperacion(val, variable.simbolo.getTipo(), variable.location.last_column, variable.location.first_line);
+        let operador = new nodoOperacion(val, variable.simbolo.getTipo(), variable.location.last_column, variable.location.first_line);
+        operador.simbolo = variable.simbolo;
+        return operador
     }
 
     /**este deberia jalar retotno */
@@ -430,6 +439,81 @@ export default class Variable {
      * @param location  en donde se declaro 
      */
     setValVariable(simbolo: Dir, resultado: nodoOperacion, location: Location, inicio?: string) {
+        return this.setVariableFiltro(simbolo, resultado, location, inicio);
+    }
+
+    private setVariableFiltro(simbolo: Dir, resultado: nodoOperacion, location: Location, inicio?: string) {
+        if (simbolo.simbolo.getTipo() == resultado.tipo) {
+            return this.setVariableNormal(simbolo, resultado, location, inicio);
+        } else if (resultado.tipo == this.analizador.STRING && simbolo.simbolo.getTipo() == this.analizador.CARACTER) {
+
+            return this.asignarCadenaAArreglo(simbolo, resultado, location);
+        } else if (simbolo.simbolo.getTipo() == this.analizador.DOUBLE && resultado.tipo == this.analizador.INT) {
+            return this.setVariableNormal(simbolo, resultado, location, inicio);
+        } else if (resultado.tipo == this.analizador.NULL) {
+            return this.setVariableNormal(simbolo, resultado, location, inicio);
+        }
+        throw this.analizador.newError("error al asignar tipos " + simbolo.simbolo.getNombre() + ": "
+            + simbolo.simbolo.getTipo() + "  no es compatible con el valor de: " + resultado.tipo
+            , location.first_line, location.last_column)
+    }
+
+    private asignarCadenaAArreglo(simbolo: Dir, arreglo: nodoOperacion, location: Location, inicio?: string) {
+        let dim = simbolo.simbolo.tam;
+        let dirArreglo = this.getValorVariable(simbolo);
+        let val = this.analizador.exp.getValor(arreglo);
+        let t1 = this.analizador.newTemporal();
+        /*posicionarse al inicio del arreglo */
+
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("+", (dim + 1) + "", dirArreglo, t1),
+            location.last_column, location.first_line
+        );
+
+        let t2 = this.analizador.newTemporal();
+        let lv = this.analizador.newEtiqueta();
+        let lf = this.analizador.newEtiqueta();
+        let ls = this.analizador.newEtiqueta();
+
+        this.analizador.agregarCodigo(
+            this.analizador.escribirEtiquetaS(ls), arreglo.column, arreglo.fila
+        );
+        /*obtener valor de la variable */
+        this.analizador.agregarCodigo(
+            this.analizador.getEnHeap(arreglo.valor, t2), arreglo.column, arreglo.fila
+        );
+        /**escribiendo if papara seber si es nulo */
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("!=", t2, this.analizador.NULL, lv), arreglo.column, arreglo.fila
+        );
+        this.analizador.agregarCodigo(
+            this.analizador.genSalto(lf), arreglo.column, arreglo.fila
+        );
+        this.analizador.agregarCodigo(
+            this.analizador.escribirEtiquetaS(lv), arreglo.column, arreglo.fila
+        );
+        this.analizador.agregarCodigo(
+            this.analizador.saveEnHeap(t1, t2), arreglo.column, arreglo.fila
+        );
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("+", t1, 1 + "", t1), arreglo.column, arreglo.fila
+        );
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("+", arreglo.valor, 1 + "", arreglo.valor), arreglo.column, arreglo.fila
+        );
+        this.analizador.agregarCodigo(
+            this.analizador.genSalto(ls), arreglo.column, arreglo.fila
+        );
+        this.analizador.agregarCodigo(
+            this.analizador.escribirEtiquetaS(lf), arreglo.column, arreglo.fila
+        );
+        this.analizador.agregarCodigo(
+            this.analizador.saveEnHeap(t1, this.analizador.NULL), arreglo.column, arreglo.fila
+        );
+
+    }
+
+    private setVariableNormal(simbolo: Dir, resultado: nodoOperacion, location: Location, inicio?: string) {
         let val = this.analizador.exp.getValor(resultado);
         let comentario = this.analizador.genComentario("se gurdara un valor a la variable " + simbolo.simbolo.getNombre())
         if (inicio === undefined) {
@@ -446,11 +530,6 @@ export default class Variable {
             }
         } else {
             let t = this.validarPossdeArreglo(simbolo, location);
-            //let temp = this.analizador.newTemporal();
-            /*this.analizador.agregarCodigo(
-                this.analizador.genOperacion('+',inicio,t,temp)+comentario,
-                 location.last_column,location.first_line
-            );*/
             this.analizador.agregarCodigo(this.analizador.saveEnHeap(t, val) + comentario, location.last_column, location.first_line);
             return true;
         }

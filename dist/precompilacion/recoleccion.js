@@ -14,11 +14,7 @@ var Recoleccion = /** @class */ (function () {
         this.metodo = new metodo_1.default(this);
     }
     Recoleccion.prototype.analizar = function (nodo) {
-        try {
-            this.inicio(nodo);
-        }
-        catch (error) {
-        }
+        this.inicio(nodo);
     };
     Recoleccion.prototype.inicio = function (nodo) {
         var nombre = nodo.childNode[0].term;

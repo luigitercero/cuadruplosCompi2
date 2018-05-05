@@ -82,7 +82,7 @@ export default class Analizador extends Inter {
     buscarClase(nombre: string, navegar?: nodoOperacion): Clase {
         for (let index = 0; index < this.clases.length; index++) {
             let element = this.clases[index];
-            if (element.nombre == nombre) {
+            if (element.nombre == nombre.toLowerCase()) {
                 element.verVariable();
                 return element;
             }

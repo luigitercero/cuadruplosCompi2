@@ -21,78 +21,122 @@ app.get('/', function(req:any, res:any,next:any) {
 */
 
 
-var compilador: Compilador;
+
 
 
 io.on('connection', function (client: any) {
+    let salida = true;
+    var compilador: Compilador;
     console.log('Client connected...');
-
     client.on('join', function (data: any) {
         console.log(data);
+        salida = true;
     });
-
     client.on('messages', function (data: any) {
         client.emit('broad', data);
         client.broadcast.emit('broad', data);
+        salida = true;
     });
-
     client.on('archivo', function (data: any) {
         try {
 
             compilador = Compilador.init(data);
             client.emit('archivo', compilador.archivo);
             client.broadcast.emit('archivo', compilador.archivo);
+            salida = true;
         } catch (error) {
-            client.emit('salidaerror', error.message);
-            client.broadcast.emit('salidaerror', error.message);
+            client.emit('salidaerror', "archivo " + error.message);
+            client.broadcast.emit('salidaerror', "archivo" + error.message);
         }
     });
-
     client.on('generar', function (data: any) {
-
+        siguiente = 0;
+        compilador.analizar(data);
+        let codigo = compilador.analizador.gen3D()
+        console.log(codigo);
+        console.log("fin");
+        client.emit('generar', codigo);
+        salida = true;
         try {
-            siguiente = 0;
-            compilador.analizar(data);
-            let codigo = compilador.analizador.gen3D()
-            console.log(codigo);
-            console.log("fin");
-            client.emit('generar', codigo);
-            client.broadcast.emit('generar', codigo);
-            client.emit('salidaerror', "sin errores");
+
         } catch (error) {
-            client.emit('salidaerror', error.message);
-            client.broadcast.emit('salidaerror', error.message);
+            client.emit('salidaerror', "generando " + error.message);
+            client.broadcast.emit('salidaerror', "generando " + error.message);
         }
     });
-
     function sendPila(client: any) {
         let pila = compilador.getPila();
-        client.emit('pila', "limpiar");
-        client.broadcast.emit('pila', "limpiar");
-        for (let index = 0; index < pila.length; index++) {
-            const element = pila[index];
-            client.emit('pila', element);
-            client.broadcast.emit('pila', element);
+        let salida = "";
+        if (pila.length >= 35174492) {
+            client.emit('salidaerror', "nulo");
+            client.broadcast.emit('salidaerror', "nulo");
+        } else {
+            let puntero = compilador.getptr()
+            for (let index = 0; index < pila.length; index++) {
+                const element = pila[index];
+                if (element == undefined) {
+
+                    if (puntero == index) {
+                        salida = salida + "<tr class = \"purple lighten-5\">"
+                    } else {
+                        salida = salida + "<tr>"
+                    }
+                    salida = salida
+                        + "<th>" + index + "</th>"
+                        + "<th>" + "null" + "</th>"
+                        + "</tr>"
+                } else {
+
+                    if (puntero == index) {
+                        salida = salida + "<tr class = \"purple lighten-5\">"
+                    } else {
+                        salida = salida + "<tr>"
+                    }
+                    salida = salida
+                        + "<th>" + index + "</th>"
+                        + "<th>" + element + "</th>"
+                        + "</tr>"
+                }
+
+            }
+            client.emit('pila', "limpiar");
+            client.broadcast.emit('pila', "limpiar");
+            client.emit('pila', salida);
+            client.broadcast.emit('pila', salida);
         }
     }
-
     function sendHeap(client: any) {
         let heap = compilador.getHeap();
+        let salida = "";
+        for (let index = 0; index < heap.length; index++) {
+            if (heap.length >= 35174492) {
+                client.emit('salidaerror', "nulo");
+                client.broadcast.emit('salidaerror', "nulo");
+                break
+            }
+            const element = heap[index];
+            if (element == undefined) {
+                salida = salida + "<tr>"
+                    + "<th>" + index + "</th>"
+                    + "<th>" + "null" + "</th>"
+                    + "</tr>"
+            } else {
+                salida = salida + "<tr>"
+                    + "<th>" + index + "</th>"
+                    + "<th>" + element + "</th>"
+                    + "</tr>"
+            }
+
+        }
         client.emit('heap', "limpiar");
         client.broadcast.emit('heap', "limpiar");
-
-        for (let index = 0; index < heap.length; index++) {
-            const element = heap[index];
-            client.emit('heap', element);
-            client.broadcast.emit('heap', element);
-        }
+        client.emit('heap', salida);
+        client.broadcast.emit('heap', salida);
     }
-
     function sendPtr(client: any) {
         client.emit('ptr', compilador.getptr());
         client.broadcast.emit('consola', compilador.getptr());
     }
-
     function sendPth(client: any) {
         client.emit('pth', compilador.getpth());
         client.broadcast.emit('pth', compilador.getpth());
@@ -109,13 +153,27 @@ io.on('connection', function (client: any) {
     }
     function sendAmbito(client: any) {
         let clase = compilador.getAmbito()
-        client.emit('ambito', "limpiar");
-        client.broadcast.emit('ambito', "limpiar");
+        let salida = "";
+        let ptr = compilador.getptr()
         for (let index = 0; index < clase.length; index++) {
             const element = clase[index];
-            client.emit('ambito', element);
-            client.broadcast.emit('ambito', element);
+            salida = salida + "<tr>"
+                + "<th>" + index + "</th>"
+                + "<th>" + (index + ptr) + "</th>"
+                + "<th class = \"purple lighten-5\">" + element[0] + "</th>"
+                + "<th>" + element[1] + "</th>"
+                + "<th>" + element[2] + "</th>"
+                + "<th>" + element[3] + "</th>"
+                + "<th>" + element[4] + "</th>"
+                + "<th>" + element[5] + "</th>"
+                + "<th>" + element[6] + "</th>"
+                + "<th>" + element[7] + "</th>"
+                + "</tr>";
         }
+        client.emit('ambito', "limpiar");
+        client.broadcast.emit('ambito', "limpiar");
+        client.emit('ambito', salida);
+        client.broadcast.emit('ambito', salida);
     }
     client.on('debuguear', function (data: any) {
         try {
@@ -130,16 +188,18 @@ io.on('connection', function (client: any) {
             operacion(client);
             sendAmbito(client);
         } catch (error) {
-            client.emit('salidaerror', error);
-            client.broadcast.emit('salidaerror', error.message);
+            client.emit('salidaerror', "debuguear " + error.message);
+            client.broadcast.emit('salidaerror', "debuguear " + error.message);
         }
-
+        salida = true;
     });
     client.on('siguiente', function (data: any) {
+        salida = true;
         sigue(client);
-    });
 
+    });
     function sigue(client: any) {
+
         try {
             let arreglo = compilador.siguiente();
             client.emit('nuevaPoss', arreglo);
@@ -152,21 +212,19 @@ io.on('connection', function (client: any) {
             operacion(client);
             sendAmbito(client);
         } catch (error) {
-            client.emit('salidaerror', error.message);
-            client.broadcast.emit('salidaerror', error.message);
+            client.emit('salidaerror', "sigue " + error.message);
+            client.broadcast.emit('salidaerror', "sigue  " + error.message);
         }
     }
-
-    let salida = true;
     client.on('alto', function (data: any) {
         salida = true;
     })
-
     client.on('auto', function (data: any) {
         if (salida) {
-            salida = false;
+
+            var count = 0;
             try {
-                var count = 0;
+                salida = false;
                 var intervalObject = setInterval(function () {
                     count++;
                     console.log(count, 'seconds passed');
@@ -174,13 +232,44 @@ io.on('connection', function (client: any) {
                     if (salida) {
                         console.log('exiting');
                         clearInterval(intervalObject);
+                    } if (!salida) {
+                        salida = compilador.getSalida();
+                        if (salida) {
+                            console.log('exiting');
+                            clearInterval(intervalObject);
+                        }
                     }
+
                 }, 500);
             } catch (error) {
-
+                salida = true;
+                client.emit('salidaerror', "automatico " + error.message);
+                client.broadcast.emit('salidaerror', "automatico " + error.message);
             }
         }
-    })
+    });
+    client.on('probar', function (data: any) {
+        try {
+            compilador = Compilador.init(data, true);
+            siguiente = 0;
+            compilador.analizar(data);
+            let codigo = compilador.analizador.gen3D()
+            console.log(codigo);
+            console.log("fin");
+            salida = true;
+            let arreglo = compilador.debuguear(data);
+            let consola = compilador.consola()
+            client.emit('consolaP', consola);
+            client.broadcast.emit('consolaP', consola);
+
+        } catch (error) {
+            client.emit('salidaerror', "generando " + error.message);
+            client.broadcast.emit('salidaerror', "generando " + error.message);
+        }
+    });
+    client.on('calificar', function (data: any) {
+
+    });
 });
 server.listen(8080);
 

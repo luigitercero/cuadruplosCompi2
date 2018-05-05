@@ -90,7 +90,7 @@ export default class Declaracion extends Asignacion {
     protected filtrarVariable(variable: nodoOperacion) {
         if (variable.simbolo.tam > 0) {
             this.analizador.agregarCodigo(this.analizador.genComentario("desplazamiento de variable a psoicion de valores"), variable.column, variable.fila);
-            let temp = this.analizador.variable.obtenerValorVariable(variable.simbolo.getNombre(), variable.column, variable.fila);
+            let temp = this.analizador.variable.obtenerValorVariable(variable.simbolo.getNombre(), variable.fila, variable.column);
             this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.done, variable.temp), variable.column, variable.fila);
             this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", variable.temp, "heap"), variable.column, variable.fila);
             this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", 1 + "", "heap"), variable.column, variable.fila);

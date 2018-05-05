@@ -100,7 +100,6 @@ export default class Asignacion {
                 return this.analizador.exp.masIgual(nodo.childNode[1], variable, "/");
         }
         throw this.analizador.newError("error al asignar", 0, 0)
-
     }
 
     private getAdd(nodo: Nodo): nodoOperacion {

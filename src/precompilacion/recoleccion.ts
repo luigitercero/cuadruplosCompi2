@@ -16,11 +16,8 @@ export default class Recoleccion {
         this.metodo = new Metodo(this);
     }
     analizar(nodo: Nodo) {
-        try {
-            this.inicio(nodo);
-        } catch (error) {
 
-        }
+        this.inicio(nodo);
 
     }
 

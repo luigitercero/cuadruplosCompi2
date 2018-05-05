@@ -7,15 +7,20 @@ var nodo_1 = __importDefault(require("./parser/nodo"));
 var analizador_1 = __importDefault(require("./parser/analizador"));
 var interprete_1 = __importDefault(require("./compilador/Parser with parser/Interprete4D/interprete"));
 var Init = /** @class */ (function () {
-    function Init(nombre) {
-        var fs = require('fs');
-        var rut = "/home/luigitercero/Documentos/Compi2/Archivo De entrada/";
-        //let archivo = fs.readFileSync(rut+'arreglo', 'utf-8');
-        //let archivo = fs.readFileSync(rut+'asignaciones', 'utf-8');
-        //let archivo = fs.readFileSync(rut+'operacion', 'utf-8');
-        //let archivo = fs.readFileSync(rut+'test', 'utf-8');
-        this.archivo = fs.readFileSync(rut + nombre, 'utf-8');
-        //let archivo = fs.readFileSync(rut+'control', 'utf-8');
+    function Init(nombre, archivo) {
+        if (archivo == undefined) {
+            var fs = require('fs');
+            var rut = "/home/luigitercero/Documentos/Compi2/Archivo De entrada/";
+            //let archivo = fs.readFileSync(rut+'arreglo', 'utf-8');
+            //let archivo = fs.readFileSync(rut+'asignaciones', 'utf-8');
+            //let archivo = fs.readFileSync(rut+'operacion', 'utf-8');
+            //let archivo = fs.readFileSync(rut+'test', 'utf-8');
+            this.archivo = fs.readFileSync(rut + nombre, 'utf-8');
+            //let archivo = fs.readFileSync(rut+'control', 'utf-8');
+        }
+        else {
+            this.archivo = nombre;
+        }
     }
     Init.prototype.analizar = function (data) {
         this.archivo = data;
@@ -27,6 +32,12 @@ var Init = /** @class */ (function () {
         var result = this.analizador.get3D();
         this.d4 = result;
         this.inter4D = new interprete_1.default(result);
+    };
+    Init.prototype.getSalida = function () {
+        if (this.inter4D.getIndex() > 0) {
+            return false;
+        }
+        return true;
     };
     Init.prototype.getAmbito = function () {
         return this.inter4D.ambito;
@@ -73,8 +84,8 @@ var Init = /** @class */ (function () {
     Init.prototype.siguiente = function () {
         return this.inter4D.siguiente();
     };
-    Init.init = function (nombre) {
-        return new Init(nombre);
+    Init.init = function (nombre, archivo) {
+        return new Init(nombre, archivo);
     };
     return Init;
 }());

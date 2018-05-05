@@ -43,12 +43,12 @@ var Operacion = /** @class */ (function () {
         }
     };
     Operacion.prototype.getSTACK = function (arg0, temp) {
-        this.op = temp + " = stack[" + arg0 + "]</br>";
+        this.op = temp + " = stack[" + arg0 + "] | ";
         this.op = this.op + temp + " = " + this.stack[arg0];
         this.setValTemp(temp, this.stack[arg0]);
     };
     Operacion.prototype.getHEAP = function (arg0, temp) {
-        this.op = temp + " = heap[" + arg0 + "]</br>";
+        this.op = temp + " = heap[" + arg0 + "] | ";
         this.op = this.op + temp + " = " + this.heap[arg0];
         this.setValTemp(temp, this.heap[arg0]);
     };

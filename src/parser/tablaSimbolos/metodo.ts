@@ -22,9 +22,11 @@ export default class Metodo extends Simbolo {
         this.postFijo.push(simbolo.getTipo());
         this.parametro.push(simbolo);
     }
+
     setPrefijo(prefijo: string) {
         this.preFijo = prefijo.toLocaleLowerCase();
     }
+
     addPostFijo(tipo: string) {
         this.postFijo.push(tipo.toLocaleLowerCase());
     }

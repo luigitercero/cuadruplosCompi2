@@ -10,18 +10,22 @@ export default class Init {
     public d4: any;
     public analizador: Analizador;
     private inter4D: Interprete;
-    constructor(nombre: string) {
+    constructor(nombre: string, archivo?: boolean) {
+        if (archivo == undefined) {
+            var fs = require('fs');
+            let rut = "/home/luigitercero/Documentos/Compi2/Archivo De entrada/"
+            //let archivo = fs.readFileSync(rut+'arreglo', 'utf-8');
+            //let archivo = fs.readFileSync(rut+'asignaciones', 'utf-8');
+            //let archivo = fs.readFileSync(rut+'operacion', 'utf-8');
+            //let archivo = fs.readFileSync(rut+'test', 'utf-8');
+            this.archivo = fs.readFileSync(rut + nombre, 'utf-8');
+            //let archivo = fs.readFileSync(rut+'control', 'utf-8');
 
-        var fs = require('fs');
-        let rut = "/home/luigitercero/Documentos/Compi2/Archivo De entrada/"
-        //let archivo = fs.readFileSync(rut+'arreglo', 'utf-8');
-        //let archivo = fs.readFileSync(rut+'asignaciones', 'utf-8');
-        //let archivo = fs.readFileSync(rut+'operacion', 'utf-8');
-        //let archivo = fs.readFileSync(rut+'test', 'utf-8');
-        this.archivo = fs.readFileSync(rut + nombre, 'utf-8');
-        //let archivo = fs.readFileSync(rut+'control', 'utf-8');
+        } else {
+            this.archivo = nombre;
+        }
+
     }
-
 
     public analizar(data: any) {
         this.archivo = data;
@@ -35,22 +39,32 @@ export default class Init {
         this.inter4D = new Interprete(result);
     }
 
+    public getSalida(): boolean {
+        if (this.inter4D.getIndex() > 0) {
+            return false;
+        }
+        return true;
+    }
     public getAmbito(): any {
         return this.inter4D.ambito;
-
     }
+
     public getPila() {
         return this.inter4D.p.parser.struct.op.stack;
     }
+
     public consola() {
         return this.inter4D.p.parser.struct.op.consola;
     }
+
     public getHeap() {
         return this.inter4D.p.parser.struct.op.heap;
     }
+
     public getptr() {
         return this.inter4D.p.parser.struct.op.ptr;
     }
+
     public getpth() {
         return this.inter4D.p.parser.struct.op.pth;
     }
@@ -58,6 +72,7 @@ export default class Init {
     public getOperacion() {
         return this.inter4D.p.parser.struct.op.op;
     }
+
     public debuguear(data: any) {
         if (this.inter4D != undefined) {
             // console.log(result.temporal[key].tempora+ " esto estoy probando " + key);
@@ -79,13 +94,13 @@ export default class Init {
             return a;
         }
     }
+
     public siguiente() {
         return this.inter4D.siguiente();
     }
 
-
-    static init(nombre: string): Init {
-        return new Init(nombre);
+    static init(nombre: string, archivo?: boolean): Init {
+        return new Init(nombre, archivo);
     }
 }
 
@@ -95,10 +110,8 @@ interface IPerson {
 }
 
 class P {
-
     p() {
         var persons: { [id: string]: IPerson; } = {};
         persons["p1"] = { firstName: "F1", lastName: "L1" };
-
     }
 }

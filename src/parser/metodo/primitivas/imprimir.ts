@@ -1,5 +1,6 @@
 import Analizador from '../../analizador';
 import nodoOperacion from '../../exp/operacion/nodoOperacion';
+import Simbolo from '../../tablaSimbolos/simbolo';
 export default class Imprimir {
 
     private analizador: Analizador;
@@ -15,8 +16,13 @@ export default class Imprimir {
                     this.imprimirNumero(parametro[0]);
                     break;
                 case this.analizador.CARACTER:
-                    this.imprimirCaracter(parametro[0]);
-
+                    if (parametro[0].simbolo == null) {
+                        this.imprimirCaracter(parametro[0]);
+                    } else if (parametro[0].simbolo.tam < 1) {
+                        this.imprimirCaracter(parametro[0]);
+                    } else if (parametro[0].simbolo.tam == 1) {
+                        this.imprimirString(parametro[0], 2);
+                    }
                     break;
                 case this.analizador.STRING:
                     this.imprimirString(parametro[0]);
@@ -46,11 +52,16 @@ export default class Imprimir {
             "print ( \"%c\" ," + arreglo.valor + ");", arreglo.column, arreglo.fila
         );
     }
-    private imprimirString(arreglo: nodoOperacion) {
+    private imprimirString(arreglo: nodoOperacion, poss?: number) {
         let t1 = this.analizador.newTemporal();
         let lv = this.analizador.newEtiqueta();
         let lf = this.analizador.newEtiqueta();
         let ls = this.analizador.newEtiqueta();
+        if (poss != undefined) {
+            this.analizador.agregarCodigo(
+                this.analizador.genOperacion("+", arreglo.valor, poss + "", arreglo.valor), arreglo.column, arreglo.fila
+            );
+        }
 
         this.analizador.agregarCodigo(
             this.analizador.escribirEtiquetaS(ls), arreglo.column, arreglo.fila
@@ -71,7 +82,6 @@ export default class Imprimir {
             this.analizador.escribirEtiquetaS(lv), arreglo.column, arreglo.fila
         );
         this.analizador.agregarCodigo(
-
             "print ( \"%c\" ," + t1 + ");", arreglo.column, arreglo.fila
         );
         this.analizador.agregarCodigo(

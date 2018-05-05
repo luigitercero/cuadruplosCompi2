@@ -79,7 +79,7 @@ var Analizador = /** @class */ (function (_super) {
     Analizador.prototype.buscarClase = function (nombre, navegar) {
         for (var index = 0; index < this.clases.length; index++) {
             var element = this.clases[index];
-            if (element.nombre == nombre) {
+            if (element.nombre == nombre.toLowerCase()) {
                 element.verVariable();
                 return element;
             }

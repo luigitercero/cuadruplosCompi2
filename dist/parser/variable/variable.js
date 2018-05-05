@@ -93,33 +93,46 @@ var Variable = /** @class */ (function () {
         }
         throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", 0, 0);
     };
+    Variable.prototype.calcularTamanio = function (identi, location) {
+        var t1 = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(this.analizador.getEnHeap(identi.valor, t1), location.last_column, location.first_line);
+        var resultado = new nodoOperacion_1.default(t1, this.analizador.INT, location.last_column, location.first_line);
+        return resultado;
+    };
     /**
      * verifica que en identi venga un va o un object
      * @param nodo
      * @param identi
      */
     Variable.prototype.identiObjec = function (nodo, identi, location) {
-        if (nodo.term == "var") {
-            this.analizador.claseA = this.analizador.buscarClase(identi.tipo);
-            return this.gerVal(this.analizador.variable.var(nodo, identi.valor));
+        if (nodo.childNode[0].token.toLowerCase() == "tamanio" && identi.simbolo.tam > 0) {
+            return this.calcularTamanio(identi, location);
         }
         else {
-            if (nodo.term == "getMetodo") {
-                var t1 = this.analizador.newTemporal();
-                var temp = this.analizador.claseA.tabla.ptr;
-                temp++;
-                var colocarse_this = this.analizador.genOperacion("+", "ptr", temp + "", t1);
-                var guardar_aputandor_This = this.analizador.saveEnPila(t1, identi.valor);
-                this.analizador.agregarCodigo(colocarse_this, location.last_column, location.first_line);
-                this.analizador.agregarCodigo(colocarse_this, location.last_column, location.first_line);
-                return this.getmetodo(nodo, identi);
+            if (nodo.term == "var") {
+                this.analizador.claseA = this.analizador.buscarClase(identi.tipo);
+                return this.gerVal(this.analizador.variable.var(nodo, identi.valor));
+            }
+            else {
+                if (nodo.term == "getMetodo") {
+                    var t1 = this.analizador.newTemporal();
+                    var temp = this.analizador.claseA.tabla.ptr;
+                    temp++;
+                    var colocarse_this = this.analizador.genOperacion("+", "ptr", temp + "", t1);
+                    var guardar_aputandor_This = this.analizador.saveEnPila(t1, identi.valor);
+                    this.analizador.agregarCodigo(colocarse_this, location.last_column, location.first_line);
+                    this.analizador.agregarCodigo(colocarse_this, location.last_column, location.first_line);
+                    return this.getmetodo(nodo, identi);
+                }
             }
         }
         throw this.analizador.newError("no se si es variable o metodo", 0, 0);
     };
     Variable.prototype.gerVal = function (variable) {
         var val = this.analizador.variable.getValorVariable(variable);
-        return new nodoOperacion_1.default(val, variable.simbolo.getTipo(), variable.location.last_column, variable.location.first_line);
+        var operador = new nodoOperacion_1.default(val, variable.simbolo.getTipo(), variable.location.last_column, variable.location.first_line);
+        operador.simbolo = variable.simbolo;
+        return operador;
     };
     /**este deberia jalar retotno */
     Variable.prototype.getmetodo = function (nodo, esto) {
@@ -356,6 +369,50 @@ var Variable = /** @class */ (function () {
      * @param location  en donde se declaro
      */
     Variable.prototype.setValVariable = function (simbolo, resultado, location, inicio) {
+        return this.setVariableFiltro(simbolo, resultado, location, inicio);
+    };
+    Variable.prototype.setVariableFiltro = function (simbolo, resultado, location, inicio) {
+        if (simbolo.simbolo.getTipo() == resultado.tipo) {
+            return this.setVariableNormal(simbolo, resultado, location, inicio);
+        }
+        else if (resultado.tipo == this.analizador.STRING && simbolo.simbolo.getTipo() == this.analizador.CARACTER) {
+            return this.asignarCadenaAArreglo(simbolo, resultado, location);
+        }
+        else if (simbolo.simbolo.getTipo() == this.analizador.DOUBLE && resultado.tipo == this.analizador.INT) {
+            return this.setVariableNormal(simbolo, resultado, location, inicio);
+        }
+        else if (resultado.tipo == this.analizador.NULL) {
+            return this.setVariableNormal(simbolo, resultado, location, inicio);
+        }
+        throw this.analizador.newError("error al asignar tipos " + simbolo.simbolo.getNombre() + ": "
+            + simbolo.simbolo.getTipo() + "  no es compatible con el valor de: " + resultado.tipo, location.first_line, location.last_column);
+    };
+    Variable.prototype.asignarCadenaAArreglo = function (simbolo, arreglo, location, inicio) {
+        var dim = simbolo.simbolo.tam;
+        var dirArreglo = this.getValorVariable(simbolo);
+        var val = this.analizador.exp.getValor(arreglo);
+        var t1 = this.analizador.newTemporal();
+        /*posicionarse al inicio del arreglo */
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", (dim + 1) + "", dirArreglo, t1), location.last_column, location.first_line);
+        var t2 = this.analizador.newTemporal();
+        var lv = this.analizador.newEtiqueta();
+        var lf = this.analizador.newEtiqueta();
+        var ls = this.analizador.newEtiqueta();
+        this.analizador.agregarCodigo(this.analizador.escribirEtiquetaS(ls), arreglo.column, arreglo.fila);
+        /*obtener valor de la variable */
+        this.analizador.agregarCodigo(this.analizador.getEnHeap(arreglo.valor, t2), arreglo.column, arreglo.fila);
+        /**escribiendo if papara seber si es nulo */
+        this.analizador.agregarCodigo(this.analizador.genOperacion("!=", t2, this.analizador.NULL, lv), arreglo.column, arreglo.fila);
+        this.analizador.agregarCodigo(this.analizador.genSalto(lf), arreglo.column, arreglo.fila);
+        this.analizador.agregarCodigo(this.analizador.escribirEtiquetaS(lv), arreglo.column, arreglo.fila);
+        this.analizador.agregarCodigo(this.analizador.saveEnHeap(t1, t2), arreglo.column, arreglo.fila);
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", t1, 1 + "", t1), arreglo.column, arreglo.fila);
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", arreglo.valor, 1 + "", arreglo.valor), arreglo.column, arreglo.fila);
+        this.analizador.agregarCodigo(this.analizador.genSalto(ls), arreglo.column, arreglo.fila);
+        this.analizador.agregarCodigo(this.analizador.escribirEtiquetaS(lf), arreglo.column, arreglo.fila);
+        this.analizador.agregarCodigo(this.analizador.saveEnHeap(t1, this.analizador.NULL), arreglo.column, arreglo.fila);
+    };
+    Variable.prototype.setVariableNormal = function (simbolo, resultado, location, inicio) {
         var val = this.analizador.exp.getValor(resultado);
         var comentario = this.analizador.genComentario("se gurdara un valor a la variable " + simbolo.simbolo.getNombre());
         if (inicio === undefined) {
@@ -373,11 +430,6 @@ var Variable = /** @class */ (function () {
         }
         else {
             var t = this.validarPossdeArreglo(simbolo, location);
-            //let temp = this.analizador.newTemporal();
-            /*this.analizador.agregarCodigo(
-                this.analizador.genOperacion('+',inicio,t,temp)+comentario,
-                 location.last_column,location.first_line
-            );*/
             this.analizador.agregarCodigo(this.analizador.saveEnHeap(t, val) + comentario, location.last_column, location.first_line);
             return true;
         }
