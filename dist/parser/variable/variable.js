@@ -283,10 +283,10 @@ var Variable = /** @class */ (function () {
     Variable.prototype.incializar = function (simbolo, location, inicio) {
         var tipo = simbolo.getTipo();
         var escritura = "";
-        var temp = this.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column, inicio);
-        if (simbolo.dim.length > 0) {
+        if (simbolo.tam > 0) {
             return;
         }
+        var temp = this.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column, inicio);
         switch (tipo) {
             case this.analizador.INT:
                 this.setValVariable(temp, new nodoOperacion_1.default("0", simbolo.getTipo(), location.last_column, location.first_line), location, inicio);
@@ -559,6 +559,10 @@ var Variable = /** @class */ (function () {
     };
     Variable.prototype.agregarDimAHeap = function (variable, val, location) {
         if (variable.simbolo.tam == 0) {
+            /**
+             * tengo que revisar las dimension dentroo del heap por que estas se estan perdinedo
+             *
+             */
             this.analizador.salidaConsola("iniciado variable con tama;o 0");
             this.analizador.agregarCodigo(this.analizador.saveEnPila(variable.simbolo.possAmbito + "", "heap"), location.last_column, location.first_line);
             this.analizador.agregarCodigo(this.analizador.genComentario("saltando la primera poscion"), location.last_column, location.first_line);

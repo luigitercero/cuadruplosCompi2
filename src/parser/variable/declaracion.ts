@@ -145,9 +145,16 @@ export default class Declaracion extends Asignacion {
 
     protected agregarDimAHeap(variable: nodoOperacion, val: nodoOperacion, location: any) {
         if (variable.simbolo.tam == 0) {
-            this.analizador.salidaConsola("iniciado variable con tama;o 0");
+            this.analizador.agregarCodigo(this.analizador.genComentario(
+                "primera posicion")
+                , location.last_column, location.first_line);
+            let t1 = this.analizador.newTemporal();
+            this.analizador.agregarCodigo(this.analizador.genOperacion(
+                "+", variable.simbolo.possAmbito + "", "ptr", t1)
+                , location.last_column, location.first_line);
+
             this.analizador.agregarCodigo(this.analizador.saveEnPila(
-                variable.simbolo.possAmbito + "", "heap")
+                t1 + "", "heap")
                 , location.last_column, location.first_line);
             this.analizador.agregarCodigo(this.analizador.genComentario(
                 "saltando la primera poscion")

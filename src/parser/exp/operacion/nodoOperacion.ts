@@ -12,6 +12,7 @@ export default class nodoOperacion {
     public dim: number;
     public temp: string;
     public simbolo: Simbolo;
+    public tam: number;
 
     constructor(valor: string, tipo: string, column: number | -1, fila: number | -1) {
         this.valor = valor;
@@ -23,6 +24,9 @@ export default class nodoOperacion {
         this.dim = 0;
         this.temp = "";
         this.simbolo = new Simbolo("", "", "")
+        this.tam = 0;
+
+
     }
     addEtiquetaV(etiqueta: string) {
         this.etiquetaV.push(etiqueta)

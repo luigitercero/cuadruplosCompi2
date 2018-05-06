@@ -336,10 +336,11 @@ export default class Variable {
     public incializar(simbolo: Simbolo, location: Location, inicio?: string) {
         let tipo = simbolo.getTipo();
         let escritura = "";
-        let temp = this.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column, inicio);
-        if (simbolo.dim.length > 0) {
+
+        if (simbolo.tam > 0) {
             return;
         }
+        let temp = this.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column, inicio);
         switch (tipo) {
             case this.analizador.INT:
                 this.setValVariable(temp, new nodoOperacion("0", simbolo.getTipo(),
@@ -685,6 +686,10 @@ export default class Variable {
 
     public agregarDimAHeap(variable: nodoOperacion, val: nodoOperacion, location: any) {
         if (variable.simbolo.tam == 0) {
+            /**
+             * tengo que revisar las dimension dentroo del heap por que estas se estan perdinedo 
+             * 
+             */
             this.analizador.salidaConsola("iniciado variable con tama;o 0");
             this.analizador.agregarCodigo(this.analizador.saveEnPila(variable.simbolo.possAmbito + "", "heap"), location.last_column, location.first_line);
             this.analizador.agregarCodigo(this.analizador.genComentario("saltando la primera poscion"), location.last_column, location.first_line)

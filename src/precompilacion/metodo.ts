@@ -62,8 +62,9 @@ export default class Metodo {
 
     /**
  * Metodo
- *   : Tipo ID '(' Parametros '{'
+ *   : Tip ID '(' Parametros '{'
  *   | ID ID '(' Parametros '{'
+ *   | ID  TipID ID '(' Parametros '{'
  *   | Metodo  CuerpoMetodo
  *   | constructor
  *   | Principal 
@@ -82,20 +83,10 @@ export default class Metodo {
         let metodo: MetodoS
         switch (nombre) {
             case "Tipo":
-                tipo = nodo.childNode[0].childNode[0].token;
-                nombreMetodo = nodo.childNode[1].token;
-                metodo = new MetodoS(nombreMetodo, visi, tipo, nodo.childNode[1].location.first_line)
-                metodo.id = this.recoleccion.analizador.getContador() + "";
-                this.parametros(nodo.childNode[3], metodo);
-                this.recoleccion.analizador.claseA.agregarMetodo(metodo);
+                this.tip0ID(nodo, visi);
                 return true;
             case "ID":
-                tipo = nodo.childNode[0].token;
-                nombreMetodo = nodo.childNode[1].token;
-                metodo = new MetodoS(nombreMetodo, visi, tipo, nodo.childNode[1].location.first_line)
-                metodo.id = this.recoleccion.analizador.getContador() + "";
-                this.parametros(nodo.childNode[3], metodo);
-                this.recoleccion.analizador.claseA.agregarMetodo(metodo);
+                this.tip1ID(nodo, visi);
                 return true;
             case "Metodo":
                 this.metodo(nodo.childNode[0], visi);
@@ -115,10 +106,70 @@ export default class Metodo {
                 metodo.id = this.recoleccion.analizador.getContador() + "";
                 this.recoleccion.analizador.claseA.agregarMetodo(metodo);
                 return true;
-
         }
         this.recoleccion.analizador.newError("error al crear metodo", 0, 0);
         return false;
+    }
+
+    private tip0ID(nodo: Nodo, visibilidad: string) {
+        let nombre = nodo.childNode[0].term;
+        let tipo: string = this.recoleccion.analizador.VACIO;
+        let nombreMetodo: string;
+        let metodo: MetodoS
+        if (nodo.childNode[1].term != 'tipID') {
+            tipo = nodo.childNode[0].childNode[0].token;
+            nombreMetodo = nodo.childNode[1].token;
+            metodo = new MetodoS(nombreMetodo, visibilidad, tipo, nodo.childNode[1].location.first_line)
+            metodo.id = this.recoleccion.analizador.getContador() + "";
+            this.parametros(nodo.childNode[3], metodo);
+            this.recoleccion.analizador.claseA.agregarMetodo(metodo);
+        } else {
+            tipo = nodo.childNode[0].childNode[0].token;
+            let tam = this.tipID(nodo.childNode[1]);
+            nombreMetodo = nodo.childNode[1 + 1].token;
+            metodo = new MetodoS(nombreMetodo, visibilidad, tipo, nodo.childNode[1 + 1].location.first_line)
+            metodo.id = this.recoleccion.analizador.getContador() + "";
+            metodo.tam = tam;
+            this.parametros(nodo.childNode[3 + 1], metodo);
+            this.recoleccion.analizador.claseA.agregarMetodo(metodo);
+        }
+
+    }
+
+    private tip1ID(nodo: Nodo, visibilidad: string) {
+        let nombre = nodo.childNode[0].term;
+        let tipo: string = this.recoleccion.analizador.VACIO;
+        let nombreMetodo: string;
+        let metodo: MetodoS
+        if (nodo.childNode[1].term != 'tipID') {
+            tipo = nodo.childNode[0].token;
+            nombreMetodo = nodo.childNode[1].token;
+            metodo = new MetodoS(nombreMetodo, visibilidad, tipo, nodo.childNode[1].location.first_line)
+            metodo.id = this.recoleccion.analizador.getContador() + "";
+            this.parametros(nodo.childNode[3], metodo);
+            this.recoleccion.analizador.claseA.agregarMetodo(metodo);
+        } else {
+            tipo = nodo.childNode[0].childNode[0].token;
+            let tam = this.tipID(nodo.childNode[1]);
+            nombreMetodo = nodo.childNode[1 + 1].token;
+            metodo = new MetodoS(nombreMetodo, visibilidad, tipo, nodo.childNode[1 + 1].location.first_line)
+            metodo.id = this.recoleccion.analizador.getContador() + "";
+            metodo.tam = tam;
+            this.parametros(nodo.childNode[3 + 1], metodo);
+            this.recoleccion.analizador.claseA.agregarMetodo(metodo);
+        }
+
+    }
+
+    private tipID(nodo: Nodo): number {
+        let term = nodo.childNode[0].term
+        switch (term) {
+            case "'['":
+                return 1;
+            case "tipID":
+                return this.tipID(nodo.childNode[0]) + 1;
+        }
+        return 0;
     }
     /**
      * Parametros

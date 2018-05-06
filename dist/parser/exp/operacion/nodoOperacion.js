@@ -15,6 +15,7 @@ var nodoOperacion = /** @class */ (function () {
         this.dim = 0;
         this.temp = "";
         this.simbolo = new simbolo_1.default("", "", "");
+        this.tam = 0;
     }
     nodoOperacion.prototype.addEtiquetaV = function (etiqueta) {
         this.etiquetaV.push(etiqueta);

@@ -370,9 +370,14 @@ SobreEscribir:SOBREESCRIBIR CrearMetodo
       nodo = new Nodo("SobreEscribir",null,null,[$1]); 
       $$ = nodo; }
   ; 
-Metodo:tip ID '(' Parametros '{'
+Metodo:
+ Tipo ID '(' Parametros '{'
      {nodo1= new Nodo ("tip", @1,$1, [] ); nodo2= new Nodo ("ID", @2,$2, [] ); nodo3= new Nodo ("'('", @3,$3, [] ); nodo4=new Nodo ("Parametros", @4,$4, [] ); nodo5= new Nodo ("'{'", @5,$5, [] );
       nodo = new Nodo("Metodo",null,null,[$1,nodo2,nodo3,$4,nodo5]);
+      $$ = nodo; }
+  |Tipo tipID ID '(' Parametros '{'
+     { nodo2= new Nodo ("ID", @3,$3, [] ); nodo3= new Nodo ("'('", @4,$4, [] ); nodo5= new Nodo ("'{'", @6,$6, [] );
+      nodo = new Nodo("Metodo",null,null,[$1,$2,nodo2,nodo3,$5,nodo5]);
       $$ = nodo; }
   | ID ID '(' Parametros '{'
      {nodo1= new Nodo ("ID", @1,$1, [] ); nodo2= new Nodo ("ID", @2,$2, [] ); nodo3= new Nodo ("'('", @3,$3, [] ); nodo4= new Nodo ("Parametros", @4,$4, [] ); nodo5= new Nodo ("'{'", @5,$5, [] );
@@ -395,15 +400,7 @@ Metodo:tip ID '(' Parametros '{'
       nodo = new Nodo("Metodo",null,null,[$1]);
       $$ = nodo; }
   ;
-tip:Tipo
-     {nodo1= new Nodo ("Tipo", @1,$1, []);
-      nodo = new Nodo("tip",null,null,[$1]);
-      $$ = nodo; }
-  | tip '[' ']'
-     {nodo1= new Nodo ("tip", @1,$1, [] ); nodo2= new Nodo ("'['", @2,$2, [] ); nodo3= new Nodo ("']'", @3,$3, [] );
-      nodo = new Nodo("tip",null,null,[$1,nodo2,nodo3]);
-      $$ = nodo; }
-  ;
+
 tipID:'[' ']'
      {nodo1= new Nodo ("'['", @1,$1, [] ); nodo2= new Nodo ("']'", @2,$2, [] );
       nodo = new Nodo("tipID",null,null,[nodo1,nodo2]);

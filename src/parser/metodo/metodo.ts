@@ -113,15 +113,9 @@ export default class metodo {
         let name: string;
         switch (nombre) {
             case "Tipo":
-                tipo = nodo.childNode[0].childNode[0].token;
-                name = nodo.childNode[1].token + this.parametros(nodo.childNode[3]);
-                metodo = this.metodoImp(name, nodo.childNode[0].childNode[0].location);
-                return metodo;
+                return this.tip0ID(nodo, visi);
             case "ID":
-                tipo = nodo.childNode[0].token;
-                name = nodo.childNode[1].token + this.parametros(nodo.childNode[3]);
-                metodo = this.metodoImp(name, nodo.childNode[0].location);
-                return metodo;
+                return this.tip1ID(nodo, visi);
             case "Metodo":
                 metodo = this.metodo(nodo.childNode[0], visi, s);
                 this.analizador.cuerpo.cuerpoMetodo(nodo.childNode[1], s);
@@ -156,6 +150,58 @@ export default class metodo {
                 return metodo;
         }
         throw this.analizador.newError("error al crear metodo", 0, 0);
+    }
+
+
+    private tip0ID(nodo: Nodo, visibilidad: string) {
+        let nombre = nodo.childNode[0].term;
+        let tipo: string = this.analizador.VACIO;
+        let nombreMetodo: string;
+        let metodo: Metodo;
+        let name: string;
+        if (nodo.childNode[1].term != 'tipID') {
+            tipo = nodo.childNode[0].childNode[0].token;
+            name = nodo.childNode[1].token + this.parametros(nodo.childNode[3]);
+            metodo = this.metodoImp(name, nodo.childNode[0].childNode[0].location);
+            return metodo
+        } else {
+            tipo = nodo.childNode[0].childNode[0].token;
+            name = nodo.childNode[1 + 1].token + this.parametros(nodo.childNode[3 + 1]);
+            metodo = this.metodoImp(name, nodo.childNode[0].childNode[0].location);
+            return metodo
+        }
+
+    }
+
+    private tip1ID(nodo: Nodo, visibilidad: string) {
+        let nombre = nodo.childNode[0].term;
+        let tipo: string = this.analizador.VACIO;
+        let nombreMetodo: string;
+        let metodo: Metodo;
+        let name: string;
+        if (nodo.childNode[1].term != 'tipID') {
+            tipo = nodo.childNode[0].token;
+            name = nodo.childNode[1].token + this.parametros(nodo.childNode[3]);
+            metodo = this.metodoImp(name, nodo.childNode[0].location);
+            return metodo;
+        } else {
+            tipo = nodo.childNode[0].token;
+            name = nodo.childNode[1 + 1].token + this.parametros(nodo.childNode[3 + 1]);
+            metodo = this.metodoImp(name, nodo.childNode[0].location);
+            return metodo;
+        }
+
+    }
+
+    private tipID(nodo: Nodo): number {
+        let term = nodo.childNode[0].term
+        switch (term) {
+            case "'['":
+                return 1;
+            case "tipID":
+                return this.tipID(nodo.childNode[0]) + 1;
+        }
+        return 0;
     }
 
     public constructorDefault(location: Location) {
