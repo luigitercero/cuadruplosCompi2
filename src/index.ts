@@ -51,6 +51,7 @@ io.on('connection', function (client: any) {
     });
     client.on('generar', function (data: any) {
         siguiente = 0;
+        compilador = Compilador.init(data, true);
         compilador.analizar(data);
         let codigo = compilador.analizador.gen3D()
         console.log(codigo);

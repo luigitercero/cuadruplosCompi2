@@ -15,10 +15,10 @@ var Imprimir = /** @class */ (function () {
                     if (parametro[0].simbolo == null) {
                         this.imprimirCaracter(parametro[0]);
                     }
-                    else if (parametro[0].simbolo.tam < 1) {
+                    else if (parametro[0].getTam() < 1) {
                         this.imprimirCaracter(parametro[0]);
                     }
-                    else if (parametro[0].simbolo.tam == 1) {
+                    else if (parametro[0].getTam() == 1) {
                         this.imprimirString(parametro[0], 2);
                     }
                     break;

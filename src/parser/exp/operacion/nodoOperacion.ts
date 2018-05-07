@@ -12,7 +12,7 @@ export default class nodoOperacion {
     public dim: number;
     public temp: string;
     public simbolo: Simbolo;
-    public tam: number;
+    private tam: number;
 
     constructor(valor: string, tipo: string, column: number | -1, fila: number | -1) {
         this.valor = valor;
@@ -25,9 +25,15 @@ export default class nodoOperacion {
         this.temp = "";
         this.simbolo = new Simbolo("", "", "")
         this.tam = 0;
-
-
     }
+
+    getTam() {
+        return this.tam;
+    }
+    setTam(tam: number) {
+        this.tam = tam;
+    }
+
     addEtiquetaV(etiqueta: string) {
         this.etiquetaV.push(etiqueta)
     }

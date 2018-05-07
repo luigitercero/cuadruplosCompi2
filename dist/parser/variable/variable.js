@@ -105,25 +105,28 @@ var Variable = /** @class */ (function () {
      * @param identi
      */
     Variable.prototype.identiObjec = function (nodo, identi, location) {
-        if (nodo.childNode[0].token.toLowerCase() == "tamanio" && identi.simbolo.tam > 0) {
-            return this.calcularTamanio(identi, location);
+        if (nodo.childNode[0].token != undefined) {
+            if (identi.simbolo.tam > 0) {
+                if (nodo.childNode[0].token.toLocaleLowerCase() == 'tamanio') {
+                    return this.calcularTamanio(identi, location);
+                }
+                //nodo.childNode[0].token.toLowerCase() == "tamanio"
+            }
+        }
+        if (nodo.term == "var") {
+            this.analizador.claseA = this.analizador.buscarClase(identi.tipo);
+            return this.gerVal(this.analizador.variable.var(nodo, identi.valor));
         }
         else {
-            if (nodo.term == "var") {
-                this.analizador.claseA = this.analizador.buscarClase(identi.tipo);
-                return this.gerVal(this.analizador.variable.var(nodo, identi.valor));
-            }
-            else {
-                if (nodo.term == "getMetodo") {
-                    var t1 = this.analizador.newTemporal();
-                    var temp = this.analizador.claseA.tabla.ptr;
-                    temp++;
-                    var colocarse_this = this.analizador.genOperacion("+", "ptr", temp + "", t1);
-                    var guardar_aputandor_This = this.analizador.saveEnPila(t1, identi.valor);
-                    this.analizador.agregarCodigo(colocarse_this, location.last_column, location.first_line);
-                    this.analizador.agregarCodigo(colocarse_this, location.last_column, location.first_line);
-                    return this.getmetodo(nodo, identi);
-                }
+            if (nodo.term == "getMetodo") {
+                var t1 = this.analizador.newTemporal();
+                var temp = this.analizador.claseA.tabla.ptr;
+                temp++;
+                var colocarse_this = this.analizador.genOperacion("+", "ptr", temp + "", t1);
+                var guardar_aputandor_This = this.analizador.saveEnPila(t1, identi.valor);
+                this.analizador.agregarCodigo(colocarse_this, location.last_column, location.first_line);
+                this.analizador.agregarCodigo(colocarse_this, location.last_column, location.first_line);
+                return this.getmetodo(nodo, identi);
             }
         }
         throw this.analizador.newError("no se si es variable o metodo", 0, 0);
@@ -132,6 +135,7 @@ var Variable = /** @class */ (function () {
         var val = this.analizador.variable.getValorVariable(variable);
         var operador = new nodoOperacion_1.default(val, variable.simbolo.getTipo(), variable.location.last_column, variable.location.first_line);
         operador.simbolo = variable.simbolo;
+        operador.setTam(variable.getTamanio());
         return operador;
     };
     /**este deberia jalar retotno */
@@ -180,6 +184,7 @@ var Variable = /** @class */ (function () {
                 variable.tam = variable.tam + 1;
                 valor = this.analizador.exp.analizar(nodo.childNode[2]);
                 this.validarArreglo(variable, valor);
+                variable.setTamanio(0);
                 return variable;
         }
         throw this.analizador.newError("error al intetar recorrer var en operaciones", 0, 0);

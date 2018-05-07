@@ -7,9 +7,16 @@ var InfVarible = /** @class */ (function () {
         this.simbolo = simbolo;
         this.tam = 0;
         this.dir = temporal;
+        this.tamanioDeVariable = simbolo.tam;
     }
     InfVarible.prototype.addLocation = function (locatio) {
         this.location = locatio;
+    };
+    InfVarible.prototype.getTamanio = function () {
+        return this.tamanioDeVariable;
+    };
+    InfVarible.prototype.setTamanio = function (tam) {
+        this.tamanioDeVariable = tam;
     };
     return InfVarible;
 }());

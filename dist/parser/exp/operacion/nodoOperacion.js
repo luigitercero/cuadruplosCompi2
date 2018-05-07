@@ -17,6 +17,12 @@ var nodoOperacion = /** @class */ (function () {
         this.simbolo = new simbolo_1.default("", "", "");
         this.tam = 0;
     }
+    nodoOperacion.prototype.getTam = function () {
+        return this.tam;
+    };
+    nodoOperacion.prototype.setTam = function (tam) {
+        this.tam = tam;
+    };
     nodoOperacion.prototype.addEtiquetaV = function (etiqueta) {
         this.etiquetaV.push(etiqueta);
     };
