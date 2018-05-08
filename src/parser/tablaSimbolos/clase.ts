@@ -62,11 +62,10 @@ export default class Clase {
             }
         }
         if (location == undefined) {
-            throw new Error("error al querer obterner el metodo");
+            throw new Error("error al querer obterner el metodo " + nombre);
         } else {
-            throw new Error("error al querer obterner el metodo " + " columna " + location.last_column + " line " + location.first_line);
+            throw new Error("error al querer obterner el metodo " + nombre + " columna " + location.last_column + " line " + location.first_line);
         }
-
     }
 
     public existeMetodo(nombre: string): boolean {
@@ -77,7 +76,6 @@ export default class Clase {
             }
         }
         return false;
-
     }
 
     buscarSimbolo(nombre: string, inicio?: string, location?: Location): Simbolo {
@@ -86,13 +84,10 @@ export default class Clase {
             let simbolo: Simbolo | null = this.tabla.buscarEnPila(nombre.toLocaleLowerCase());
             if (simbolo != null) {
                 return simbolo
-
             } else {
                 simbolo = this.tabla.buscarEnHeap(nombre.toLocaleLowerCase());
                 if (simbolo != null) {
-
                     return simbolo
-
                 }
             }
         } else {

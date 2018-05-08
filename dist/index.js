@@ -254,7 +254,7 @@ io.on('connection', function (client) {
             console.log(codigo);
             console.log("fin");
             salida = true;
-            var arreglo = compilador.debuguear(data);
+            var arreglo = compilador.debuguear("");
             var consola = compilador.consola();
             client.emit('consolaP', consola);
             client.broadcast.emit('consolaP', consola);
@@ -265,6 +265,23 @@ io.on('connection', function (client) {
         }
     });
     client.on('calificar', function (data) {
+        try {
+            compilador = init_1.default.init(data, true);
+            siguiente = 0;
+            compilador.analizar(data);
+            var codigo = compilador.analizador.gen3D();
+            console.log(codigo);
+            console.log("fin");
+            salida = true;
+            compilador.debuguear("");
+            var consola = compilador.consola();
+            client.emit('consolaP', consola);
+            client.broadcast.emit('consolaP', consola);
+        }
+        catch (error) {
+            client.emit('salidaerror', "generando " + error.message);
+            client.broadcast.emit('salidaerror', "generando " + error.message);
+        }
     });
 });
 server.listen(8080);

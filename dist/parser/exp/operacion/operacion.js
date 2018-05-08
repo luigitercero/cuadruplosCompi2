@@ -191,6 +191,8 @@ var Operacion = /** @class */ (function () {
                 return this.operarMayorQue(nodo.childNode[0], nodo.childNode[2]);
             case "'>='":
                 return this.operarMayorIgual(nodo.childNode[0], nodo.childNode[2]);
+            case "e":
+                return this.analizar(nodo.childNode[1]);
         }
         this.analizador.newError("un error en el archivo Operacion.ts en el metodo operasicion no encotro un simbolo", nodo.childNode[0].location.first_line, nodo.childNode[0].location.last_column);
         throw new Error("error en analizar");

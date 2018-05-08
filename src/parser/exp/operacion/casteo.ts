@@ -55,40 +55,40 @@ export default class Casteo {
         }
     }
     evaluarObjeto(): nodoOperacion {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     }
     stringString(): nodoOperacion {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     }
     caracterCaracter(): nodoOperacion {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     }
     numberNumber(): nodoOperacion {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     }
     booleaBolean(): nodoOperacion {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     }
     numberBolean(): nodoOperacion {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     }
     boleanNumber(): nodoOperacion {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     }
     boleanCaracter(): nodoOperacion {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     }
     caracterBolean(): nodoOperacion {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     }
     doubleDouble(): nodoOperacion {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);;
     }
     booleanDouble(): nodoOperacion {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     }
     doubleBoolean(): nodoOperacion {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     }
 
 

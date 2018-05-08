@@ -463,7 +463,10 @@ export default class Variable {
             return this.setVariableNormal(simbolo, resultado, location, inicio);
         } else if (resultado.tipo == this.analizador.NULL) {
             return this.setVariableNormal(simbolo, resultado, location, inicio);
-        }
+        } else if ((simbolo.simbolo.getTipo() == this.analizador.INT
+            || simbolo.simbolo.getTipo() == this.analizador.DOUBLE)
+            && resultado.tipo == this.analizador.CARACTER
+        ) { return this.setVariableNormal(simbolo, resultado, location, inicio); }
         throw this.analizador.newError("error al asignar tipos " + simbolo.simbolo.getNombre() + ": "
             + simbolo.simbolo.getTipo() + "  no es compatible con el valor de: " + resultado.tipo
             , location.first_line, location.last_column)

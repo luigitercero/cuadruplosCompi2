@@ -60,40 +60,41 @@ var Casteo = /** @class */ (function () {
         }
     };
     Casteo.prototype.evaluarObjeto = function () {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.stringString = function () {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.caracterCaracter = function () {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.numberNumber = function () {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.booleaBolean = function () {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.numberBolean = function () {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.boleanNumber = function () {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.boleanCaracter = function () {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.caracterBolean = function () {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.doubleDouble = function () {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
+        ;
     };
     Casteo.prototype.booleanDouble = function () {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     };
     Casteo.prototype.doubleBoolean = function () {
-        throw this.analizador.newError("errro de caseteo", this.arg0.column, this.arg0.fila);
+        throw this.analizador.newError("erro de casteo " + this.arg0.tipo + " no compatible con " + this.arg1.tipo, this.arg0.column, this.arg0.fila);
     };
     return Casteo;
 }());

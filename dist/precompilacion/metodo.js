@@ -261,6 +261,8 @@ var Metodo = /** @class */ (function () {
             case "var":
                 var variable = this.var(nodo.childNode[0], tipo, visibilidad, metodo);
                 variable.addDimension(nodo.childNode[2]);
+                variable.tam++;
+                return variable;
             default:
                 throw this.recoleccion.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
         }

@@ -50,10 +50,10 @@ var Clase = /** @class */ (function () {
             }
         }
         if (location == undefined) {
-            throw new Error("error al querer obterner el metodo");
+            throw new Error("error al querer obterner el metodo " + nombre);
         }
         else {
-            throw new Error("error al querer obterner el metodo " + " columna " + location.last_column + " line " + location.first_line);
+            throw new Error("error al querer obterner el metodo " + nombre + " columna " + location.last_column + " line " + location.first_line);
         }
     };
     Clase.prototype.existeMetodo = function (nombre) {

@@ -222,7 +222,6 @@ io.on('connection', function (client: any) {
     })
     client.on('auto', function (data: any) {
         if (salida) {
-
             var count = 0;
             try {
                 salida = false;
@@ -240,7 +239,6 @@ io.on('connection', function (client: any) {
                             clearInterval(intervalObject);
                         }
                     }
-
                 }, 500);
             } catch (error) {
                 salida = true;
@@ -258,7 +256,7 @@ io.on('connection', function (client: any) {
             console.log(codigo);
             console.log("fin");
             salida = true;
-            let arreglo = compilador.debuguear(data);
+            let arreglo = compilador.debuguear("");
             let consola = compilador.consola()
             client.emit('consolaP', consola);
             client.broadcast.emit('consolaP', consola);
@@ -269,7 +267,23 @@ io.on('connection', function (client: any) {
         }
     });
     client.on('calificar', function (data: any) {
+        try {
+            compilador = Compilador.init(data, true);
+            siguiente = 0;
+            compilador.analizar(data);
+            let codigo = compilador.analizador.gen3D();
+            console.log(codigo);
+            console.log("fin");
+            salida = true;
+            compilador.debuguear("");
+            let consola = compilador.consola();
+            client.emit('consolaP', consola);
+            client.broadcast.emit('consolaP', consola);
 
+        } catch (error) {
+            client.emit('salidaerror', "generando " + error.message);
+            client.broadcast.emit('salidaerror', "generando " + error.message);
+        }
     });
 });
 server.listen(8080);
