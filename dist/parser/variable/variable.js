@@ -307,6 +307,21 @@ var Variable = /** @class */ (function () {
                 break;
         }
     };
+    /**metodo para obtener el valor inicial por default de todo objeto */
+    Variable.prototype.valorInicial = function (simbolo) {
+        var tipo = simbolo.getTipo();
+        var escritura = "";
+        switch (tipo) {
+            case this.analizador.INT:
+                return "0";
+            case this.analizador.DOUBLE:
+                return "0.0";
+            case this.analizador.CARACTER:
+                return this.analizador.NULL;
+            default:
+                return this.analizador.NULL;
+        }
+    };
     Variable.prototype.evaluarAsignacionasignarValor = function (simbolo) {
         var nodo = simbolo.valor.getNodo();
         var nombre = nodo.term;

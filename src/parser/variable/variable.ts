@@ -369,7 +369,22 @@ export default class Variable {
                     location.last_column, location.first_line), location, inicio);
                 break;
         }
+    }
+    /**metodo para obtener el valor inicial por default de todo objeto */
+    public valorInicial(simbolo: Simbolo) {
+        let tipo = simbolo.getTipo();
+        let escritura = ""
+        switch (tipo) {
+            case this.analizador.INT:
+                return "0";
 
+            case this.analizador.DOUBLE:
+                return "0.0";
+            case this.analizador.CARACTER:
+                return this.analizador.NULL;
+            default:
+                return this.analizador.NULL;
+        }
     }
     public evaluarAsignacionasignarValor(simbolo: Simbolo) {
         let nodo: Nodo = simbolo.valor.getNodo();

@@ -16,6 +16,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var nodoOperacion_1 = __importDefault(require("../exp/operacion/nodoOperacion"));
 var asignacion_1 = __importDefault(require("./asignacion"));
 var simbolo_1 = __importDefault(require("../tablaSimbolos/simbolo"));
+var sigenerico_1 = __importDefault(require("../sigenerico"));
 var Declaracion = /** @class */ (function (_super) {
     __extends(Declaracion, _super);
     function Declaracion(analizador) {
@@ -99,15 +100,41 @@ var Declaracion = /** @class */ (function (_super) {
         }
         return false;
     };
-    /**SE FILTRA EL HEAP A LAS SIGUIENTE POSICION LIBRE DEPENDIENDO SE SE USO UN ARREGLO este es solo para arreglos locales*/
+    /**SE FILTRA EL HEAP A LAS SIGUIENTE POSICION LIBRE DEPENDIENDO SE SE USO UN ARREGLO
+     *
+     * este es solo para arreglos locales
+     *
+     * */
     Declaracion.prototype.filtrarVariable = function (variable) {
         if (variable.simbolo.tam > 0) {
             this.analizador.agregarCodigo(this.analizador.genComentario("desplazamiento de variable a psoicion de valores"), variable.column, variable.fila);
             var temp = this.analizador.variable.obtenerValorVariable(variable.simbolo.getNombre(), variable.fila, variable.column);
             this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.done, variable.temp), variable.column, variable.fila);
-            this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", variable.temp, "heap"), variable.column, variable.fila);
-            this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", 1 + "", "heap"), variable.column, variable.fila);
+            //this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", variable.temp, "heap"), variable.column, variable.fila);
+            //this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", 1 + "", "heap"), variable.column, variable.fila);
+            this.InicializarPosicionesArreglo(variable);
         }
+    };
+    /**
+     * este codigo funciona para agregarle un valor por default a cada una de las posiciones de los arreglos
+     *
+     */
+    Declaracion.prototype.InicializarPosicionesArreglo = function (variable) {
+        this.analizador.agregarCodigo(this.analizador.genComentario("incializar arreglo local con nombre " + variable.simbolo.getNombre() + " mas tipo " + variable.simbolo.getTipo()), variable.column, variable.fila);
+        var contador = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(this.analizador.asignar("0", contador), variable.column, variable.fila);
+        var si = new sigenerico_1.default(this.analizador);
+        this.analizador.agregarCodigo(si.escribirEtiquetaS(), variable.column, variable.fila);
+        this.analizador.agregarCodigo(si.genSi("<", contador, variable.temp), variable.column, variable.fila);
+        this.analizador.agregarCodigo(si.genSaltoFalso(), variable.column, variable.fila);
+        this.analizador.agregarCodigo(si.escribirEtiquetaV(), variable.column, variable.fila);
+        var valorInicial = this.analizador.variable.valorInicial(variable.simbolo);
+        this.analizador.agregarCodigo(this.analizador.saveEnHeap("heap", valorInicial), variable.column, variable.fila);
+        this.analizador.agregarCodigo(this.analizador.siguiLibreHeap(), variable.column, variable.fila);
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", contador, "1", contador), variable.column, variable.fila);
+        this.analizador.agregarCodigo(si.escribirSaltoS(), variable.column, variable.fila);
+        this.analizador.agregarCodigo(si.escribirEtiquetaF(), variable.column, variable.fila);
+        //this.analizador.agregarCodigo(this.analizador.siguiLibreHeap(), variable.column, variable.fila);
     };
     /**
      * var

@@ -142,7 +142,7 @@ var Clase = /** @class */ (function () {
         this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo" + id) + coment, 0, poss);
     };
     /**
-     * agrega el tama;ano necesario para los arreglos
+     * agrega el tama;ano necesario para los arreglos funciona para valores globales
      * @param simbolo
      */
     Clase.prototype.agregarDimGlobal = function (simbolo) {
