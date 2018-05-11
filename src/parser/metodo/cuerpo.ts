@@ -194,10 +194,10 @@ export default class cuerpo {
         switch (term) {
             case "Tipo":
 
-                return true;
+                break
             case "Nuevo":
 
-                return true;
+                break
             case "e":
                 parametro.push(this.analizador.exp.analizar(nodo));
                 return true;
@@ -210,7 +210,7 @@ export default class cuerpo {
         let objeto = nodo.childNode[1].childNode[0].token
         let location = nodo.childNode[0].location;
         let tam = this.analizador.claseA.tabla.ptr;
-        let metodo;
+        let metodo: nodoOperacion;
         this.analizador.claseA.tabla.aumetarAbmito();
         let este = this.analizador.metodoA.nuevoThis(location, objeto, tam);
         metodo = this.analizador.variable.getmetodo(nodo.childNode[1], este);

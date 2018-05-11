@@ -230,7 +230,7 @@ var Operacion = /** @class */ (function () {
             case "Datos":
                 return this.resolverDatos(nodo);
         }
-        throw new Error("error en analizar");
+        throw new Error("error en datos ");
     };
     /**
      * Datos

@@ -178,9 +178,9 @@ var cuerpo = /** @class */ (function () {
         var term = nodo.term;
         switch (term) {
             case "Tipo":
-                return true;
+                break;
             case "Nuevo":
-                return true;
+                break;
             case "e":
                 parametro.push(this.analizador.exp.analizar(nodo));
                 return true;

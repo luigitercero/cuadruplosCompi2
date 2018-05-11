@@ -115,6 +115,7 @@ var Clase = /** @class */ (function () {
         return false;
     };
     Clase.prototype.asignarVariablesGlobales = function () {
+        this.analizador.claseA.tabla.ptr = 2;
         var nombreClase = this.analizador.claseA.nombre;
         var poss = this.analizador.claseA.poss;
         var coment = this.analizador.genComentario(nombreClase + "_Precontructor");
@@ -140,6 +141,7 @@ var Clase = /** @class */ (function () {
         }
         coment = this.analizador.genComentario("fin de metodo preconstructor para " + nombreClase);
         this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo" + id) + coment, 0, poss);
+        this.analizador.claseA.tabla.ptr = 0;
     };
     /**
      * agrega el tama;ano necesario para los arreglos funciona para valores globales
@@ -158,7 +160,8 @@ var Clase = /** @class */ (function () {
             this.analizador.agregarCodigo(this.analizador.genComentario("desplazamiento de variable a psoicion de valores"), op.column, op.fila);
             var temp = this.analizador.variable.obtenerValorVariable(op.simbolo.getNombre(), op.fila, op.column);
             this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.val, op.temp), op.column, op.fila);
-            this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", op.temp, "heap"), op.column, op.fila);
+            this.analizador.cuerpo.declarar.InicializarPosicionesArreglo(op);
+            //this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", op.temp, "heap"), op.column, op.fila);
             //this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap",1+"","heap"),op.column,op.fila);
         }
         else {

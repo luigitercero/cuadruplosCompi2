@@ -152,12 +152,23 @@ io.on('connection', function (client) {
         var clase = compilador.getAmbito();
         var salida = "";
         var ptr = compilador.getptr();
+        var contadorh = 0;
+        var contadorP = 0;
         for (var index = 0; index < clase.length; index++) {
             var element = clase[index];
+
             salida = salida + "<tr>"
                 + "<th>" + index + "</th>"
-                + "<th>" + (index + ptr) + "</th>"
-                + "<th class = \"purple lighten-5\">" + element[0] + "</th>"
+            if (element[6] == "ptr") {
+                salida = salida + "<th>" + (contadorP + ptr) + "</th>";
+                contadorP++;
+            }
+            else {
+                salida = salida + "<th>" + (contadorh) + "</th>";
+                contadorh++;
+            }
+
+            salida = salida + "<th class = \"purple lighten-5\">" + element[0] + "</th>"
                 + "<th>" + element[1] + "</th>"
                 + "<th>" + element[2] + "</th>"
                 + "<th>" + element[3] + "</th>"
@@ -333,5 +344,5 @@ io.on('connection', function(client:any) {
     });
 
 
-});*/ 
+});*/
 //# sourceMappingURL=index.js.map

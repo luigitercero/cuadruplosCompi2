@@ -128,7 +128,7 @@ export default class Clase {
     }
 
     public asignarVariablesGlobales() {
-
+        this.analizador.claseA.tabla.ptr = 2;
         let nombreClase = this.analizador.claseA.nombre;
         let poss = this.analizador.claseA.poss;
         let coment = this.analizador.genComentario(nombreClase + "_Precontructor")
@@ -158,6 +158,7 @@ export default class Clase {
         }
         coment = this.analizador.genComentario("fin de metodo preconstructor para " + nombreClase);
         this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo" + id) + coment, 0, poss);
+        this.analizador.claseA.tabla.ptr = 0;
     }
     /**
      * agrega el tama;ano necesario para los arreglos funciona para valores globales
@@ -181,7 +182,8 @@ export default class Clase {
             let temp = this.analizador.variable.obtenerValorVariable(op.simbolo.getNombre(), op.fila, op.column, );
 
             this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.val, op.temp), op.column, op.fila);
-            this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", op.temp, "heap"), op.column, op.fila);
+            this.analizador.cuerpo.declarar.InicializarPosicionesArreglo(op);
+            //this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", op.temp, "heap"), op.column, op.fila);
             //this.analizador.agregarCodigo(this.analizador.genOperacion("+","heap",1+"","heap"),op.column,op.fila);
         } else {
             this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", 1 + "", "heap"), op.column, op.fila);

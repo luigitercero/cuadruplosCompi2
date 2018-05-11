@@ -48,30 +48,47 @@ export default class Asignacion {
         switch (nombre) {
             case "e":
                 let resultado: nodoOperacion = this.analizador.exp.analizar(nodo);
-                if (this.analizador.exp.evaluarTipo(resultado.tipo, simbolo.getTipo())) {
-                    let val = this.analizador.exp.getValor(resultado); //el temporal del resulttod
-                    let temp = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
-                    this.analizador.agregarCodigo(this.analizador.saveEnPila(temp.temporal, val),
-                        location.last_column, location.first_line, );
-                    return true;
-                } else if (resultado.tipo == this.analizador.NULL) {
-                    let val = this.analizador.NULL; //el temporal del resulttod
-                    let temp = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
-                    this.analizador.agregarCodigo(this.analizador.saveEnPila(temp.temporal, val),
-                        location.last_column, location.first_line);
-                    return true;
-                } else {
-                    throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column);
-                }
-
+                return this.asignarValoresAvariables(resultado, simbolo, location);
             case "Nuevo":
-                throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column)
+                resultado = this.analizador.variable.getNuevo(nodo);
+                return this.asignarValoresAvariables(resultado, simbolo, location);
+            //throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column)
             case "Lista":
-                throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column)
+                let temp = this.analizador.variable.obtenerValorVariable(simbolo.getNombre(), location.first_line, location.last_column);
+                if (simbolo.tam > 0) {
+                    this.analizador.variable.moverseApossDeArregloInicial(simbolo, temp, location);
+                    this.analizador.recorrer(nodo, "");
+                    this.analizador.variable.inicializandoLista(nodo.childNode[0], simbolo, location, temp);
+
+                } else {
+                    throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column)
+                }
+                return true;
         }
         this.analizador.newError("asinganr valor", location.first_line, location.last_column);
         return false;
     }
+
+    asignarValoresAvariables(resultado: nodoOperacion, simbolo: Simbolo, location: Location) {
+        if (this.analizador.exp.evaluarTipo(resultado.tipo, simbolo.getTipo())) {
+            let val = this.analizador.exp.getValor(resultado); //el temporal del resulttod
+            let temp = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
+            this.analizador.agregarCodigo(this.analizador.saveEnPila(temp.temporal, val),
+                location.last_column, location.first_line);
+            return true;
+        } else if (resultado.tipo == this.analizador.NULL) {
+            let val = this.analizador.NULL; //el temporal del resulttod
+            let temp = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
+            this.analizador.agregarCodigo(this.analizador.saveEnPila(temp.temporal, val),
+                location.last_column, location.first_line);
+            return true;
+        } else {
+            throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column);
+        }
+    }
+
+
+
     /**
        Asignar
         :'+=' e 
@@ -106,15 +123,15 @@ export default class Asignacion {
         let term = nodo.term;
         switch (term) {
             case "Nuevo":
-                let temClase = this.analizador.claseA;
-                let retornarValor = this.analizador.cuerpo.nuevoObjeto(nodo);
-                this.analizador.claseA = temClase;
-                return retornarValor;
+
+                return this.analizador.variable.getNuevo(nodo);
             case "e":
                 return this.analizador.exp.analizar(nodo);
         }
         throw this.analizador.newError("error al asignar", 0, 0)
     }
+
+
 
     /**
      * Asignacion
@@ -151,11 +168,6 @@ export default class Asignacion {
         throw this.analizador.newError("error algo esta mal", nodo.childNode[2].location.first_line, nodo.childNode[2].location.last_column);
     }
 
-    private getHeap(navegar: NodoNavegar, variable: Dir) {
-        if (navegar.tipo == "'.'") {
-
-        }
-    }
 
 }
 

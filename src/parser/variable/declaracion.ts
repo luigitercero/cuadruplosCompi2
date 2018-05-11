@@ -65,23 +65,24 @@ export default class Declaracion extends Asignacion {
         switch (nombre) {
             case "Tipo":
                 tipo = nodo.childNode[0].childNode[0].token;
-                try {
-                    variable = this.var(nodo.childNode[1], tipo, Visibilidad);
-                    this.filtrarVariable(variable);
-                    this.asignarValor(nodo.childNode[2], variable.simbolo);
-                } catch (error) {
-                    this.analizador.newError("error al delcarar variable", nodo.childNode[0].childNode[0].location.first_line, 0);
-                }
+                // try {
+                variable = this.var(nodo.childNode[1], tipo, Visibilidad);
+                this.filtrarVariable(variable);
+                this.asignarValor(nodo.childNode[2], variable.simbolo);
+                //} catch (error) {
+                //this.analizador.newError("error al delcarar variable " + error.message, nodo.childNode[0].childNode[0].location.first_line, 0);
+                //}
+
                 return true;
             case "ID":
                 tipo = nodo.childNode[0].token;
-                try {
-                    variable = this.var(nodo.childNode[1], tipo, Visibilidad);
-                    this.filtrarVariable(variable);
-                    this.asignarValor(nodo.childNode[2], variable.simbolo);
-                } catch (error) {
-                    this.analizador.newError("error al delcarar variable", nodo.childNode[0].location.first_line, 0);
-                }
+                //try {
+                variable = this.var(nodo.childNode[1], tipo, Visibilidad);
+                this.filtrarVariable(variable);
+                this.asignarValor(nodo.childNode[2], variable.simbolo);
+                //} catch (error) {
+                //  this.analizador.newError("error al delcarar variable " + error.message, nodo.childNode[0].location.first_line, 0);
+                //}
                 return true;
         }
         return false;

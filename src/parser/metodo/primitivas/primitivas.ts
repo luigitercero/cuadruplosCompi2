@@ -2,7 +2,7 @@ import Variable from '../../variable/variable';
 import Analizador from '../../analizador';
 import Asignacion from '../../variable/asignacion'
 import Nodo from '../../nodo';
-import Declaracion from '../../variable/declaracion';
+
 import Control from '../control/control';
 import Metodo from '../../tablaSimbolos/metodo';
 import Salida from '../control/nodoSalida';

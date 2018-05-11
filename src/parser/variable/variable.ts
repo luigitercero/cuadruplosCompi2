@@ -388,43 +388,162 @@ export default class Variable {
     }
     public evaluarAsignacionasignarValor(simbolo: Simbolo) {
         let nodo: Nodo = simbolo.valor.getNodo();
-        let nombre = nodo.term;
+        let term = nodo.term;
         let location = simbolo.valor.location;
         this.analizador.logPorCompletar("falta agregar nuevas asignaciones");
         let temp: string;
         let pos: string
-        switch (nombre) {
 
+
+        switch (term) {
             case "e":
                 let resultado: nodoOperacion = this.analizador.exp.analizar(nodo);
-                if (this.analizador.exp.evaluarTipo(resultado.tipo, simbolo.getTipo())) {
-                    let val = this.analizador.exp.getValor(resultado); //el temporal del resulttod
-                    let temp = this.obtenerDirVariable(simbolo.getNombre(),
-                        location.first_line, location.last_column);
-
-                    this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.temporal, val),
-                        location.last_column, location.first_line);
-
-                    this.analizador.agregarCodigo(this.analizador.genComentario
-                        ("fin de agregacion de valor a la variable " + simbolo.getNombre())
-                        , location.last_column, location.first_line);// es un comentario
-                    return true;
-
-                } else {
-                    throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column)
-                }
+                return this.asignarVariableGLobal(resultado, simbolo, location);
 
             case "Nuevo":
-                throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column)
+                resultado = this.getNuevo(nodo);
+                return this.asignarVariableGLobal(resultado, simbolo, location);
 
             case "Lista":
-                throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column)
+
+                let temp = this.analizador.variable.obtenerValorVariable(simbolo.getNombre(), location.first_line, location.last_column);
+                if (simbolo.tam > 0) {
+                    this.analizador.variable.moverseApossDeArregloInicial(simbolo, temp, location);
+                    this.analizador.recorrer(nodo, "");
+                    this.analizador.variable.inicializandoLista(nodo.childNode[0], simbolo, location, temp);
+
+                } else {
+                    throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column)
+                }
+                return true;
+            //throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column)
 
         }
         this.analizador.newError("asinganr valor", location.first_line, location.last_column);
         return false;
-
     }
+
+
+
+
+    moverseApossDeArregloInicial(simbolo: Simbolo, temp: Dir, location: Location) {
+        let t0 = this.analizador.newTemporal();
+        let codigo = this.analizador.genOperacion(
+            "+", simbolo.tam + 1 + "", temp.val, t0
+        );
+        temp.val = t0;
+        this.analizador.agregarCodigo(codigo, location.last_column, location.first_line);
+    }
+
+    /**
+     *  Lista:List '}'
+     ;
+     * @param nodo 
+     * @param simbolo 
+     * @param location 
+     */
+    inicializandoLista(nodo: Nodo, simbolo: Simbolo, location: Location, temp: Dir) {
+        let term = nodo.childNode[0].term;
+        if (term = "List") {
+            this.list(nodo.childNode[0], simbolo, location, temp);
+        }
+    }
+    /**
+     * List:
+     * '{' DefList
+     | List ',' DefList
+     ;
+     */
+    private list(nodo: Nodo, simbolo: Simbolo, location: Location, temp: Dir) {
+        let term = nodo.childNode[0].term;
+        switch (term) {
+            case "List":
+                this.list(nodo.childNode[0], simbolo, location, temp);
+                this.defList(nodo.childNode[2], simbolo, location, temp);
+                break;
+            case "'{'":
+                this.defList(nodo.childNode[1], simbolo, location, temp);
+                break;
+        }
+    }
+    /**
+     *
+   DefList:e
+     | Lista
+     | Nuevo
+     ;
+     */
+    private defList(nodo: Nodo, simbolo: Simbolo, location: Location, temp: Dir) {
+        let term = nodo.childNode[0].term;
+        switch (term) {
+            case "e":
+                let resultado: nodoOperacion = this.analizador.exp.analizar(nodo.childNode[0]);
+                let val = this.analizador.exp.getValor(resultado);
+                if (resultado.tipo == simbolo.getTipo()) {
+                    this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.val, val),
+                        location.last_column, location.first_line);
+                    this.analizador.agregarCodigo(
+                        this.analizador.genOperacion("+", temp.val, "1", temp.val),
+                        location.last_column, location.first_line);
+
+                } else {
+                    this.analizador.newError("error al asignar tipos en arreglos", resultado.fila, resultado.column);
+                }
+                return true;
+            case "Nuevo":
+                resultado = this.analizador.variable.getNuevo(nodo.childNode[0]);
+                val = this.analizador.exp.getValor(resultado);
+                if (resultado.tipo == simbolo.getTipo()) {
+                    this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.val, val),
+                        location.last_column, location.first_line);
+                    this.analizador.agregarCodigo(
+                        this.analizador.genOperacion("+", temp.val, "1", temp.val),
+                        location.last_column, location.first_line);
+
+                } else {
+                    this.analizador.newError("error al asignar tipos en arreglos", resultado.fila, resultado.column);
+                }
+
+                break;
+            case "Lista":
+                this.inicializandoLista(nodo.childNode[0], simbolo, location, temp);
+                return true;
+
+        }
+    }
+
+
+    public getNuevo(nodo: Nodo): nodoOperacion {
+        let term = nodo.term;
+        switch (term) {
+            case "Nuevo":
+                let temClase = this.analizador.claseA;
+                let retornarValor = this.analizador.cuerpo.nuevoObjeto(nodo);
+                this.analizador.claseA = temClase;
+                return retornarValor;
+        }
+        throw this.analizador.newError("error esto no es nuevo", nodo.location.first_line, nodo.location.last_column)
+    }
+
+    public asignarVariableGLobal(resultado: nodoOperacion, simbolo: Simbolo, location: Location) {
+        if (this.analizador.exp.evaluarTipo(resultado.tipo, simbolo.getTipo())) {
+            let val = this.analizador.exp.getValor(resultado); //el temporal del resulttod
+            let temp = this.obtenerDirVariable(simbolo.getNombre(),
+                location.first_line, location.last_column);
+
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.temporal, val),
+                location.last_column, location.first_line);
+
+            this.analizador.agregarCodigo(this.analizador.genComentario
+                ("fin de agregacion de valor a la variable " + simbolo.getNombre())
+                , location.last_column, location.first_line);// es un comentario
+            return true;
+
+        } else {
+            throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column)
+        }
+    }
+
 
     /**
      * obtener y escribir el temporal de la posicion en memoria del objeto
@@ -676,41 +795,6 @@ export default class Variable {
     }
 
 
-    /**
-     * Lista
-     *: List '}'
-     *;
-    */
-    lista(nodo: Nodo, simbolo: Simbolo) {
-        //this.list(simbolo)
-    }
-    /**
-     *List
-     *: '{' DefList
-     *| List ',' DefList
-     *;
-    */
-    list(nodo: Nodo, simbolo: Simbolo) {
-        let nombre = "";
-        switch (nombre) {
-            case "'{'":
-            // this.defList(simbolo);
-            case "List":
-            // this.list(simbolo)
-            //   this.defList(simbolo);
-        }
-    }
-
-    /**
-     *DefList
-     *: e
-     *| Lista
-     *| Nuevo
-     *;
-    */
-    private defList(nodo: Nodo, simbolo: Simbolo) {
-
-    }
 
     public agregarDimAHeap(variable: nodoOperacion, val: nodoOperacion, location: any) {
         if (variable.simbolo.tam == 0) {

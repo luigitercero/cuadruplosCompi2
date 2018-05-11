@@ -324,31 +324,129 @@ var Variable = /** @class */ (function () {
     };
     Variable.prototype.evaluarAsignacionasignarValor = function (simbolo) {
         var nodo = simbolo.valor.getNodo();
-        var nombre = nodo.term;
+        var term = nodo.term;
         var location = simbolo.valor.location;
         this.analizador.logPorCompletar("falta agregar nuevas asignaciones");
         var temp;
         var pos;
-        switch (nombre) {
+        switch (term) {
             case "e":
                 var resultado = this.analizador.exp.analizar(nodo);
-                if (this.analizador.exp.evaluarTipo(resultado.tipo, simbolo.getTipo())) {
-                    var val = this.analizador.exp.getValor(resultado); //el temporal del resulttod
-                    var temp_1 = this.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
-                    this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp_1.temporal, val), location.last_column, location.first_line);
-                    this.analizador.agregarCodigo(this.analizador.genComentario("fin de agregacion de valor a la variable " + simbolo.getNombre()), location.last_column, location.first_line); // es un comentario
-                    return true;
+                return this.asignarVariableGLobal(resultado, simbolo, location);
+            case "Nuevo":
+                resultado = this.getNuevo(nodo);
+                return this.asignarVariableGLobal(resultado, simbolo, location);
+            case "Lista":
+                var temp_1 = this.analizador.variable.obtenerValorVariable(simbolo.getNombre(), location.first_line, location.last_column);
+                if (simbolo.tam > 0) {
+                    this.analizador.variable.moverseApossDeArregloInicial(simbolo, temp_1, location);
+                    this.analizador.recorrer(nodo, "");
+                    this.analizador.variable.inicializandoLista(nodo.childNode[0], simbolo, location, temp_1);
                 }
                 else {
-                    throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column);
+                    throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column);
                 }
-            case "Nuevo":
-                throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column);
-            case "Lista":
-                throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column);
+                return true;
         }
         this.analizador.newError("asinganr valor", location.first_line, location.last_column);
         return false;
+    };
+    Variable.prototype.moverseApossDeArregloInicial = function (simbolo, temp, location) {
+        var t0 = this.analizador.newTemporal();
+        var codigo = this.analizador.genOperacion("+", simbolo.tam + 1 + "", temp.val, t0);
+        temp.val = t0;
+        this.analizador.agregarCodigo(codigo, location.last_column, location.first_line);
+    };
+    /**
+     *  Lista:List '}'
+     ;
+     * @param nodo
+     * @param simbolo
+     * @param location
+     */
+    Variable.prototype.inicializandoLista = function (nodo, simbolo, location, temp) {
+        var term = nodo.childNode[0].term;
+        if (term = "List") {
+            this.list(nodo.childNode[0], simbolo, location, temp);
+        }
+    };
+    /**
+     * List:
+     * '{' DefList
+     | List ',' DefList
+     ;
+     */
+    Variable.prototype.list = function (nodo, simbolo, location, temp) {
+        var term = nodo.childNode[0].term;
+        switch (term) {
+            case "List":
+                this.list(nodo.childNode[0], simbolo, location, temp);
+                this.defList(nodo.childNode[2], simbolo, location, temp);
+                break;
+            case "'{'":
+                this.defList(nodo.childNode[1], simbolo, location, temp);
+                break;
+        }
+    };
+    /**
+     *
+   DefList:e
+     | Lista
+     | Nuevo
+     ;
+     */
+    Variable.prototype.defList = function (nodo, simbolo, location, temp) {
+        var term = nodo.childNode[0].term;
+        switch (term) {
+            case "e":
+                var resultado = this.analizador.exp.analizar(nodo.childNode[0]);
+                var val = this.analizador.exp.getValor(resultado);
+                if (resultado.tipo == simbolo.getTipo()) {
+                    this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.val, val), location.last_column, location.first_line);
+                    this.analizador.agregarCodigo(this.analizador.genOperacion("+", temp.val, "1", temp.val), location.last_column, location.first_line);
+                }
+                else {
+                    this.analizador.newError("error al asignar tipos en arreglos", resultado.fila, resultado.column);
+                }
+                return true;
+            case "Nuevo":
+                resultado = this.analizador.variable.getNuevo(nodo.childNode[0]);
+                val = this.analizador.exp.getValor(resultado);
+                if (resultado.tipo == simbolo.getTipo()) {
+                    this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.val, val), location.last_column, location.first_line);
+                    this.analizador.agregarCodigo(this.analizador.genOperacion("+", temp.val, "1", temp.val), location.last_column, location.first_line);
+                }
+                else {
+                    this.analizador.newError("error al asignar tipos en arreglos", resultado.fila, resultado.column);
+                }
+                break;
+            case "Lista":
+                this.inicializandoLista(nodo.childNode[0], simbolo, location, temp);
+                return true;
+        }
+    };
+    Variable.prototype.getNuevo = function (nodo) {
+        var term = nodo.term;
+        switch (term) {
+            case "Nuevo":
+                var temClase = this.analizador.claseA;
+                var retornarValor = this.analizador.cuerpo.nuevoObjeto(nodo);
+                this.analizador.claseA = temClase;
+                return retornarValor;
+        }
+        throw this.analizador.newError("error esto no es nuevo", nodo.location.first_line, nodo.location.last_column);
+    };
+    Variable.prototype.asignarVariableGLobal = function (resultado, simbolo, location) {
+        if (this.analizador.exp.evaluarTipo(resultado.tipo, simbolo.getTipo())) {
+            var val = this.analizador.exp.getValor(resultado); //el temporal del resulttod
+            var temp = this.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.temporal, val), location.last_column, location.first_line);
+            this.analizador.agregarCodigo(this.analizador.genComentario("fin de agregacion de valor a la variable " + simbolo.getNombre()), location.last_column, location.first_line); // es un comentario
+            return true;
+        }
+        else {
+            throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column);
+        }
     };
     /**
      * obtener y escribir el temporal de la posicion en memoria del objeto
@@ -550,37 +648,6 @@ var Variable = /** @class */ (function () {
         comentario = this.analizador.genComentario("obteniendo valor de  " + nombre);
         this.analizador.agregarCodigo(this.analizador.genOperacion('+', temp, simbolo.possAmbito + "", temp1), columna, linea); //moverse en heap
         return temp1;
-    };
-    /**
-     * Lista
-     *: List '}'
-     *;
-    */
-    Variable.prototype.lista = function (nodo, simbolo) {
-        //this.list(simbolo)
-    };
-    /**
-     *List
-     *: '{' DefList
-     *| List ',' DefList
-     *;
-    */
-    Variable.prototype.list = function (nodo, simbolo) {
-        var nombre = "";
-        switch (nombre) {
-            case "'{'":
-            // this.defList(simbolo);
-            case "List":
-        }
-    };
-    /**
-     *DefList
-     *: e
-     *| Lista
-     *| Nuevo
-     *;
-    */
-    Variable.prototype.defList = function (nodo, simbolo) {
     };
     Variable.prototype.agregarDimAHeap = function (variable, val, location) {
         if (variable.simbolo.tam == 0) {

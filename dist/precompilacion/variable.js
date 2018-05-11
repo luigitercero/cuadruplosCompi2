@@ -97,6 +97,7 @@ var Variable = /** @class */ (function () {
                 var variable = this.var(nodo.childNode[0], tipo, visibilidad);
                 var val = nodo.childNode[2];
                 variable.addDimension(val);
+                variable.addTam(1);
                 return variable;
             default:
                 throw this.recoleccion.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);

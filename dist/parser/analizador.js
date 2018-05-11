@@ -67,6 +67,13 @@ var Analizador = /** @class */ (function (_super) {
         }
         return ambito;
     };
+    Analizador.prototype.recorrer = function (nodo, espacio) {
+        var _this = this;
+        console.log(espacio + nodo.term);
+        nodo.childNode.forEach(function (element) {
+            _this.recorrer(element, espacio + " ");
+        });
+    };
     Analizador.prototype.verTodasLasClases = function () {
         console.log("---------Obeservando clasese-----------");
         for (var index = 0; index < this.clases.length; index++) {

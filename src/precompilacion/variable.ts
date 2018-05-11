@@ -103,6 +103,7 @@ export default class Variable {
                 let variable: Simbolo = this.var(nodo.childNode[0], tipo, visibilidad);
                 let val: Nodo = nodo.childNode[2];
                 variable.addDimension(val);
+                variable.addTam(1);
                 return variable;
 
             default:

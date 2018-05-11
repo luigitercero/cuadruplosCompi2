@@ -34,28 +34,42 @@ var Asignacion = /** @class */ (function () {
         switch (nombre) {
             case "e":
                 var resultado = this.analizador.exp.analizar(nodo);
-                if (this.analizador.exp.evaluarTipo(resultado.tipo, simbolo.getTipo())) {
-                    var val = this.analizador.exp.getValor(resultado); //el temporal del resulttod
-                    var temp_1 = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
-                    this.analizador.agregarCodigo(this.analizador.saveEnPila(temp_1.temporal, val), location.last_column, location.first_line);
-                    return true;
-                }
-                else if (resultado.tipo == this.analizador.NULL) {
-                    var val = this.analizador.NULL; //el temporal del resulttod
-                    var temp_2 = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
-                    this.analizador.agregarCodigo(this.analizador.saveEnPila(temp_2.temporal, val), location.last_column, location.first_line);
-                    return true;
+                return this.asignarValoresAvariables(resultado, simbolo, location);
+            case "Nuevo":
+                resultado = this.analizador.variable.getNuevo(nodo);
+                return this.asignarValoresAvariables(resultado, simbolo, location);
+            //throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column)
+            case "Lista":
+                var temp_1 = this.analizador.variable.obtenerValorVariable(simbolo.getNombre(), location.first_line, location.last_column);
+                if (simbolo.tam > 0) {
+                    this.analizador.variable.moverseApossDeArregloInicial(simbolo, temp_1, location);
+                    this.analizador.recorrer(nodo, "");
+                    this.analizador.variable.inicializandoLista(nodo.childNode[0], simbolo, location, temp_1);
                 }
                 else {
-                    throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column);
+                    throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column);
                 }
-            case "Nuevo":
-                throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column);
-            case "Lista":
-                throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column);
+                return true;
         }
         this.analizador.newError("asinganr valor", location.first_line, location.last_column);
         return false;
+    };
+    Asignacion.prototype.asignarValoresAvariables = function (resultado, simbolo, location) {
+        if (this.analizador.exp.evaluarTipo(resultado.tipo, simbolo.getTipo())) {
+            var val = this.analizador.exp.getValor(resultado); //el temporal del resulttod
+            var temp = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
+            this.analizador.agregarCodigo(this.analizador.saveEnPila(temp.temporal, val), location.last_column, location.first_line);
+            return true;
+        }
+        else if (resultado.tipo == this.analizador.NULL) {
+            var val = this.analizador.NULL; //el temporal del resulttod
+            var temp = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
+            this.analizador.agregarCodigo(this.analizador.saveEnPila(temp.temporal, val), location.last_column, location.first_line);
+            return true;
+        }
+        else {
+            throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column);
+        }
     };
     /**
        Asignar
@@ -90,10 +104,7 @@ var Asignacion = /** @class */ (function () {
         var term = nodo.term;
         switch (term) {
             case "Nuevo":
-                var temClase = this.analizador.claseA;
-                var retornarValor = this.analizador.cuerpo.nuevoObjeto(nodo);
-                this.analizador.claseA = temClase;
-                return retornarValor;
+                return this.analizador.variable.getNuevo(nodo);
             case "e":
                 return this.analizador.exp.analizar(nodo);
         }
@@ -132,10 +143,6 @@ var Asignacion = /** @class */ (function () {
                 return true;
         }
         throw this.analizador.newError("error algo esta mal", nodo.childNode[2].location.first_line, nodo.childNode[2].location.last_column);
-    };
-    Asignacion.prototype.getHeap = function (navegar, variable) {
-        if (navegar.tipo == "'.'") {
-        }
     };
     return Asignacion;
 }());

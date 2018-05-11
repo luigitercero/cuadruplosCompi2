@@ -66,6 +66,14 @@ export default class Analizador extends Inter {
 
         return ambito;
     }
+
+    public recorrer(nodo: Nodo, espacio: string) {
+        console.log(espacio + nodo.term);
+        nodo.childNode.forEach(element => {
+            this.recorrer(element, espacio + " ");
+        });
+
+    }
     verTodasLasClases() {
 
         console.log("---------Obeservando clasese-----------")
