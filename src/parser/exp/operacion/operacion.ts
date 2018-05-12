@@ -294,7 +294,7 @@ export default class Operacion {
         }
         throw new Error("error en analizar");
     }
-
+    /**escribir cadena operacion */
     private cadena(cadena: string, location: Location) {
         let t1 = this.analizador.newTemporal();
         this.analizador.agregarCodigo(

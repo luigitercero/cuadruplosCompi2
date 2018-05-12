@@ -136,6 +136,7 @@ var Variable = /** @class */ (function () {
         var operador = new nodoOperacion_1.default(val, variable.simbolo.getTipo(), variable.location.last_column, variable.location.first_line);
         operador.simbolo = variable.simbolo;
         operador.setTam(variable.getTamanio());
+        operador.setReff(variable);
         return operador;
     };
     /**este deberia jalar retotno */
@@ -269,6 +270,7 @@ var Variable = /** @class */ (function () {
         }
         else {
             cuadruplo = this.analizador.getEnHeap(varibale.done, temp);
+            // throw this.analizador.newError("revisar done aqui por que deberia de se valor", 0, 0);
         }
         this.analizador.agregarCodigo(cuadruplo, varibale.location.last_column, varibale.location.first_line);
         return temp;
@@ -489,6 +491,13 @@ var Variable = /** @class */ (function () {
     Variable.prototype.setValVariable = function (simbolo, resultado, location, inicio) {
         return this.setVariableFiltro(simbolo, resultado, location, inicio);
     };
+    /**
+     * esto es un filtro para las asignaciones de tipos
+     * @param simbolo
+     * @param resultado
+     * @param location
+     * @param inicio
+     */
     Variable.prototype.setVariableFiltro = function (simbolo, resultado, location, inicio) {
         if (simbolo.simbolo.getTipo() == resultado.tipo) {
             return this.setVariableNormal(simbolo, resultado, location, inicio);
@@ -505,6 +514,12 @@ var Variable = /** @class */ (function () {
         else if ((simbolo.simbolo.getTipo() == this.analizador.INT
             || simbolo.simbolo.getTipo() == this.analizador.DOUBLE)
             && resultado.tipo == this.analizador.CARACTER) {
+            return this.setVariableNormal(simbolo, resultado, location, inicio);
+        }
+        else if (simbolo.simbolo.getTipo() == this.analizador.CARACTER && resultado.tipo == this.analizador.INT) {
+            return this.setVariableNormal(simbolo, resultado, location, inicio);
+        }
+        else if (simbolo.simbolo.getTipo() == this.analizador.CARACTER && resultado.tipo == this.analizador.DOUBLE) {
             return this.setVariableNormal(simbolo, resultado, location, inicio);
         }
         throw this.analizador.newError("error al asignar tipos " + simbolo.simbolo.getNombre() + ": "

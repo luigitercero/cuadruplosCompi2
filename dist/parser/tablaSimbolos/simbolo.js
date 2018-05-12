@@ -14,6 +14,8 @@ var Simbolo = /** @class */ (function () {
         this.dim = new Array();
         this.tam = 0;
         this.valor = new Valor();
+        this.puntero = false;
+        this.lugar = "pila";
     }
     Simbolo.prototype.setLocacion_declaracion = function (location) {
         this.location = location;
@@ -23,6 +25,18 @@ var Simbolo = /** @class */ (function () {
     };
     Simbolo.prototype.getDim = function (number) {
         return this.dim[number];
+    };
+    Simbolo.prototype.setPuntero = function (esPuntero) {
+        this.puntero = esPuntero;
+    };
+    Simbolo.prototype.getPunter = function () {
+        return this.puntero;
+    };
+    Simbolo.prototype.getLugar = function () {
+        return this.lugar;
+    };
+    Simbolo.prototype.setLugar = function (lugar) {
+        this.lugar = lugar;
     };
     Simbolo.prototype.filtro = function (tipo) {
         switch (tipo) {

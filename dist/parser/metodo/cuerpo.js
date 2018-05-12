@@ -198,7 +198,7 @@ var cuerpo = /** @class */ (function () {
         this.analizador.claseA.tabla.disminuirAmbito();
         return metodo;
     };
-    cuerpo.prototype.ejecutarMetodo = function (nombre, param, tam, location, esto) {
+    cuerpo.prototype.ejecutarMetodo = function (nombre, param, tam, location, temp, parametoM, esto) {
         var coment = this.analizador.genComentario("aumentando de ambito para " + this.analizador.claseA.nombre);
         var metodoNombre = nombre + param;
         var ambitotemporal = this.analizador.claseA;
@@ -206,6 +206,7 @@ var cuerpo = /** @class */ (function () {
             this.analizador.claseA = this.analizador.buscarClase(esto.tipo);
         }
         var metodo = this.analizador.claseA.buscarMetodo(metodoNombre, location);
+        this.escribirParametrosApila(temp, parametoM, metodo);
         this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", tam + "", "ptr") + coment, location.last_column, location.first_line);
         coment = this.analizador.genComentario("llamando metodo " + metodoNombre);
         this.analizador.agregarCodigo(this.analizador.llamarMetodo("metodo" + metodo.id) + coment, location.last_column, location.first_line);
@@ -214,29 +215,65 @@ var cuerpo = /** @class */ (function () {
         this.analizador.agregarCodigo(this.analizador.genOperacion("-", "ptr", tam + "", "ptr") + coment, location.last_column, location.first_line);
         return metodo;
     };
+    /**
+     * escribir metodo antes de variables
+     * agregar parametros
+     * @param nombre
+     * @param parametoM
+     * @param location
+     * @param esto
+     */
     cuerpo.prototype.metodoID2 = function (nombre, parametoM, location, esto) {
         var tam = this.analizador.claseA.tabla.ptr;
         var dir;
         if (esto === undefined) {
-            dir = this.analizador.variable.obtenerValorVariable("este", location.first_line, location.last_column).done;
+            dir = this.analizador.variable.obtenerValorVariable("este", location.first_line, location.last_column).done; //aqui deberia de se valor en vez de done
+            //throw this.analizador.newError("revisar done ", 0, 0);
         }
         else {
             dir = esto.valor;
             this.analizador.claseA = this.analizador.buscarClase(esto.tipo);
         }
         var temp = this.escribirEstoAnuevoAmbito(dir, location, tam);
-        var param = this.escribirParametrosApila(temp, parametoM);
-        temp = temp + parametoM.length;
-        return this.ejecutarMetodo(nombre, param, tam, location, esto);
+        // let param = this.escribirParametrosApila(temp, parametoM);
+        var param = this.tiposDeParametros(parametoM);
+        return this.ejecutarMetodo(nombre, param, tam, location, temp, parametoM, esto);
     };
-    cuerpo.prototype.escribirParametrosApila = function (temp, parametoM) {
+    /**
+     * paremetros metodos variables metodos
+     * @param temp
+     * @param parametoM
+     */
+    cuerpo.prototype.escribirParametrosApila = function (temp, parametoM, metodo) {
         var param = "";
         for (var index = 0; index < parametoM.length; index++) {
             var t1 = this.analizador.newTemporal();
+            metodo.parametro[index];
             this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", temp + "", t1), parametoM[index].column, parametoM[index].fila);
-            this.analizador.agregarCodigo(this.analizador.saveEnPila(t1, parametoM[index].valor), parametoM[index].column, parametoM[index].fila);
+            var agregarValor = "";
+            if (!metodo.parametro[index].getPunter()) {
+                agregarValor = this.analizador.saveEnPila(t1, parametoM[index].valor);
+            }
+            else {
+                if (parametoM[index].getReff().simbolo.getPunter()) {
+                    agregarValor = this.analizador.saveEnPila(t1, parametoM[index].valor);
+                    metodo.parametro[index].setLugar(parametoM[index].getReff().simbolo.getLugar());
+                }
+                else {
+                    agregarValor = this.analizador.saveEnPila(t1, parametoM[index].getReff().getDir());
+                    metodo.parametro[index].setLugar(parametoM[index].getReff().done);
+                }
+            }
+            this.analizador.agregarCodigo(agregarValor, parametoM[index].column, parametoM[index].fila);
             param = param + "_" + parametoM[index].tipo;
             temp++;
+        }
+        return param;
+    };
+    cuerpo.prototype.tiposDeParametros = function (parametoM) {
+        var param = "";
+        for (var index = 0; index < parametoM.length; index++) {
+            param = param + "_" + parametoM[index].tipo;
         }
         return param;
     };

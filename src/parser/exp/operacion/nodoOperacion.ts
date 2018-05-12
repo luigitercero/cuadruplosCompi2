@@ -1,5 +1,5 @@
 import Simbolo from "../../tablaSimbolos/simbolo";
-
+import Dir from "../../variable/obtenerDireccion"
 
 export default class nodoOperacion {
     public tipo: string;
@@ -13,6 +13,8 @@ export default class nodoOperacion {
     public temp: string;
     public simbolo: Simbolo;
     private tam: number;
+    private reff: Dir;
+    private lugar: string;
 
     constructor(valor: string, tipo: string, column: number | -1, fila: number | -1) {
         this.valor = valor;
@@ -25,8 +27,19 @@ export default class nodoOperacion {
         this.temp = "";
         this.simbolo = new Simbolo("", "", "")
         this.tam = 0;
+
+
     }
 
+
+
+    setReff(reff: Dir) {
+        this.reff = reff;
+    }
+
+    getReff() {
+        return this.reff;
+    }
     getTam() {
         return this.tam;
     }

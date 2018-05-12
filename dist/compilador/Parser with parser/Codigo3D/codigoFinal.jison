@@ -100,8 +100,7 @@ frac                        (?:\.[0-9]+)
 
 "imprimir"                  return 'IMPRIMIR'
 "concatenar"                return 'CONCATENAR'
-"convertiracadena"          return 'CONVERTIRCADENA'
-"convertiraenetero"         return 'CONVERTIRENTERO'
+"puntero"                   return 'PUNTERO'
 "crearpuntero"              return 'CREARPUNTERO'
 "obtenerdireccion"          return 'OBTERNERDIRECCION'
 "reservarmemoria"           return 'RESERVAMEMORIA'
@@ -274,6 +273,11 @@ Declaracion:Tipo var AsignarValor
 var:ID
      {nodo1= new Nodo ("ID", @1,$1, [] ); 
       nodo = new Nodo("var",null,null,[nodo1]);  
+      $$ = nodo; }
+  | PUNTERO ID
+    {nodo0 = new Nodo ("PUNTERO", @1,$1, [] );
+     nodo1= new Nodo ("ID", @2,$2, [] );  
+      nodo = new Nodo("var",null,null,[nodo0,nodo1]);  
       $$ = nodo; }
   | var '[' e ']'
      {nodo1= new Nodo ("var", @1,$1, [] ); nodo2= new Nodo ("'['", @2,$2, [] ); nodo3= new Nodo ("e", @3,$3, [] ); nodo4= new Nodo ("']'", @4,$4, [] );

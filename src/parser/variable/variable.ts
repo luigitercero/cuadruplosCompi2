@@ -155,6 +155,7 @@ export default class Variable {
         let operador = new nodoOperacion(val, variable.simbolo.getTipo(), variable.location.last_column, variable.location.first_line);
         operador.simbolo = variable.simbolo;
         operador.setTam(variable.getTamanio());
+        operador.setReff(variable)
         return operador
     }
 
@@ -302,7 +303,7 @@ export default class Variable {
      * obtiene el valor de la posicion a partir de una direccion
      * @param varibale 
      */
-    getVAlorD(varibale: Dir) {
+    getVAlorD(varibale: Dir): string {
 
         let cuadruplo: string = "";
 
@@ -319,7 +320,7 @@ export default class Variable {
             cuadruplo = this.analizador.getEnHeap(
                 varibale.done, temp
             );
-
+            // throw this.analizador.newError("revisar done aqui por que deberia de se valor", 0, 0);
         }
         this.analizador.agregarCodigo(cuadruplo, varibale.location.last_column, varibale.location.first_line);
         return temp;
@@ -587,6 +588,13 @@ export default class Variable {
         return this.setVariableFiltro(simbolo, resultado, location, inicio);
     }
 
+    /**
+     * esto es un filtro para las asignaciones de tipos
+     * @param simbolo 
+     * @param resultado 
+     * @param location 
+     * @param inicio 
+     */
     private setVariableFiltro(simbolo: Dir, resultado: nodoOperacion, location: Location, inicio?: string) {
         if (simbolo.simbolo.getTipo() == resultado.tipo) {
             return this.setVariableNormal(simbolo, resultado, location, inicio);
@@ -601,6 +609,12 @@ export default class Variable {
             || simbolo.simbolo.getTipo() == this.analizador.DOUBLE)
             && resultado.tipo == this.analizador.CARACTER
         ) { return this.setVariableNormal(simbolo, resultado, location, inicio); }
+        else if (simbolo.simbolo.getTipo() == this.analizador.CARACTER && resultado.tipo == this.analizador.INT) {
+            return this.setVariableNormal(simbolo, resultado, location, inicio);
+        } else if (simbolo.simbolo.getTipo() == this.analizador.CARACTER && resultado.tipo == this.analizador.DOUBLE) {
+            return this.setVariableNormal(simbolo, resultado, location, inicio);
+        }
+
         throw this.analizador.newError("error al asignar tipos " + simbolo.simbolo.getNombre() + ": "
             + simbolo.simbolo.getTipo() + "  no es compatible con el valor de: " + resultado.tipo
             , location.first_line, location.last_column)

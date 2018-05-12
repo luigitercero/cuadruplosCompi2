@@ -17,6 +17,12 @@ var nodoOperacion = /** @class */ (function () {
         this.simbolo = new simbolo_1.default("", "", "");
         this.tam = 0;
     }
+    nodoOperacion.prototype.setReff = function (reff) {
+        this.reff = reff;
+    };
+    nodoOperacion.prototype.getReff = function () {
+        return this.reff;
+    };
     nodoOperacion.prototype.getTam = function () {
         return this.tam;
     };

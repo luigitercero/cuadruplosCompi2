@@ -18,6 +18,9 @@ var InfVarible = /** @class */ (function () {
     InfVarible.prototype.setTamanio = function (tam) {
         this.tamanioDeVariable = tam;
     };
+    InfVarible.prototype.getDir = function () {
+        return this.dir;
+    };
     return InfVarible;
 }());
 exports.default = InfVarible;

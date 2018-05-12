@@ -281,8 +281,19 @@ export default class Metodo {
                 variable.addDimension(nodo.childNode[2]);
                 variable.tam++;
                 return variable;
+            case "PUNTERO":
+                nombre = nodo.childNode[1].token;
+                if (
+                    metodo.buscarSimbolo(nombre))
+                    this.recoleccion.analizador.newError("la variable existe", nodo.childNode[1].location.first_line, nodo.childNode[1].location.last_column);
+                else {
+                    let simbolo: Simbolo = new Simbolo(nombre, visibilidad, tipo);
+                    simbolo.setPuntero(true);
+                    return simbolo;
+                }
+                throw this.recoleccion.analizador.newError("esto no puede declararse ", nodo.childNode[1].location.last_column, nodo.childNode[1].location.first_line)
             default:
-                throw this.recoleccion.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line)
+                throw this.recoleccion.analizador.newError("esto no puede declararse ", nodo.childNode[1].location.last_column, nodo.childNode[1].location.first_line)
 
         }
 

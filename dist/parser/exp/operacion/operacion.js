@@ -286,6 +286,7 @@ var Operacion = /** @class */ (function () {
         }
         throw new Error("error en analizar");
     };
+    /**escribir cadena operacion */
     Operacion.prototype.cadena = function (cadena, location) {
         var t1 = this.analizador.newTemporal();
         this.analizador.agregarCodigo(this.analizador.asignar("heap", t1), location.last_column, location.first_line);

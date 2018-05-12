@@ -108,6 +108,7 @@ var Declaracion = /** @class */ (function (_super) {
             this.analizador.agregarCodigo(this.analizador.genComentario("desplazamiento de variable a psoicion de valores"), variable.column, variable.fila);
             var temp = this.analizador.variable.obtenerValorVariable(variable.simbolo.getNombre(), variable.fila, variable.column);
             this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.done, variable.temp), variable.column, variable.fila);
+            //throw this.analizador.newError("aqui deberia de se temp .val en vz . done ", 0, 0);
             //this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", variable.temp, "heap"), variable.column, variable.fila);
             //this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", 1 + "", "heap"), variable.column, variable.fila);
             this.InicializarPosicionesArreglo(variable);

@@ -218,7 +218,7 @@ export default class cuerpo {
         return metodo;
 
     }
-    private ejecutarMetodo(nombre: string, param: string, tam: number, location: Location, esto?: nodoOperacion): Metodo {
+    private ejecutarMetodo(nombre: string, param: string, tam: number, location: Location, temp: number, parametoM: nodoOperacion[], esto?: nodoOperacion): Metodo {
         let coment = this.analizador.genComentario("aumentando de ambito para " + this.analizador.claseA.nombre)
         let metodoNombre = nombre + param;
         let ambitotemporal = this.analizador.claseA;
@@ -226,6 +226,10 @@ export default class cuerpo {
             this.analizador.claseA = this.analizador.buscarClase(esto.tipo);
         }
         let metodo: Metodo = this.analizador.claseA.buscarMetodo(metodoNombre, location);
+
+        this.escribirParametrosApila(temp, parametoM, metodo);
+
+
         this.analizador.agregarCodigo(
             this.analizador.genOperacion("+", "ptr", tam + "", "ptr") + coment, location.last_column, location.first_line
         );
@@ -241,12 +245,21 @@ export default class cuerpo {
         return metodo;
     }
 
+    /**
+     * escribir metodo antes de variables
+     * agregar parametros
+     * @param nombre 
+     * @param parametoM 
+     * @param location 
+     * @param esto 
+     */
     private metodoID2(nombre: string, parametoM: nodoOperacion[], location: Location, esto?: nodoOperacion): Metodo {
         let tam = this.analizador.claseA.tabla.ptr
         let dir;
 
         if (esto === undefined) {
-            dir = this.analizador.variable.obtenerValorVariable("este", location.first_line, location.last_column).done;
+            dir = this.analizador.variable.obtenerValorVariable("este", location.first_line, location.last_column).done; //aqui deberia de se valor en vez de done
+            //throw this.analizador.newError("revisar done ", 0, 0);
         } else {
 
             dir = esto.valor;
@@ -254,26 +267,51 @@ export default class cuerpo {
         }
         let temp = this.escribirEstoAnuevoAmbito(dir, location, tam);
 
-        let param = this.escribirParametrosApila(temp, parametoM);
+        // let param = this.escribirParametrosApila(temp, parametoM);
+        let param = this.tiposDeParametros(parametoM);
 
-        temp = temp + parametoM.length;
-        return this.ejecutarMetodo(nombre, param, tam, location, esto);
+        return this.ejecutarMetodo(nombre, param, tam, location, temp, parametoM, esto, );
     }
 
-    private escribirParametrosApila(temp: number, parametoM: nodoOperacion[]) {
+    /**
+     * paremetros metodos variables metodos
+     * @param temp 
+     * @param parametoM 
+     */
+    private escribirParametrosApila(temp: number, parametoM: nodoOperacion[], metodo: Metodo): string {
         let param = "";
         for (let index = 0; index < parametoM.length; index++) {
             let t1 = this.analizador.newTemporal();
 
+            metodo.parametro[index];
             this.analizador.agregarCodigo(
                 this.analizador.genOperacion("+", "ptr", temp + "", t1), parametoM[index].column, parametoM[index].fila
             );
+            let agregarValor = ""
+            if (!metodo.parametro[index].getPunter()) {
+                agregarValor = this.analizador.saveEnPila(t1, parametoM[index].valor);
+            } else {
+                if (parametoM[index].getReff().simbolo.getPunter()) {
+                    agregarValor = this.analizador.saveEnPila(t1, parametoM[index].valor);
+                    metodo.parametro[index].setLugar(parametoM[index].getReff().simbolo.getLugar());
+                } else {
+                    agregarValor = this.analizador.saveEnPila(t1, parametoM[index].getReff().getDir());
+                    metodo.parametro[index].setLugar(parametoM[index].getReff().done);
+                }
+            }
 
-            this.analizador.agregarCodigo(
-                this.analizador.saveEnPila(t1, parametoM[index].valor), parametoM[index].column, parametoM[index].fila
-            );
+            this.analizador.agregarCodigo(agregarValor, parametoM[index].column, parametoM[index].fila);
             param = param + "_" + parametoM[index].tipo;
             temp++;
+        }
+        return param;
+    }
+
+    private tiposDeParametros(parametoM: nodoOperacion[]) {
+        let param = "";
+
+        for (let index = 0; index < parametoM.length; index++) {
+            param = param + "_" + parametoM[index].tipo;
         }
         return param;
     }

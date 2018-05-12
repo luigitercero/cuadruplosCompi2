@@ -34,4 +34,8 @@ export default class InfVarible {
     setTamanio(tam: number) {
         this.tamanioDeVariable = tam;
     }
+    getDir() {
+
+        return this.dir;
+    }
 }

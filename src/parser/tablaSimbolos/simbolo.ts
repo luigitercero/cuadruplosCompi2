@@ -12,6 +12,9 @@ export default class Simbolo {
     public tam: number;
     public valor: Valor;
     public location: Location | any;
+    private puntero: boolean;
+    private lugar: string;
+
 
     setLocacion_declaracion(location: Location) {
         this.location = location;
@@ -24,7 +27,12 @@ export default class Simbolo {
     getDim(number: number) {
         return this.dim[number];
     }
-
+    setPuntero(esPuntero: boolean) {
+        this.puntero = esPuntero;
+    }
+    getPunter() {
+        return this.puntero;
+    }
     constructor(nombre: string, visibilidad: string, tipo: string) {
         this.nombre = nombre.toLocaleLowerCase();
         this.visibilidad = visibilidad.toLocaleLowerCase();
@@ -37,8 +45,17 @@ export default class Simbolo {
         this.dim = new Array();
         this.tam = 0;
         this.valor = new Valor();
+        this.puntero = false;
+        this.lugar = "pila";
     }
 
+    getLugar() {
+        return this.lugar;
+    }
+
+    setLugar(lugar: string) {
+        this.lugar = lugar;
+    }
     private filtro(tipo: string) {
         switch (tipo) {
             case "entero": return "entero";
