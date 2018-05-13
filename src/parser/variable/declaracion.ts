@@ -84,8 +84,28 @@ export default class Declaracion extends Asignacion {
                 //  this.analizador.newError("error al delcarar variable " + error.message, nodo.childNode[0].location.first_line, 0);
                 //}
                 return true;
+            case "CREARPUNTERO":
+                this.declararPuntero(nodo);
+                return true;
         }
-        return false;
+        throw this.analizador.newError("error en declaraciones", 0, 0);
+    }
+
+
+    private declararPuntero(nodo: Nodo) {
+        let tipo = "";
+        let tam = 0;
+        if (nodo.childNode[2].term == "Tipo") {
+            tipo = nodo.childNode[2].childNode[0].token;
+        } else {
+            tipo = nodo.childNode[2].token;
+
+        }
+        let variable = this.varID(nodo.childNode[4], this.analizador.PUBLICO, tipo);
+        variable.simbolo.setPuntero(true);
+
+        this.asignarValor(nodo.childNode[6], variable.simbolo);
+        return true;
     }
 
     /**SE FILTRA EL HEAP A LAS SIGUIENTE POSICION LIBRE DEPENDIENDO SE SE USO UN ARREGLO 
@@ -115,19 +135,19 @@ export default class Declaracion extends Asignacion {
         let contador = this.analizador.newTemporal();
 
         this.analizador.agregarCodigo(this.analizador.asignar("0", contador), variable.column, variable.fila);
-        let si: SIGENERICO = new SIGENERICO(this.analizador);
-        this.analizador.agregarCodigo(si.escribirEtiquetaS(), variable.column, variable.fila);
-        this.analizador.agregarCodigo(si.genSi("<", contador, variable.temp), variable.column, variable.fila)
-        this.analizador.agregarCodigo(si.genSaltoFalso(), variable.column, variable.fila);
-        this.analizador.agregarCodigo(si.escribirEtiquetaV(), variable.column, variable.fila);
+        let si: SIGENERICO = new SIGENERICO(this.analizador, variable.column, variable.fila);
+        si.escribirEtiquetaS();
+        si.genSi("<", contador, variable.temp);
+        si.genSaltoFalso();
+        si.escribirEtiquetaV();
         let valorInicial = this.analizador.variable.valorInicial(variable.simbolo);
         this.analizador.agregarCodigo(
             this.analizador.saveEnHeap("heap", valorInicial), variable.column, variable.fila
         );
         this.analizador.agregarCodigo(this.analizador.siguiLibreHeap(), variable.column, variable.fila);
         this.analizador.agregarCodigo(this.analizador.genOperacion("+", contador, "1", contador), variable.column, variable.fila);
-        this.analizador.agregarCodigo(si.escribirSaltoS(), variable.column, variable.fila);
-        this.analizador.agregarCodigo(si.escribirEtiquetaF(), variable.column, variable.fila);
+        si.escribirSaltoS();
+        si.escribirEtiquetaF();
         //this.analizador.agregarCodigo(this.analizador.siguiLibreHeap(), variable.column, variable.fila);
     }
 
@@ -147,24 +167,7 @@ export default class Declaracion extends Asignacion {
         let nombre: string;
         switch (term) {
             case "ID":
-                nombre = nodo.childNode[0].token;
-                if (
-                    this.analizador.claseA.tabla.buscarEnPila(nombre)
-                ) this.analizador.newError("la variable existe"
-                    , nodo.childNode[0].location.first_line
-                    , nodo.childNode[0].location.last_column);
-                else {
-                    let s = new Simbolo(nombre, visibilidad, tipo);
-                    this.analizador.claseA.tabla.agregarSimboloApila(s);
-                    let op = new nodoOperacion("", "", nodo.childNode[0].location.last_column
-                        , nodo.childNode[0].location.first_line);
-                    op.simbolo = s;
-                    op.simbolo.setLocacion_declaracion(nodo.childNode[0].location);
-                    return op;
-                }
-                throw this.analizador.newError("esto no puede declararse "
-                    , nodo.childNode[0].location.last_column
-                    , nodo.childNode[0].location.first_line)
+                return this.varID(nodo.childNode[0], visibilidad, tipo);
             case "var":
                 let variable: nodoOperacion = this.var(nodo.childNode[0], tipo, visibilidad);
                 let val: nodoOperacion = this.analizador.exp.analizar(nodo.childNode[2]);
@@ -176,6 +179,27 @@ export default class Declaracion extends Asignacion {
 
         }
 
+    }
+
+    private varID(nodo: Nodo, visibilidad: string, tipo: string): nodoOperacion {
+        let nombre = nodo.token;
+        if (
+            this.analizador.claseA.tabla.buscarEnPila(nombre)
+        ) this.analizador.newError("la variable existe"
+            , nodo.location.first_line
+            , nodo.location.last_column);
+        else {
+            let s = new Simbolo(nombre, visibilidad, tipo);
+            this.analizador.claseA.tabla.agregarSimboloApila(s);
+            let op = new nodoOperacion("", "", nodo.location.last_column
+                , nodo.location.first_line);
+            op.simbolo = s;
+            op.simbolo.setLocacion_declaracion(nodo.location);
+            return op;
+        }
+        throw this.analizador.newError("esto no puede declararse "
+            , nodo.location.last_column
+            , nodo.location.first_line)
     }
 
     protected agregarDimAHeap(variable: nodoOperacion, val: nodoOperacion, location: any) {

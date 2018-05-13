@@ -1,13 +1,5 @@
-Metodo:tip ID '(' Parametros '{'
-  | ID ID '(' Parametros '{'
-  | ID tipID ID '(' Parametros '{'
-  | Metodo CuerpoMetodo
-  | Constructor
-  | Principal
-  ; 
-tip : Tipo
-    | tip '[' ']'
-    ;
-tipID : '[' ']'
-    | tipID '[' ']'
-    ;
+Declaracion:Tipo var AsignarValor
+  | ID var AsignarValor
+  | CREARPUNTERO '(' Tipo ',' ID ')' AsignarValor
+  | CREARPUNTERO '(' ID ',' ID ')' AsignarValor
+  ;

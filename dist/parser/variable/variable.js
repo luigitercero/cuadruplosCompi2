@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var nodoOperacion_1 = __importDefault(require("../exp/operacion/nodoOperacion"));
 var obtenerDireccion_1 = __importDefault(require("./obtenerDireccion"));
 var nodoNavegar_1 = __importDefault(require("./nodoNavegar"));
+var sigenerico_1 = __importDefault(require("../sigenerico"));
 var Variable = /** @class */ (function () {
     function Variable(analizdor) {
         this.analizador = analizdor;
@@ -131,13 +132,114 @@ var Variable = /** @class */ (function () {
         }
         throw this.analizador.newError("no se si es variable o metodo", 0, 0);
     };
+    /**obtener el valor de la variable*/
     Variable.prototype.gerVal = function (variable) {
         var val = this.analizador.variable.getValorVariable(variable);
         var operador = new nodoOperacion_1.default(val, variable.simbolo.getTipo(), variable.location.last_column, variable.location.first_line);
         operador.simbolo = variable.simbolo;
         operador.setTam(variable.getTamanio());
         operador.setReff(variable);
+        if (variable.simbolo.getPunter()) {
+            variable.dir = val;
+            this.getValorDePuntero(operador);
+        }
+        else {
+        }
         return operador;
+    };
+    Variable.prototype.getValorDePuntero = function (operador) {
+        var varibale = operador.getReff();
+        var cuadruplo = "";
+        var temp = this.analizador.newTemporal();
+        var dir0 = this.analizador.newTemporal();
+        var dir = this.analizador.newTemporal();
+        var dirA0 = this.analizador.newTemporal();
+        var dirA = this.analizador.newTemporal();
+        var val = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(this.analizador.getEnHeap(operador.valor, temp), operador.column, operador.fila);
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "0", operador.valor, dir0), operador.column, operador.fila);
+        this.analizador.agregarCodigo(this.analizador.getEnHeap(dir0, dir), operador.column, operador.fila);
+        operador.getReff().dir = dir; //direccion donde esta la posicion
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "1", operador.valor, dirA0), operador.column, operador.fila);
+        this.analizador.agregarCodigo(this.analizador.getEnHeap(dirA0, dirA), operador.column, operador.fila);
+        operador.getReff().settemporalDeGuardado(dirA);
+        var si = new sigenerico_1.default(this.analizador, operador.column, operador.fila);
+        si.genSi("==", dirA, "0");
+        si.genSaltoFalso();
+        si.escribirEtiquetaV();
+        this.analizador.agregarCodigo(this.analizador.getEnPila(dir, val), operador.column, operador.fila);
+        si.escribirSaltoS();
+        si.escribirEtiquetaF();
+        this.analizador.agregarCodigo(this.analizador.getEnHeap(dir, val), operador.column, operador.fila);
+        si.escribirEtiquetaS();
+        operador.valor = val;
+    };
+    /**
+     *
+     * @param simbolo simboolo del parametro de la funcion
+     * @param parametrM valor que se va a guardar
+     * @param temporalGuardado
+     */
+    Variable.prototype.crearPuntero = function (parametrM) {
+        var direccionDeVariable = parametrM.getReff().getDir();
+        var comentario = this.analizador.genComentario("aqui va hacer la posicion del primer apuntador");
+        var valorDeHeap = this.analizador.newTemporal();
+        var apuntaAdonde = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(this.analizador.asignar("heap", valorDeHeap) + comentario, parametrM.column, parametrM.fila);
+        comentario = this.analizador.genComentario("agreagar nueva Posicion de Heap el apuntador tiene dos espacios");
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", "2", "heap") + comentario, parametrM.column, parametrM.fila);
+        comentario = this.analizador.genComentario("aqui se gurda la verdadera direccion a donde se va dirigir");
+        this.analizador.agregarCodigo(this.analizador.saveEnHeap(valorDeHeap, direccionDeVariable) + comentario, parametrM.column, parametrM.fila);
+        comentario = this.analizador.genComentario("en eta posicion se encuentra a donde sera dirigido el apuntador 0 pila 1 heap");
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", valorDeHeap, "1", apuntaAdonde) + comentario, parametrM.column, parametrM.fila);
+        var dirigirA = 0;
+        var lugar = parametrM.getReff().done;
+        if (lugar == "pila") {
+            dirigirA = 0;
+        }
+        else {
+            dirigirA = 1;
+        }
+        this.analizador.agregarCodigo(this.analizador.saveEnHeap(apuntaAdonde, dirigirA + "") + comentario, parametrM.column, parametrM.fila);
+        var valor = new nodoOperacion_1.default(valorDeHeap, "entero", parametrM.column, parametrM.fila);
+        valor.setReff(parametrM.getReff());
+        return valor;
+    };
+    Variable.prototype.crearPunteroDefault = function (location) {
+        var comentario = this.analizador.genComentario("aqui va hacer la posicion del primer apuntador");
+        var valorDeHeap = this.analizador.newTemporal();
+        var apuntaAdonde = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(this.analizador.asignar("heap", valorDeHeap) + comentario, location.last_column, location.first_line);
+        comentario = this.analizador.genComentario("agreagar nueva Posicion de Heap el apuntador tiene dos espacios");
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", "2", "heap") + comentario, location.last_column, location.first_line);
+        comentario = this.analizador.genComentario("aqui se gurda la verdadera direccion a donde se va dirigir");
+        this.analizador.agregarCodigo(this.analizador.saveEnHeap(valorDeHeap, this.analizador.NULL) + comentario, location.last_column, location.first_line);
+        comentario = this.analizador.genComentario("en eta posicion se encuentra a donde sera dirigido el apuntador 0 pila 1 heap");
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", valorDeHeap, "1", apuntaAdonde) + comentario, location.last_column, location.first_line);
+        var dirigirA = 1;
+        this.analizador.agregarCodigo(this.analizador.saveEnHeap(apuntaAdonde, dirigirA + "") + comentario, location.last_column, location.first_line);
+        var valor = new nodoOperacion_1.default(valorDeHeap, "entero", location.last_column, location.first_line);
+        return valor;
+    };
+    /**
+        * obtiene el valor de la posicion a partir de una direccion
+        * @param varibale
+    */
+    Variable.prototype.getVAlorD = function (varibale) {
+        var cuadruplo = "";
+        var temp = this.analizador.newTemporal();
+        if (varibale.done == "heap") {
+            cuadruplo = this.analizador.getEnHeap(varibale.temporal, temp);
+        }
+        else if (varibale.done == "pila") {
+            cuadruplo = this.analizador.getEnPila(varibale.temporal, temp);
+        }
+        else {
+            cuadruplo = this.analizador.getEnHeap(varibale.done, temp);
+            // throw this.analizador.newError("revisar done aqui por que deberia de se valor", 0, 0);
+        }
+        this.analizador.agregarCodigo(cuadruplo, varibale.location.last_column, varibale.location.first_line);
+        return temp;
     };
     /**este deberia jalar retotno */
     Variable.prototype.getmetodo = function (nodo, esto) {
@@ -255,26 +357,6 @@ var Variable = /** @class */ (function () {
         }
         return this.getVAlorD(varibale);
     };
-    /**
-     * obtiene el valor de la posicion a partir de una direccion
-     * @param varibale
-     */
-    Variable.prototype.getVAlorD = function (varibale) {
-        var cuadruplo = "";
-        var temp = this.analizador.newTemporal();
-        if (varibale.done == "heap") {
-            cuadruplo = this.analizador.getEnHeap(varibale.temporal, temp);
-        }
-        else if (varibale.done == "pila") {
-            cuadruplo = this.analizador.getEnPila(varibale.temporal, temp);
-        }
-        else {
-            cuadruplo = this.analizador.getEnHeap(varibale.done, temp);
-            // throw this.analizador.newError("revisar done aqui por que deberia de se valor", 0, 0);
-        }
-        this.analizador.agregarCodigo(cuadruplo, varibale.location.last_column, varibale.location.first_line);
-        return temp;
-    };
     Variable.prototype.moverseEnArreglo = function (variable, possArreglo) {
         var temp1 = this.analizador.newTemporal();
         var temp2 = this.analizador.newTemporal();
@@ -294,19 +376,25 @@ var Variable = /** @class */ (function () {
             return;
         }
         var temp = this.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column, inicio);
-        switch (tipo) {
-            case this.analizador.INT:
-                this.setValVariable(temp, new nodoOperacion_1.default("0", simbolo.getTipo(), location.last_column, location.first_line), location, inicio);
-                break;
-            case this.analizador.DOUBLE:
-                this.setValVariable(temp, new nodoOperacion_1.default("0", simbolo.getTipo(), location.last_column, location.first_line), location, inicio);
-                break;
-            case this.analizador.CARACTER:
-                this.setValVariable(temp, new nodoOperacion_1.default("0", simbolo.getTipo(), location.last_column, location.first_line), location, inicio);
-                break;
-            default:
-                this.setValVariable(temp, new nodoOperacion_1.default(this.analizador.NULL, simbolo.getTipo(), location.last_column, location.first_line), location, inicio);
-                break;
+        if (!simbolo.getPunter()) {
+            switch (tipo) {
+                case this.analizador.INT:
+                    this.setValVariable(temp, new nodoOperacion_1.default("0", simbolo.getTipo(), location.last_column, location.first_line), location, inicio);
+                    break;
+                case this.analizador.DOUBLE:
+                    this.setValVariable(temp, new nodoOperacion_1.default("0", simbolo.getTipo(), location.last_column, location.first_line), location, inicio);
+                    break;
+                case this.analizador.CARACTER:
+                    this.setValVariable(temp, new nodoOperacion_1.default("0", simbolo.getTipo(), location.last_column, location.first_line), location, inicio);
+                    break;
+                default:
+                    this.setValVariable(temp, new nodoOperacion_1.default(this.analizador.NULL, simbolo.getTipo(), location.last_column, location.first_line), location, inicio);
+                    break;
+            }
+        }
+        else {
+            var val = this.analizador.variable.crearPunteroDefault(location);
+            this.setValVariable(temp, new nodoOperacion_1.default(val.valor, simbolo.getTipo(), location.last_column, location.first_line), location, inicio);
         }
     };
     /**metodo para obtener el valor inicial por default de todo objeto */

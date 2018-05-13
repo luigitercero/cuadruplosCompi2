@@ -95,8 +95,25 @@ var Declaracion = /** @class */ (function (_super) {
                 //  this.analizador.newError("error al delcarar variable " + error.message, nodo.childNode[0].location.first_line, 0);
                 //}
                 return true;
+            case "CREARPUNTERO":
+                this.declararPuntero(nodo);
+                return true;
         }
-        return false;
+        throw this.analizador.newError("error en declaraciones", 0, 0);
+    };
+    Declaracion.prototype.declararPuntero = function (nodo) {
+        var tipo = "";
+        var tam = 0;
+        if (nodo.childNode[2].term == "Tipo") {
+            tipo = nodo.childNode[2].childNode[0].token;
+        }
+        else {
+            tipo = nodo.childNode[2].token;
+        }
+        var variable = this.varID(nodo.childNode[4], this.analizador.PUBLICO, tipo);
+        variable.simbolo.setPuntero(true);
+        this.asignarValor(nodo.childNode[6], variable.simbolo);
+        return true;
     };
     /**SE FILTRA EL HEAP A LAS SIGUIENTE POSICION LIBRE DEPENDIENDO SE SE USO UN ARREGLO
      *
@@ -122,17 +139,17 @@ var Declaracion = /** @class */ (function (_super) {
         this.analizador.agregarCodigo(this.analizador.genComentario("incializar arreglo local con nombre " + variable.simbolo.getNombre() + " mas tipo " + variable.simbolo.getTipo()), variable.column, variable.fila);
         var contador = this.analizador.newTemporal();
         this.analizador.agregarCodigo(this.analizador.asignar("0", contador), variable.column, variable.fila);
-        var si = new sigenerico_1.default(this.analizador);
-        this.analizador.agregarCodigo(si.escribirEtiquetaS(), variable.column, variable.fila);
-        this.analizador.agregarCodigo(si.genSi("<", contador, variable.temp), variable.column, variable.fila);
-        this.analizador.agregarCodigo(si.genSaltoFalso(), variable.column, variable.fila);
-        this.analizador.agregarCodigo(si.escribirEtiquetaV(), variable.column, variable.fila);
+        var si = new sigenerico_1.default(this.analizador, variable.column, variable.fila);
+        si.escribirEtiquetaS();
+        si.genSi("<", contador, variable.temp);
+        si.genSaltoFalso();
+        si.escribirEtiquetaV();
         var valorInicial = this.analizador.variable.valorInicial(variable.simbolo);
         this.analizador.agregarCodigo(this.analizador.saveEnHeap("heap", valorInicial), variable.column, variable.fila);
         this.analizador.agregarCodigo(this.analizador.siguiLibreHeap(), variable.column, variable.fila);
         this.analizador.agregarCodigo(this.analizador.genOperacion("+", contador, "1", contador), variable.column, variable.fila);
-        this.analizador.agregarCodigo(si.escribirSaltoS(), variable.column, variable.fila);
-        this.analizador.agregarCodigo(si.escribirEtiquetaF(), variable.column, variable.fila);
+        si.escribirSaltoS();
+        si.escribirEtiquetaF();
         //this.analizador.agregarCodigo(this.analizador.siguiLibreHeap(), variable.column, variable.fila);
     };
     /**
@@ -149,18 +166,7 @@ var Declaracion = /** @class */ (function (_super) {
         var nombre;
         switch (term) {
             case "ID":
-                nombre = nodo.childNode[0].token;
-                if (this.analizador.claseA.tabla.buscarEnPila(nombre))
-                    this.analizador.newError("la variable existe", nodo.childNode[0].location.first_line, nodo.childNode[0].location.last_column);
-                else {
-                    var s = new simbolo_1.default(nombre, visibilidad, tipo);
-                    this.analizador.claseA.tabla.agregarSimboloApila(s);
-                    var op = new nodoOperacion_1.default("", "", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
-                    op.simbolo = s;
-                    op.simbolo.setLocacion_declaracion(nodo.childNode[0].location);
-                    return op;
-                }
-                throw this.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
+                return this.varID(nodo.childNode[0], visibilidad, tipo);
             case "var":
                 var variable = this.var(nodo.childNode[0], tipo, visibilidad);
                 var val = this.analizador.exp.analizar(nodo.childNode[2]);
@@ -169,6 +175,20 @@ var Declaracion = /** @class */ (function (_super) {
             default:
                 throw this.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
         }
+    };
+    Declaracion.prototype.varID = function (nodo, visibilidad, tipo) {
+        var nombre = nodo.token;
+        if (this.analizador.claseA.tabla.buscarEnPila(nombre))
+            this.analizador.newError("la variable existe", nodo.location.first_line, nodo.location.last_column);
+        else {
+            var s = new simbolo_1.default(nombre, visibilidad, tipo);
+            this.analizador.claseA.tabla.agregarSimboloApila(s);
+            var op = new nodoOperacion_1.default("", "", nodo.location.last_column, nodo.location.first_line);
+            op.simbolo = s;
+            op.simbolo.setLocacion_declaracion(nodo.location);
+            return op;
+        }
+        throw this.analizador.newError("esto no puede declararse ", nodo.location.last_column, nodo.location.first_line);
     };
     Declaracion.prototype.agregarDimAHeap = function (variable, val, location) {
         if (variable.simbolo.tam == 0) {

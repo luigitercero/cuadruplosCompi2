@@ -291,8 +291,21 @@ export default class Operacion {
                 //fil = nodo.childNode[0].location.last_column;
                 let valor: nodoOperacion = this.analizador.variable.identi(nodo.childNode[0])
                 return valor;
+            case "OBTERNERDIRECCION":
+
+                return this.ObtenerDireccionDeVariable(nodo);
         }
         throw new Error("error en analizar");
+    }
+
+    private ObtenerDireccionDeVariable(nodo: Nodo): NodoOperacion {
+        let a: nodoOperacion = this.analizar(nodo.childNode[1]);
+        let m = a.getReff()
+        a.valor = m.dir;
+        a.tipo = this.analizador.INT;
+        a.setEnDireccion(true);
+        return a;
+
     }
     /**escribir cadena operacion */
     private cadena(cadena: string, location: Location) {

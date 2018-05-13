@@ -5,11 +5,15 @@ export default class SIGENERICO {
     private etiquetaF: string;
     private etiquetaS: string;
     private analizador: Analizador;
-    constructor(analizador: Analizador) {
+    private column: number;
+    private line: number;
+    constructor(analizador: Analizador, column: number, line: number) {
         this.analizador = analizador;
         this.etiquetaV = this.analizador.newEtiqueta();
         this.etiquetaF = this.analizador.newEtiqueta();
         this.etiquetaS = this.analizador.newEtiqueta();
+        this.column = column;
+        this.line = line;
     }
 
     getEtiquetaV() {
@@ -24,24 +28,27 @@ export default class SIGENERICO {
     }
 
     genSi(operador: string, arg0: string, arg1: string) {
-        return this.analizador.genOperacion(operador, arg0, arg1, this.etiquetaV);
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion(operador, arg0, arg1, this.etiquetaV), this.column, this.line
+        );
     }
     genSaltoFalso() {
-        return this.analizador.genSalto(this.etiquetaF);
+        this.analizador.agregarCodigo(
+            this.analizador.genSalto(this.etiquetaF), this.column, this.line);
     }
 
     escribirEtiquetaV() {
-        return this.analizador.escribirEtiquetaS(this.etiquetaV);
+        this.analizador.agregarCodigo(this.analizador.escribirEtiquetaS(this.etiquetaV), this.column, this.line);
     }
     escribirEtiquetaF() {
-        return this.analizador.escribirEtiquetaS(this.etiquetaF);
+        this.analizador.agregarCodigo(this.analizador.escribirEtiquetaS(this.etiquetaF), this.column, this.line);
     }
 
     escribirEtiquetaS() {
-        return this.analizador.escribirEtiquetaS(this.etiquetaS);
+        this.analizador.agregarCodigo(this.analizador.escribirEtiquetaS(this.etiquetaS), this.column, this.line);
     }
 
     escribirSaltoS() {
-        return this.analizador.genSalto(this.etiquetaS);
+        this.analizador.agregarCodigo(this.analizador.genSalto(this.etiquetaS), this.column, this.line);
     }
 }

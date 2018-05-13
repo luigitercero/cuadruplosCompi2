@@ -283,8 +283,18 @@ var Operacion = /** @class */ (function () {
                 //fil = nodo.childNode[0].location.last_column;
                 var valor = this.analizador.variable.identi(nodo.childNode[0]);
                 return valor;
+            case "OBTERNERDIRECCION":
+                return this.ObtenerDireccionDeVariable(nodo);
         }
         throw new Error("error en analizar");
+    };
+    Operacion.prototype.ObtenerDireccionDeVariable = function (nodo) {
+        var a = this.analizar(nodo.childNode[1]);
+        var m = a.getReff();
+        a.valor = m.dir;
+        a.tipo = this.analizador.INT;
+        a.setEnDireccion(true);
+        return a;
     };
     /**escribir cadena operacion */
     Operacion.prototype.cadena = function (cadena, location) {

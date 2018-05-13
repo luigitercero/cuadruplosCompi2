@@ -15,6 +15,7 @@ export default class nodoOperacion {
     private tam: number;
     private reff: Dir;
     private lugar: string;
+    private enDireccion: boolean;
 
     constructor(valor: string, tipo: string, column: number | -1, fila: number | -1) {
         this.valor = valor;
@@ -27,12 +28,16 @@ export default class nodoOperacion {
         this.temp = "";
         this.simbolo = new Simbolo("", "", "")
         this.tam = 0;
-
+        this.enDireccion = false;
 
     }
 
-
-
+    getenDireccion() {
+        return this.enDireccion;
+    }
+    setEnDireccion(endireccion: boolean) {
+        this.enDireccion = endireccion
+    }
     setReff(reff: Dir) {
         this.reff = reff;
     }

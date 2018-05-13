@@ -252,24 +252,33 @@ Estruct:Cuerpo_Estruct ']' ';'
       nodo = new Nodo("Estruct",null,null,[$1,nodo2,nodo3]);  
       $$ = nodo; }
   ; 
-Cuerpo_Estruct:ESTRUCTURA '['
-     {nodo1= new Nodo ("ESTRUCTURA", @1,$1, [] ); nodo2= new Nodo ("'['", @2,$2, [] ); 
-      nodo = new Nodo("Cuerpo_Estruct",null,null,[nodo1,nodo2]);  
+Cuerpo_Estruct:ESTRUCTURA ID '['
+     {nodo1= new Nodo ("ESTRUCTURA", @1,$1, [] ); nodo2= new Nodo ("'['", @3,$3, [] ); 
+      nodo3= new Nodo ("ID", @2,$2, [] );
+      nodo = new Nodo("Cuerpo_Estruct",null,null,[nodo1,nodo3,nodo2]);
       $$ = nodo; }
   | Cuerpo_Estruct Declaracion
      {nodo1= new Nodo ("Cuerpo_Estruct", @1,$1, [] ); nodo2= new Nodo ("Declaracion", @2,$2, [] );
       nodo = new Nodo("Cuerpo_Estruct",null,null,[$1,$2]); 
       $$ = nodo; }
   ; 
-Declaracion:Tipo var AsignarValor
-     {nodo1= new Nodo ("Tipo", @1,$1, [] ); nodo2= new Nodo ("var", @2,$2, [] ); nodo3= new Nodo ("AsignarValor", @3,$3, [] ); 
-      nodo = new Nodo("Declaracion",null,null,[$1,$2,$3]);  
+Declaracion:Tipo var AsignarValor     {nodo1= new Nodo ("Tipo", @1,$1, [] ); nodo2= new
+ Nodo ("var", @2,$2, [] ); nodo3= new Nodo ("AsignarValor", @3,$3, [] );
+      nodo = new Nodo("Declaracion",null,null,[$1,$2,$3]);
       $$ = nodo; }
   | ID var AsignarValor
      {nodo1= new Nodo ("ID", @1,$1, [] ); nodo2= new Nodo ("var", @2,$2, [] ); nodo3= new Nodo ("AsignarValor", @3,$3, [] );
-      nodo = new Nodo("Declaracion",null,null,[nodo1,$2,$3]); 
+      nodo = new Nodo("Declaracion",null,null,[nodo1,$2,$3]);
       $$ = nodo; }
-  ;  
+  | CREARPUNTERO '(' Tipo ',' ID ')' AsignarValor
+     {nodo1= new Nodo ("CREARPUNTERO", @1,$1, [] ); nodo2= new Nodo ("'('", @2,$2, [] ); nodo3= new Nodo ("Tipo", @3,$3, [] ); nodo4= new Nodo ("','", @4,$4, [] ); nodo5= new Nodo ("ID", @5,$5, [] ); nodo6= new Nodo("')'", @6,$6, [] ); nodo7= new Nodo ("AsignarValor",@7,$7, [] );
+      nodo = new Nodo("Declaracion",null,null,[nodo1,nodo2,$3,nodo4,nodo5,nodo6,$7]);
+      $$ = nodo; }
+  | CREARPUNTERO '(' ID ',' ID ')' AsignarValor
+     {nodo1= new Nodo ("CREARPUNTERO", @1,$1, [] ); nodo2= new Nodo ("'('", @2,$2, [] ); nodo3= new Nodo ("ID", @3,$3, [] ); nodo4= new Nodo ("','", @4,$4, [] );nodo5= new Nodo ("ID", @5,$5, [] ); nodo6= new Nodo ("')'", @6,$6, [] ); nodo7= new Nodo ("AsignarValor", @7,$7, [] );
+      nodo = new Nodo("Declaracion",null,null,[nodo1,nodo2,nodo3,nodo4,nodo5,nodo6,$7]);
+      $$ = nodo; }
+  ;
 var:ID
      {nodo1= new Nodo ("ID", @1,$1, [] ); 
       nodo = new Nodo("var",null,null,[nodo1]);  
@@ -803,14 +812,6 @@ Primitivas:IMPRIMIR
      {nodo1= new Nodo ("CONVERTIRENTERO", @1,$1, [] );
       nodo = new Nodo("Primitivas",null,null,[nodo1]); 
       $$ = nodo; }
-  | CREARPUNTERO
-     {nodo1= new Nodo ("CREARPUNTERO", @1,$1, [] );
-      nodo = new Nodo("Primitivas",null,null,[nodo1]); 
-      $$ = nodo; }
-  | OBTERNERDIRECCION
-     {nodo1= new Nodo ("OBTERNERDIRECCION", @1,$1, [] );
-      nodo = new Nodo("Primitivas",null,null,[nodo1]); 
-      $$ = nodo; }
   | RESERVAMEMORIA
      {nodo1= new Nodo ("RESERVAMEMORIA", @1,$1, [] );
       nodo = new Nodo("Primitivas",null,null,[nodo1]); 
@@ -960,6 +961,10 @@ Datos:NUMBERLIST
 | CARACTER
     {nodo1= new Nodo ("CARACTER", @1,$1, [] );
       nodo = new Nodo("Datos",null,null,[nodo1]); 
+      $$ = nodo; }
+| OBTERNERDIRECCION '(' e ')'
+     {nodo1= new Nodo ("OBTERNERDIRECCION", @1,$1, [] );
+      nodo = new Nodo("Datos",null,null,[nodo1,$3]); 
       $$ = nodo; }
   ; 
 Identi:var

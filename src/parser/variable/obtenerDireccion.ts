@@ -14,6 +14,7 @@ export default class InfVarible {
     public dir: string;
     public val: string | any;
     private tamanioDeVariable: number
+    private temporalDeGuardado: string
 
     constructor(temporal: string, done: string, simbolo: Simbolo) {
         this.temporal = temporal;
@@ -22,6 +23,14 @@ export default class InfVarible {
         this.tam = 0;
         this.dir = temporal;
         this.tamanioDeVariable = simbolo.tam;
+        this.temporalDeGuardado = "";
+    }
+
+    gettemporalDeGuardado() {
+        return this.temporalDeGuardado;
+    }
+    settemporalDeGuardado(lugar: string) {
+        this.temporalDeGuardado = lugar
     }
     addLocation(locatio: Location) {
         this.location = locatio;

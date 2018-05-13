@@ -290,13 +290,28 @@ export default class cuerpo {
             let agregarValor = ""
             if (!metodo.parametro[index].getPunter()) {
                 agregarValor = this.analizador.saveEnPila(t1, parametoM[index].valor);
-            } else {
-                if (parametoM[index].getReff().simbolo.getPunter()) {
-                    agregarValor = this.analizador.saveEnPila(t1, parametoM[index].valor);
-                    metodo.parametro[index].setLugar(parametoM[index].getReff().simbolo.getLugar());
+            } else {//aqui el parametro de la funcion es puntero
+                let pra = parametoM[index].getReff();
+                if (pra != undefined) {
+                    if (parametoM[index].getReff().simbolo.getPunter()) {
+                        let ap: nodoOperacion = this.analizador.variable.crearPunteroDefault(parametoM[index].getReff().location);
+                        let t0 = this.analizador.newTemporal();
+                        this.analizador.agregarCodigo(this.analizador.genOperacion("+", ap.valor, "1", t0), parametoM[index].column, parametoM[index].fila);
+                        this.analizador.agregarCodigo(
+                            this.analizador.saveEnHeap(ap.valor, parametoM[index].getReff().dir), parametoM[index].column, parametoM[index].fila);
+                        this.analizador.agregarCodigo(
+                            this.analizador.saveEnHeap(t0, parametoM[index].getReff().gettemporalDeGuardado()), parametoM[index].column, parametoM[index].fila);
+
+                        agregarValor = this.analizador.saveEnPila(t1, ap.valor);
+
+                    } else {
+                        //aqui son apuntadores de variables
+                        let ap: nodoOperacion = this.analizador.variable.crearPuntero(parametoM[index]);
+                        agregarValor = this.analizador.saveEnPila(t1, ap.valor);
+                    }
+
                 } else {
-                    agregarValor = this.analizador.saveEnPila(t1, parametoM[index].getReff().getDir());
-                    metodo.parametro[index].setLugar(parametoM[index].getReff().done);
+                    throw this.analizador.newError("se requiere un apuntador con el tipo", parametoM[index].column, parametoM[index].fila)
                 }
             }
 

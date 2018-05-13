@@ -16,7 +16,14 @@ var nodoOperacion = /** @class */ (function () {
         this.temp = "";
         this.simbolo = new simbolo_1.default("", "", "");
         this.tam = 0;
+        this.enDireccion = false;
     }
+    nodoOperacion.prototype.getenDireccion = function () {
+        return this.enDireccion;
+    };
+    nodoOperacion.prototype.setEnDireccion = function (endireccion) {
+        this.enDireccion = endireccion;
+    };
     nodoOperacion.prototype.setReff = function (reff) {
         this.reff = reff;
     };

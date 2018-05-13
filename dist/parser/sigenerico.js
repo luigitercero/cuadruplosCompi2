@@ -1,11 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var SIGENERICO = /** @class */ (function () {
-    function SIGENERICO(analizador) {
+    function SIGENERICO(analizador, column, line) {
         this.analizador = analizador;
         this.etiquetaV = this.analizador.newEtiqueta();
         this.etiquetaF = this.analizador.newEtiqueta();
         this.etiquetaS = this.analizador.newEtiqueta();
+        this.column = column;
+        this.line = line;
     }
     SIGENERICO.prototype.getEtiquetaV = function () {
         return this.etiquetaV;
@@ -17,22 +19,22 @@ var SIGENERICO = /** @class */ (function () {
         return this.getEtiquetaS;
     };
     SIGENERICO.prototype.genSi = function (operador, arg0, arg1) {
-        return this.analizador.genOperacion(operador, arg0, arg1, this.etiquetaV);
+        this.analizador.agregarCodigo(this.analizador.genOperacion(operador, arg0, arg1, this.etiquetaV), this.column, this.line);
     };
     SIGENERICO.prototype.genSaltoFalso = function () {
-        return this.analizador.genSalto(this.etiquetaF);
+        this.analizador.agregarCodigo(this.analizador.genSalto(this.etiquetaF), this.column, this.line);
     };
     SIGENERICO.prototype.escribirEtiquetaV = function () {
-        return this.analizador.escribirEtiquetaS(this.etiquetaV);
+        this.analizador.agregarCodigo(this.analizador.escribirEtiquetaS(this.etiquetaV), this.column, this.line);
     };
     SIGENERICO.prototype.escribirEtiquetaF = function () {
-        return this.analizador.escribirEtiquetaS(this.etiquetaF);
+        this.analizador.agregarCodigo(this.analizador.escribirEtiquetaS(this.etiquetaF), this.column, this.line);
     };
     SIGENERICO.prototype.escribirEtiquetaS = function () {
-        return this.analizador.escribirEtiquetaS(this.etiquetaS);
+        this.analizador.agregarCodigo(this.analizador.escribirEtiquetaS(this.etiquetaS), this.column, this.line);
     };
     SIGENERICO.prototype.escribirSaltoS = function () {
-        return this.analizador.genSalto(this.etiquetaS);
+        this.analizador.agregarCodigo(this.analizador.genSalto(this.etiquetaS), this.column, this.line);
     };
     return SIGENERICO;
 }());

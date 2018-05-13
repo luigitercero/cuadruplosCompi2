@@ -8,7 +8,14 @@ var InfVarible = /** @class */ (function () {
         this.tam = 0;
         this.dir = temporal;
         this.tamanioDeVariable = simbolo.tam;
+        this.temporalDeGuardado = "";
     }
+    InfVarible.prototype.gettemporalDeGuardado = function () {
+        return this.temporalDeGuardado;
+    };
+    InfVarible.prototype.settemporalDeGuardado = function (lugar) {
+        this.temporalDeGuardado = lugar;
+    };
     InfVarible.prototype.addLocation = function (locatio) {
         this.location = locatio;
     };
