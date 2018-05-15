@@ -18,9 +18,11 @@ var Exp_1 = __importDefault(require("./exp/operacion/Exp"));
 var variable_1 = __importDefault(require("./variable/variable"));
 var metodo_1 = __importDefault(require("./metodo/metodo"));
 var clase_1 = __importDefault(require("./tablaSimbolos/clase"));
+var Estructuras_1 = __importDefault(require("./tablaSimbolos/estructura/Estructuras"));
 var recoleccion_1 = __importDefault(require("../precompilacion/recoleccion"));
 var clase_2 = __importDefault(require("./clase/clase"));
 var cuerpo_1 = __importDefault(require("./metodo/cuerpo"));
+var estructura_1 = __importDefault(require("./estrucura/estructura"));
 var Analizador = /** @class */ (function (_super) {
     __extends(Analizador, _super);
     function Analizador() {
@@ -31,9 +33,14 @@ var Analizador = /** @class */ (function (_super) {
         _this.cuerpo = new cuerpo_1.default(_this);
         _this.claseA = new clase_1.default("", 0);
         _this.clases = new Array();
+        _this.Estructuras = new Estructuras_1.default();
         _this.clas = new clase_2.default(_this);
+        _this.estructura = new estructura_1.default(_this);
         return _this;
     }
+    Analizador.prototype.getCodEstruct = function () {
+        return this.estructura;
+    };
     Analizador.prototype.getAmbito = function () {
         var ambito = [];
         for (var index = 0; index < this.claseA.tabla.Lista.length; index++) {
@@ -72,6 +79,13 @@ var Analizador = /** @class */ (function (_super) {
         console.log(espacio + nodo.term);
         nodo.childNode.forEach(function (element) {
             _this.recorrer(element, espacio + " ");
+        });
+    };
+    Analizador.prototype.recorrerArbol = function (nodo) {
+        var _this = this;
+        console.log(nodo.term);
+        nodo.childNode.forEach(function (element) {
+            _this.recorrer(element, " ");
         });
     };
     Analizador.prototype.verTodasLasClases = function () {
@@ -171,7 +185,6 @@ var Analizador = /** @class */ (function (_super) {
                     this.clas.crearClase(nodo));
                 return true;
             case "Estruct":
-                this.logPorCompletar("estruct");
                 return true;
         }
         return false;

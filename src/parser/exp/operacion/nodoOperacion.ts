@@ -29,6 +29,7 @@ export default class nodoOperacion {
         this.simbolo = new Simbolo("", "", "")
         this.tam = 0;
         this.enDireccion = false;
+        this.lugar = "";
 
     }
 

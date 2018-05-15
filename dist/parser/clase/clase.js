@@ -104,7 +104,7 @@ var Clase = /** @class */ (function () {
                     this.analizador.metodoA.sobrescribir(nodo.childNode[0]));
                 return true;
             case "Estruct":
-                this.analizador.logPorCompletar("agreagar struct a tabla de simbolos");
+                //this.analizador.getCodEstruct().Inicio(nodo.childNode[0],this.analizador.)
                 return true;
             case "CuerpoClase":
                 this.analizador.log("cuerpoClase a cuerpoClase: " +
@@ -129,14 +129,28 @@ var Clase = /** @class */ (function () {
         for (var index = 0; index < this.analizador.claseA.tabla.esto.ambito.length; index++) {
             var element = this.analizador.claseA.tabla.esto.ambito[index];
             var sim = element;
-            if (sim.dim.length > 0) {
-                this.agregarDimGlobal(sim);
-            }
-            if (element.valor.valor != null) {
-                this.analizador.variable.evaluarAsignacionasignarValor(sim);
+            if (!sim.getPunter()) {
+                if (sim.dim.length > 0) {
+                    this.agregarDimGlobal(sim);
+                }
+                if (element.valor.valor != null) {
+                    this.analizador.variable.evaluarAsignacionasignarValor(sim);
+                }
+                else {
+                    this.analizador.variable.incializar(sim, sim.getLocacion_de_declaracion());
+                }
             }
             else {
-                this.analizador.variable.incializar(sim, sim.getLocacion_de_declaracion());
+                if (element.valor.valor != null) {
+                    var nodo = element.valor.getNodo();
+                    var Valor = this.analizador.exp.analizar(nodo);
+                    var puntero = this.analizador.variable.crearPuntero(Valor);
+                    this.analizador.variable.asignarPunteroDefaul(puntero, sim, sim.location);
+                }
+                else {
+                    var valor = this.analizador.variable.crearPunteroDefault(sim.location);
+                    this.analizador.variable.asignarPunteroDefaul(valor, sim, sim.location);
+                }
             }
         }
         coment = this.analizador.genComentario("fin de metodo preconstructor para " + nombreClase);

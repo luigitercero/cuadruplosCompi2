@@ -106,7 +106,7 @@ var Clase = /** @class */ (function () {
                     this.recoleccion.metodo.sobrescribir(nodo.childNode[0]));
                 return true;
             case "Estruct":
-                this.recoleccion.analizador.logPorCompletar("agreagar struct a tabla de simbolos");
+                this.recoleccion.analizador.claseA.estructura.agregarEstructura(this.recoleccion.analizador.getCodEstruct().Inicio(nodo.childNode[0]));
                 return true;
         }
         this.recoleccion.analizador.newError("no existe nodo pra continuar el cuerpo clase", 0, 0);

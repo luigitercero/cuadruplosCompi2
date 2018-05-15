@@ -47,7 +47,7 @@ export default class Ambito {
         this.siguietePosicionLibre(simbolo);
     }
 
-    siguietePosicionLibre(simbolo: Simbolo) {
+    private siguietePosicionLibre(simbolo: Simbolo) {
         this.ptr++;
     }
     existeVariable(nombre: string): boolean {

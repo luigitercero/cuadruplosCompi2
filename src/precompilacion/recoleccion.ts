@@ -12,13 +12,11 @@ export default class Recoleccion {
     constructor(analizador: Analizador) {
         this.analizador = analizador;
         this.clase = new Class(this);
-        this.variable = new Variable(this);
+        this.variable = new Variable(analizador);
         this.metodo = new Metodo(this);
     }
     analizar(nodo: Nodo) {
-
         this.inicio(nodo);
-
     }
 
 
@@ -66,6 +64,11 @@ export default class Recoleccion {
                 this.analizador.log("encabezado a Import: " +
                     this.import(nodo.childNode[0]));
                 return true;
+            case "Estruct":
+                this.analizador.Estructuras.agregarEstructura(
+                    this.analizador.getCodEstruct().Inicio(nodo.childNode[0]));
+                //this.analizador.newError("declarando struct", 0, 0);
+                return true
         }
         return false;
     }
@@ -84,8 +87,10 @@ export default class Recoleccion {
                     this.clase.crearClase(nodo));
                 return true;
             case "Estruct":
-                this.analizador.logPorCompletar("estruct")
+                this.analizador.Estructuras.agregarEstructura(
+                    this.analizador.getCodEstruct().Inicio(nodo.childNode[0]));
                 return true;
+
         }
         return false;
     }

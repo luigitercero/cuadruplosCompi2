@@ -285,8 +285,28 @@ var Operacion = /** @class */ (function () {
                 return valor;
             case "OBTERNERDIRECCION":
                 return this.ObtenerDireccionDeVariable(nodo);
+            case "CONSULTARTAMANIO":
+                return this.Consutartamanio(nodo);
+            case "RESERVAMEMORIA":
+                return this.ReservarMemoria(nodo);
         }
         throw new Error("error en analizar");
+    };
+    Operacion.prototype.Consutartamanio = function (nodo) {
+        var id = nodo.childNode[1].token;
+        var variable = this.analizador.getCodEstruct().buscarEstructura(id, nodo.childNode[1].location);
+        var tam = variable.variables.ambito.length;
+        var op = new nodoOperacion_1.default(tam + "", this.analizador.INT, nodo.childNode[1].location.last_column, nodo.childNode[1].location.first_line);
+        return op;
+    };
+    Operacion.prototype.ReservarMemoria = function (nodo) {
+        var valor = this.analizar(nodo.childNode[1]);
+        var t0 = this.analizador.newTemporal();
+        var comentario = this.analizador.genComentario("guardando pos inicial de la reserva de memoria");
+        this.analizador.agregarCodigo(this.analizador.asignar("heap", t0) + comentario, valor.column, valor.fila);
+        comentario = this.analizador.genComentario("dezplazando posiciones");
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", valor.valor, "heap") + comentario, valor.column, valor.fila);
+        return new nodoOperacion_1.default(t0, this.analizador.INT, valor.column, valor.fila);
     };
     Operacion.prototype.ObtenerDireccionDeVariable = function (nodo) {
         var a = this.analizar(nodo.childNode[1]);

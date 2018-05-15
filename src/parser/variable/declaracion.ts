@@ -99,7 +99,6 @@ export default class Declaracion extends Asignacion {
             tipo = nodo.childNode[2].childNode[0].token;
         } else {
             tipo = nodo.childNode[2].token;
-
         }
         let variable = this.varID(nodo.childNode[4], this.analizador.PUBLICO, tipo);
         variable.simbolo.setPuntero(true);
@@ -171,6 +170,7 @@ export default class Declaracion extends Asignacion {
             case "var":
                 let variable: nodoOperacion = this.var(nodo.childNode[0], tipo, visibilidad);
                 let val: nodoOperacion = this.analizador.exp.analizar(nodo.childNode[2]);
+
                 this.agregarDimAHeap(variable, val, nodo.childNode[1].location);
                 return variable;
             default:
@@ -190,6 +190,7 @@ export default class Declaracion extends Asignacion {
             , nodo.location.last_column);
         else {
             let s = new Simbolo(nombre, visibilidad, tipo);
+            s.linea = nodo.location.first_line;
             this.analizador.claseA.tabla.agregarSimboloApila(s);
             let op = new nodoOperacion("", "", nodo.location.last_column
                 , nodo.location.first_line);

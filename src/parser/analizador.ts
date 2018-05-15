@@ -6,10 +6,12 @@ import Variable from './variable/variable'
 
 import Metodo from './metodo/metodo'
 import Clase from './tablaSimbolos/clase'
+import Estructura from './tablaSimbolos/estructura/Estructuras'
 import Recoleccion from '../precompilacion/recoleccion'
 import Class from './clase/clase'
 import Cuerpo from './metodo/cuerpo'
 import nodoOperacion from './exp/operacion/nodoOperacion';
+import Estruct from './estrucura/estructura'
 export default class Analizador extends Inter {
     public exp: Exp;
     public variable: Variable;
@@ -18,6 +20,9 @@ export default class Analizador extends Inter {
     public claseA: Clase;
     public clases: Clase[];
     public cuerpo: Cuerpo;
+    private estructura: Estruct;
+    public Estructuras: Estructura;
+
     constructor() {
         super();
         this.exp = new Exp(this);
@@ -26,7 +31,13 @@ export default class Analizador extends Inter {
         this.cuerpo = new Cuerpo(this);
         this.claseA = new Clase("", 0);
         this.clases = new Array<Clase>();
+        this.Estructuras = new Estructura();
         this.clas = new Class(this);
+        this.estructura = new Estruct(this);
+    }
+
+    getCodEstruct() {
+        return this.estructura;
     }
     getAmbito() {
 
@@ -73,6 +84,12 @@ export default class Analizador extends Inter {
             this.recorrer(element, espacio + " ");
         });
 
+    }
+    public recorrerArbol(nodo: Nodo) {
+        console.log(nodo.term);
+        nodo.childNode.forEach(element => {
+            this.recorrer(element, " ");
+        });
     }
     verTodasLasClases() {
 
@@ -179,7 +196,7 @@ export default class Analizador extends Inter {
                     this.clas.crearClase(nodo));
                 return true;
             case "Estruct":
-                this.logPorCompletar("estruct")
+
                 return true;
         }
         return false;

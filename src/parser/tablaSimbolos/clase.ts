@@ -5,6 +5,8 @@ import Simbolo from "./simbolo";
 import { text } from "body-parser";
 import { error } from "util";
 import Location from "../location";
+import Estructuras from "./estructura/Estructuras";
+
 
 export default class Clase {
     public nombre: string;
@@ -12,6 +14,7 @@ export default class Clase {
     public tabla: Tabla;
     public metodo: Metodo[];
     public importar: Clase[];
+    public estructura: Estructuras
 
     constructor(nombre: string, poss: number) {
         this.nombre = nombre.toLocaleLowerCase();
@@ -21,6 +24,7 @@ export default class Clase {
         this.crearPila();
         this.metodo = new Array();
         this.importar = new Array<Clase>();
+        this.estructura = new Estructuras();
     }
 
     private crearEsto() {

@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tabla_1 = __importDefault(require("./tabla"));
 var ambito_1 = __importDefault(require("./ambito"));
 var simbolo_1 = __importDefault(require("./simbolo"));
+var Estructuras_1 = __importDefault(require("./estructura/Estructuras"));
 var Clase = /** @class */ (function () {
     function Clase(nombre, poss) {
         this.nombre = nombre.toLocaleLowerCase();
@@ -15,6 +16,7 @@ var Clase = /** @class */ (function () {
         this.crearPila();
         this.metodo = new Array();
         this.importar = new Array();
+        this.estructura = new Estructuras_1.default();
     }
     Clase.prototype.crearEsto = function () {
         this.tabla.esto = new ambito_1.default();

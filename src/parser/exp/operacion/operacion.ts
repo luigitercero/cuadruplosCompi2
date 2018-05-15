@@ -292,12 +292,39 @@ export default class Operacion {
                 let valor: nodoOperacion = this.analizador.variable.identi(nodo.childNode[0])
                 return valor;
             case "OBTERNERDIRECCION":
-
                 return this.ObtenerDireccionDeVariable(nodo);
+            case "CONSULTARTAMANIO":
+                return this.Consutartamanio(nodo);
+            case "RESERVAMEMORIA":
+                return this.ReservarMemoria(nodo);
         }
         throw new Error("error en analizar");
     }
 
+    private Consutartamanio(nodo: Nodo): NodoOperacion {
+        let id = nodo.childNode[1].token;
+        let variable = this.analizador.getCodEstruct().buscarEstructura(id, nodo.childNode[1].location);
+        let tam = variable.variables.ambito.length
+        let op = new NodoOperacion(tam + "", this.analizador.INT,
+            nodo.childNode[1].location.last_column, nodo.childNode[1].location.first_line);
+
+        return op;
+    }
+    private ReservarMemoria(nodo: Nodo): NodoOperacion {
+        let valor: NodoOperacion = this.analizar(nodo.childNode[1]);
+        let t0 = this.analizador.newTemporal();
+        let comentario = this.analizador.genComentario("guardando pos inicial de la reserva de memoria")
+        this.analizador.agregarCodigo(this.analizador.asignar("heap", t0) + comentario,
+            valor.column, valor.fila
+        )
+        comentario = this.analizador.genComentario("dezplazando posiciones");
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", valor.valor, "heap") + comentario,
+            valor.column, valor.fila
+        );
+
+        return new NodoOperacion(t0, this.analizador.INT, valor.column, valor.fila);
+
+    }
     private ObtenerDireccionDeVariable(nodo: Nodo): NodoOperacion {
         let a: nodoOperacion = this.analizar(nodo.childNode[1]);
         let m = a.getReff()
@@ -305,7 +332,6 @@ export default class Operacion {
         a.tipo = this.analizador.INT;
         a.setEnDireccion(true);
         return a;
-
     }
     /**escribir cadena operacion */
     private cadena(cadena: string, location: Location) {

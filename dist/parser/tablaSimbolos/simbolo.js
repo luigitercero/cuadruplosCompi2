@@ -3,11 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var util_1 = require("util");
 var Simbolo = /** @class */ (function () {
     function Simbolo(nombre, visibilidad, tipo) {
-        this.nombre = nombre.toLocaleLowerCase();
         this.visibilidad = visibilidad.toLocaleLowerCase();
         this.tipo = this.filtro(tipo.toLocaleLowerCase());
         this.linea = -1;
         this.possAmbito = -1;
+        this.nombre = nombre.toLocaleLowerCase();
         /**
          * es el tama;o del arreglo
          */

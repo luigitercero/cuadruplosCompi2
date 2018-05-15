@@ -143,7 +143,7 @@ export default class cuerpo {
                 this.primitivas.analizar(nombre, this.getParametro(nodo.childNode[2]));
                 return
             case "Tipo":
-
+                throw this.analizador.newError("no puedo hacer esto todavia", 0, 0);
 
         }
     }
@@ -193,11 +193,11 @@ export default class cuerpo {
         let term = nodo.term;
         switch (term) {
             case "Tipo":
-
-                break
+                throw this.analizador.newError("aun no puedo hacer esto", 0, 0)
+            //break
             case "Nuevo":
-
-                break
+                throw this.analizador.newError("aun no puedo hacer esto", 0, 0)
+            //break
             case "e":
                 parametro.push(this.analizador.exp.analizar(nodo));
                 return true;

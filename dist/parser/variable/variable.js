@@ -412,6 +412,10 @@ var Variable = /** @class */ (function () {
                 return this.analizador.NULL;
         }
     };
+    /**
+     *
+     * @param simbolo simbolo de la variable global
+     */
     Variable.prototype.evaluarAsignacionasignarValor = function (simbolo) {
         var nodo = simbolo.valor.getNodo();
         var term = nodo.term;
@@ -537,6 +541,19 @@ var Variable = /** @class */ (function () {
         else {
             throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column);
         }
+    };
+    /**
+     * asignado a punteros globales
+     * @param resultado
+     * @param simbolo
+     * @param location
+     */
+    Variable.prototype.asignarPunteroDefaul = function (resultado, simbolo, location) {
+        var val = this.analizador.exp.getValor(resultado); //el temporal del resulttod
+        var temp = this.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
+        this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.temporal, val), location.last_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.genComentario("fin de agregacion de valor a la variable " + simbolo.getNombre()), location.last_column, location.first_line); // es un comentario
+        return true;
     };
     /**
      * obtener y escribir el temporal de la posicion en memoria del objeto

@@ -10,7 +10,7 @@ var Recoleccion = /** @class */ (function () {
     function Recoleccion(analizador) {
         this.analizador = analizador;
         this.clase = new clase_1.default(this);
-        this.variable = new variable_1.default(this);
+        this.variable = new variable_1.default(analizador);
         this.metodo = new metodo_1.default(this);
     }
     Recoleccion.prototype.analizar = function (nodo) {
@@ -57,6 +57,10 @@ var Recoleccion = /** @class */ (function () {
                 this.analizador.log("encabezado a Import: " +
                     this.import(nodo.childNode[0]));
                 return true;
+            case "Estruct":
+                this.analizador.Estructuras.agregarEstructura(this.analizador.getCodEstruct().Inicio(nodo.childNode[0]));
+                //this.analizador.newError("declarando struct", 0, 0);
+                return true;
         }
         return false;
     };
@@ -74,7 +78,7 @@ var Recoleccion = /** @class */ (function () {
                     this.clase.crearClase(nodo));
                 return true;
             case "Estruct":
-                this.analizador.logPorCompletar("estruct");
+                this.analizador.Estructuras.agregarEstructura(this.analizador.getCodEstruct().Inicio(nodo.childNode[0]));
                 return true;
         }
         return false;

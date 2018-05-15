@@ -812,14 +812,7 @@ Primitivas:IMPRIMIR
      {nodo1= new Nodo ("CONVERTIRENTERO", @1,$1, [] );
       nodo = new Nodo("Primitivas",null,null,[nodo1]); 
       $$ = nodo; }
-  | RESERVAMEMORIA
-     {nodo1= new Nodo ("RESERVAMEMORIA", @1,$1, [] );
-      nodo = new Nodo("Primitivas",null,null,[nodo1]); 
-      $$ = nodo; }
-  | CONSULTARTAMANIO
-     {nodo1= new Nodo ("CONSULTARTAMANIO", @1,$1, [] );
-      nodo = new Nodo("Primitivas",null,null,[nodo1]); 
-      $$ = nodo; }
+
   | TECLADO
      {nodo1= new Nodo ("TECLADO", @1,$1, [] );
       nodo = new Nodo("Primitivas",null,null,[nodo1]); 
@@ -965,6 +958,15 @@ Datos:NUMBERLIST
 | OBTERNERDIRECCION '(' e ')'
      {nodo1= new Nodo ("OBTERNERDIRECCION", @1,$1, [] );
       nodo = new Nodo("Datos",null,null,[nodo1,$3]); 
+      $$ = nodo; }
+| RESERVAMEMORIA '(' e ')'
+     {nodo1= new Nodo ("RESERVAMEMORIA", @1,$1, [] );
+      nodo = new Nodo("Datos",null,null,[nodo1,$3]); 
+      $$ = nodo; }
+| CONSULTARTAMANIO '(' ID ')'
+     {nodo1= new Nodo ("CONSULTARTAMANIO", @1,$1, [] );
+     nodo2= new Nodo ("ID", @3,$3, [] );
+      nodo = new Nodo("Datos",null,null,[nodo1,nodo2]); 
       $$ = nodo; }
   ; 
 Identi:var

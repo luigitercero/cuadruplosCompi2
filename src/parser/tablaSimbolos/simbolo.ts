@@ -34,11 +34,12 @@ export default class Simbolo {
         return this.puntero;
     }
     constructor(nombre: string, visibilidad: string, tipo: string) {
-        this.nombre = nombre.toLocaleLowerCase();
+
         this.visibilidad = visibilidad.toLocaleLowerCase();
         this.tipo = this.filtro(tipo.toLocaleLowerCase());
         this.linea = -1;
         this.possAmbito = -1;
+        this.nombre = nombre.toLocaleLowerCase();
         /**
          * es el tama;o del arreglo
          */

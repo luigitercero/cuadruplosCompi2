@@ -548,6 +548,10 @@ export default class Variable {
                 return this.analizador.NULL;
         }
     }
+    /**
+     * 
+     * @param simbolo simbolo de la variable global
+     */
     public evaluarAsignacionasignarValor(simbolo: Simbolo) {
         let nodo: Nodo = simbolo.valor.getNodo();
         let term = nodo.term;
@@ -705,6 +709,28 @@ export default class Variable {
             throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column)
         }
     }
+    /**
+     * asignado a punteros globales
+     * @param resultado 
+     * @param simbolo 
+     * @param location 
+     */
+    public asignarPunteroDefaul(resultado: nodoOperacion, simbolo: Simbolo, location: Location) {
+
+        let val = this.analizador.exp.getValor(resultado); //el temporal del resulttod
+        let temp = this.obtenerDirVariable(simbolo.getNombre(),
+            location.first_line, location.last_column);
+
+        this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.temporal, val),
+            location.last_column, location.first_line);
+
+        this.analizador.agregarCodigo(this.analizador.genComentario
+            ("fin de agregacion de valor a la variable " + simbolo.getNombre())
+            , location.last_column, location.first_line);// es un comentario
+        return true;
+
+
+    }
 
 
     /**
@@ -779,8 +805,6 @@ export default class Variable {
         throw this.analizador.newError("error al asignar tipos " + simbolo.simbolo.getNombre() + ": "
             + simbolo.simbolo.getTipo() + "  no es compatible con el valor de: " + resultado.tipo
             , location.first_line, location.last_column)
-
-
     }
 
 

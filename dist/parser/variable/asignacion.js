@@ -78,6 +78,7 @@ var Asignacion = /** @class */ (function () {
                 var a = resultado.getReff();
                 var temp = this.analizador.variable.obtenerValorVariable(simbolo.getNombre(), location.first_line, location.last_column);
                 if (a == undefined) {
+                    this.analizador.agregarCodigo(this.analizador.genComentario("mietras no sea variable se asigna la poss de memoria"), location.last_column, location.first_line);
                     var val = this.analizador.exp.getValor(resultado);
                     this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.val, val), location.last_column, location.first_line);
                 }
@@ -206,12 +207,21 @@ var Asignacion = /** @class */ (function () {
         this.asignarPunteroAPuntero(simbolo, resultado, location);
     };
     Asignacion.prototype.asignarPunteroAPuntero = function (simbolo, resultado, location, inicio) {
+        var ap = this.analizador.variable.crearPunteroDefault(location);
         simbolo.addLocation(location);
-        var uff = this.analizador.variable.getVAlorD(simbolo);
+        //let uff: string = this.analizador.variable.getVAlorD(simbolo);
         var t0 = this.analizador.newTemporal();
-        this.analizador.agregarCodigo(this.analizador.genOperacion("+", uff, "1", t0), location.first_column, location.first_line);
-        this.analizador.agregarCodigo(this.analizador.saveEnHeap(uff, resultado.getReff().dir), location.first_column, location.first_line);
-        this.analizador.agregarCodigo(this.analizador.saveEnHeap(t0, resultado.getReff().gettemporalDeGuardado()), location.first_column, location.first_line);
+        var t1 = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", ap.valor, "0", t0), location.first_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", ap.valor, "1", t1), location.first_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.saveEnHeap(t0, resultado.getReff().dir), location.first_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.saveEnHeap(t1, resultado.getReff().gettemporalDeGuardado()), location.first_column, location.first_line);
+        if (simbolo.done == "pila") {
+            this.analizador.agregarCodigo(this.analizador.saveEnPila(simbolo.dir, ap.valor), location.first_column, location.first_line);
+        }
+        else {
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap(simbolo.dir, ap.valor), location.first_column, location.first_line);
+        }
     };
     return Asignacion;
 }());

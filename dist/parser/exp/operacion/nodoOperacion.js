@@ -17,6 +17,7 @@ var nodoOperacion = /** @class */ (function () {
         this.simbolo = new simbolo_1.default("", "", "");
         this.tam = 0;
         this.enDireccion = false;
+        this.lugar = "";
     }
     nodoOperacion.prototype.getenDireccion = function () {
         return this.enDireccion;

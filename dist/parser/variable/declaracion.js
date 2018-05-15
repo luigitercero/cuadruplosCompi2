@@ -182,6 +182,7 @@ var Declaracion = /** @class */ (function (_super) {
             this.analizador.newError("la variable existe", nodo.location.first_line, nodo.location.last_column);
         else {
             var s = new simbolo_1.default(nombre, visibilidad, tipo);
+            s.linea = nodo.location.first_line;
             this.analizador.claseA.tabla.agregarSimboloApila(s);
             var op = new nodoOperacion_1.default("", "", nodo.location.last_column, nodo.location.first_line);
             op.simbolo = s;

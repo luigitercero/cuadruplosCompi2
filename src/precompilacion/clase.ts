@@ -108,10 +108,9 @@ export default class Clase {
             case "SobreEscribir":
                 this.recoleccion.analizador.log("cuerpoClase a sobrescribir: " +
                     this.recoleccion.metodo.sobrescribir(nodo.childNode[0]));
-
                 return true;
             case "Estruct":
-                this.recoleccion.analizador.logPorCompletar("agreagar struct a tabla de simbolos");
+                this.recoleccion.analizador.claseA.estructura.agregarEstructura(this.recoleccion.analizador.getCodEstruct().Inicio(nodo.childNode[0]));
                 return true
 
         }

@@ -12,11 +12,8 @@ import nodoOperacion from '../exp/operacion/nodoOperacion';
 export default class metodo {
     public analizador: Analizador;
 
-
     constructor(analizador: Analizador) {
         this.analizador = analizador;
-
-
     }
 
     /**

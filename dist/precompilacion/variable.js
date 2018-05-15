@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var simbolo_1 = __importDefault(require("../parser/tablaSimbolos/simbolo"));
 var Variable = /** @class */ (function () {
-    function Variable(recoleccion) {
-        this.recoleccion = recoleccion;
+    function Variable(analizador) {
+        this.analizador = analizador;
     }
     /**
      * DeclaracionClase
@@ -17,7 +17,7 @@ var Variable = /** @class */ (function () {
      */
     Variable.prototype.declaracion = function (nodo) {
         var nombre = nodo.childNode[0].term;
-        var visibilidad = this.recoleccion.analizador.PRIVADO;
+        var visibilidad = this.analizador.PRIVADO;
         switch (nombre) {
             case "Visibilidad":
                 visibilidad = nodo.childNode[0].childNode[0].token;
@@ -47,26 +47,44 @@ var Variable = /** @class */ (function () {
                 tipo = nodo.childNode[0].childNode[0].token;
                 try {
                     variable = this.var(nodo.childNode[1], tipo, Visibilidad);
-                    this.recoleccion.analizador.claseA.tabla.esto.agregarSimbolo(variable);
+                    this.analizador.claseA.tabla.esto.agregarSimbolo(variable);
                     this.asignarValor(nodo.childNode[2], variable);
                 }
                 catch (error) {
-                    this.recoleccion.analizador.newError("error al delcarar variable", nodo.childNode[0].childNode[0].location.first_line, 0);
+                    throw this.analizador.newError("error al delcarar variable", nodo.childNode[0].childNode[0].location.first_line, 0);
                 }
                 return true;
             case "ID":
                 tipo = nodo.childNode[0].token;
                 try {
                     variable = this.var(nodo.childNode[1], tipo, Visibilidad);
-                    this.recoleccion.analizador.claseA.tabla.esto.agregarSimbolo(variable);
+                    this.analizador.claseA.tabla.esto.agregarSimbolo(variable);
                     this.asignarValor(nodo.childNode[2], variable);
                 }
                 catch (error) {
-                    this.recoleccion.analizador.newError("error al delcarar variable", nodo.childNode[0].childNode[0].location.first_line, 0);
+                    throw this.analizador.newError("error al delcarar variable", nodo.childNode[0].childNode[0].location.first_line, 0);
                 }
                 return true;
+            case "CREARPUNTERO":
+                this.declararPuntero(nodo, Visibilidad);
+                return true;
         }
-        return false;
+        throw this.analizador.newError("error al declarar hace falta algo", 0, 0);
+    };
+    Variable.prototype.declararPuntero = function (nodo, visibilidad) {
+        var tipo = "";
+        var tam = 0;
+        if (nodo.childNode[2].term == "Tipo") {
+            tipo = nodo.childNode[2].childNode[0].token;
+        }
+        else {
+            tipo = nodo.childNode[2].token;
+        }
+        var variable = this.varID(nodo.childNode[4], visibilidad, tipo);
+        variable.setPuntero(true);
+        this.analizador.claseA.tabla.esto.agregarSimbolo(variable);
+        this.asignarValor(nodo.childNode[6], variable);
+        return true;
     };
     /** este var solo sirve para la primera pasada
      * var
@@ -84,15 +102,7 @@ var Variable = /** @class */ (function () {
         switch (term) {
             case "ID":
                 nombre = nodo.childNode[0].token;
-                if (this.recoleccion.analizador.claseA.tabla.esto.buscarVariable(nombre))
-                    this.recoleccion.analizador.newError("la variable existe", nodo.childNode[0].location.first_line, nodo.childNode[0].location.last_column);
-                else {
-                    var sim = new simbolo_1.default(nombre, visibilidad, tipo);
-                    sim.linea = nodo.childNode[0].location.first_line;
-                    sim.setLocacion_declaracion(nodo.childNode[0].location);
-                    return sim;
-                }
-                throw this.recoleccion.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
+                return this.varID(nodo.childNode[0], visibilidad, tipo);
             case "var":
                 var variable = this.var(nodo.childNode[0], tipo, visibilidad);
                 var val = nodo.childNode[2];
@@ -100,8 +110,20 @@ var Variable = /** @class */ (function () {
                 variable.addTam(1);
                 return variable;
             default:
-                throw this.recoleccion.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
+                throw this.analizador.newError("esto no puede declararse ", nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
         }
+    };
+    Variable.prototype.varID = function (nodo, visibilidad, tipo) {
+        var nombre = nodo.token;
+        if (this.analizador.claseA.tabla.esto.buscarVariable(nombre))
+            this.analizador.newError("la variable existe", nodo.location.first_line, nodo.location.last_column);
+        else {
+            var sim = new simbolo_1.default(nombre, visibilidad, tipo);
+            sim.linea = nodo.location.first_line;
+            sim.setLocacion_declaracion(nodo.location);
+            return sim;
+        }
+        throw this.analizador.newError("esto no puede declararse ", nodo.location.last_column, nodo.location.first_line);
     };
     /**
      * * AsignarValor
@@ -114,7 +136,7 @@ var Variable = /** @class */ (function () {
      */
     Variable.prototype.asignarValor = function (nodo, simbolo) {
         var nombre = nodo.childNode[0].term;
-        this.recoleccion.analizador.log("agregando valor");
+        this.analizador.log("agregando valor");
         if (nombre == "';'") {
         }
         else {
