@@ -266,7 +266,6 @@ export default class FormatoItermedio {
     }
     public logPorCompletar(mensaje: string) {
         console.log("es necesario completar: " + mensaje);
-
     }
 
     public INT: string = "entero";

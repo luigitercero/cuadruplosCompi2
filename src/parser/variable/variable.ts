@@ -11,6 +11,7 @@ import Location from '../location';
 import Metodo from '../tablaSimbolos/metodo';
 import NodoNavegar from './nodoNavegar';
 import IfG from '../sigenerico'
+import Struct from '../tablaSimbolos/estructura/Estructura';
 
 export default class Variable {
 
@@ -45,13 +46,26 @@ export default class Variable {
             case "getMetodo":
                 return this.getmetodo(nodo.childNode[0])
             case "Identi":
-                let temp = this.analizador.claseA;
-                let identi = this.identi(nodo.childNode[0]);
-                let op = this.identiObjec(nodo.childNode[2], identi, nodo.childNode[1].location);
-                this.analizador.claseA = temp;
+                let op
+                if (nodo.childNode[1].term == "'.'") {
+                    let temp = this.analizador.claseA;
+                    let identi = this.identi(nodo.childNode[0]);
+                    op = this.identiObjec(nodo.childNode[2], identi, nodo.childNode[1].location);
+                    this.analizador.claseA = temp;
+                } else {
+                    let identi = this.identi(nodo.childNode[0]);
+                    let nombre = this.analizador.variable.varParaPunteros(nodo.childNode[2], identi.valor);
+                    let simb: Dir = this.analizador.variable.ObtenerDirVariableEstruct(identi.tipo, nombre.valor,
+                        nombre.getlocation(), identi.valor);
+                    //let valor = this.analizador.variable.getVAlorD(simb);
+                    op = this.gerVal(simb);
+                    // op = this.identiStruct(nodo.childNode[2], identi, nodo.childNode[1].location);
+                }
+
                 return op;
             case "ESTE":
-                variable = this.analizador.variable.obtenerValorVariable("este", nodo.childNode[0].location.first_line, nodo.childNode[0].location.last_column);
+                variable = this.analizador.variable.obtenerValorVariable("este",
+                    nodo.childNode[0].location.first_line, nodo.childNode[0].location.last_column);
                 navegar = new NodoNavegar(variable, nodo.childNode[1].term);
                 location = nodo.childNode[0].location;
                 variable.addLocation(nodo.childNode[0].location);
@@ -88,17 +102,19 @@ export default class Variable {
                 variable = this.analizador.variable.var(nodo.childNode[0]);
                 return this.analizador.variable.gerVal(variable);
             case "ESTE":
-                variable = this.analizador.variable.obtenerDirVariable("este", nodo.childNode[0].location.first_line, nodo.childNode[0].location.last_column);
+                variable = this.analizador.variable.obtenerDirVariable("este", nodo.childNode[0].location.first_line,
+                    nodo.childNode[0].location.last_column);
                 location = nodo.childNode[1].location;
-
                 variable.addLocation(nodo.childNode[0].location);
                 return this.analizador.variable.gerVal(variable);
             case "getMetodo":
                 return this.analizador.variable.getmetodo(nodo.childNode[0])
             case "Navegar":
+
                 let temp = this.analizador.claseA;
                 let identi = this.navegar(nodo.childNode[0]);
-                let op = this.analizador.variable.identiObjec(nodo.childNode[1], identi, nodo.childNode[2].location);
+                let op = this.analizador.variable.identiObjec(nodo.childNode[1],
+                    identi, nodo.childNode[2].location);
                 this.analizador.claseA = temp;
                 return op;
 
@@ -155,47 +171,56 @@ export default class Variable {
     /**obtener el valor de la variable*/
     gerVal(variable: Dir): nodoOperacion {
         let val = this.analizador.variable.getValorVariable(variable);
-        let operador = new nodoOperacion(val, variable.simbolo.getTipo(), variable.location.last_column, variable.location.first_line);
+        let operador = new nodoOperacion(val, variable.simbolo.getTipo(),
+            variable.location.last_column, variable.location.first_line);
         operador.simbolo = variable.simbolo;
         operador.setTam(variable.getTamanio());
         operador.setReff(variable)
         if (variable.simbolo.getPunter()) {
-            variable.dir = val;
-            this.getValorDePuntero(operador);
+
+            if (!variable.simbolo.isStruct()) {
+                this.getValorDePuntero(operador);
+            } else {
+
+                let val = this.getValorDepossPuntero(operador);
+                this.getValorDeLugar(operador);
+                operador.valor = val;
+            }
+
         } else {
 
         }
+        if (variable.location != undefined) {
+            operador.setLocation(variable.location);
+        }
+
 
         return operador
     }
 
-    getValorDePuntero(operador: nodoOperacion) {
-        let varibale = operador.getReff();
-        let cuadruplo: string = "";
-        let temp = this.analizador.newTemporal();
+    private getValorDepossPuntero(operador: nodoOperacion) {
         let dir0 = this.analizador.newTemporal();
         let dir = this.analizador.newTemporal();
-        let dirA0 = this.analizador.newTemporal();
-        let dirA = this.analizador.newTemporal();
-        let val = this.analizador.newTemporal();
-        this.analizador.agregarCodigo(
-            this.analizador.getEnHeap(
-                operador.valor, temp
-            ), operador.column, operador.fila
-        );
+        let comentario = this.analizador.genComentario("valor donde apunta el putero")
+
         this.analizador.agregarCodigo(
             this.analizador.genOperacion(
                 "+", "0", operador.valor, dir0
-            ), operador.column, operador.fila
+            ) + comentario, operador.column, operador.fila
         );
 
         this.analizador.agregarCodigo(
             this.analizador.getEnHeap(
                 dir0, dir
-            ), operador.column, operador.fila
+            ) + comentario, operador.column, operador.fila
         );
-        operador.getReff().dir = dir; //direccion donde esta la posicion
+        operador.getReff().dir = dir;
+        return dir;
+    }
 
+    private getValorDeLugar(operador: nodoOperacion) {
+        let dirA0 = this.analizador.newTemporal();
+        let dirA = this.analizador.newTemporal();
         this.analizador.agregarCodigo(
             this.analizador.genOperacion(
                 "+", "1", operador.valor, dirA0
@@ -208,9 +233,26 @@ export default class Variable {
             ), operador.column, operador.fila
         );
         operador.getReff().settemporalDeGuardado(dirA);
+        return dirA
+    }
+    getValorDePuntero(operador: nodoOperacion) {
+        let varibale = operador.getReff();
+        let cuadruplo: string = "";
+
+        let val = this.analizador.newTemporal();
+        let comentario = this.analizador.genComentario("tomando possiciones de puntero y lugar")
+
+        let dir = this.getValorDepossPuntero(operador);
+        let dirA = this.getValorDeLugar(operador)
+
 
 
         let si: IfG = new IfG(this.analizador, operador.column, operador.fila);
+
+        comentario = this.analizador.genComentario("estoy apuntando en heap o no")
+        this.analizador.agregarCodigo(
+            comentario, operador.column, operador.fila
+        );
         si.genSi("==", dirA, "0");
         si.genSaltoFalso();
         si.escribirEtiquetaV();
@@ -231,6 +273,9 @@ export default class Variable {
         si.escribirEtiquetaS();
         operador.valor = val;
     }
+
+
+
     /**
      * 
      * @param simbolo simboolo del parametro de la funcion
@@ -297,7 +342,8 @@ export default class Variable {
             this.analizador.saveEnHeap(valorDeHeap, this.analizador.NULL) + comentario
             , location.last_column, location.first_line
         );
-        comentario = this.analizador.genComentario("en eta posicion se encuentra a donde sera dirigido el apuntador 0 pila 1 heap")
+        comentario = this.analizador.genComentario("en eta posicion se encuentra a donde sera dirigido "
+            + "el apuntador 0 pila 1 heap")
         this.analizador.agregarCodigo(
             this.analizador.genOperacion("+", valorDeHeap, "1", apuntaAdonde) + comentario
             , location.last_column, location.first_line
@@ -307,7 +353,8 @@ export default class Variable {
             this.analizador.saveEnHeap(apuntaAdonde, dirigirA + "") + comentario
             , location.last_column, location.first_line
         );
-        let valor: nodoOperacion = new nodoOperacion(valorDeHeap, "entero", location.last_column, location.first_line);
+        let valor: nodoOperacion = new nodoOperacion(valorDeHeap, "entero", location.last_column,
+            location.first_line);
         return valor;
     }
 
@@ -378,7 +425,8 @@ export default class Variable {
                 location = nodo.childNode[0].location;
                 // simbolo  = this.analizador.claseA.buscarSimbolo(nombre,inicio,location);
                 //Obtener direccion de la variable
-                variable = this.analizador.variable.obtenerDirVariable(nombre, location.first_line, location.last_column, inicio);
+                variable = this.analizador.variable.obtenerDirVariable(nombre, location.first_line,
+                    location.last_column, inicio);
                 variable.addLocation(location);
 
                 return variable;
@@ -393,6 +441,25 @@ export default class Variable {
         throw this.analizador.newError("error al intetar recorrer var en operaciones", 0, 0);
     }
 
+    varParaPunteros(nodo: Nodo, inicio?: string): nodoOperacion {
+        let term = nodo.childNode[0].term;
+        let nombre: string;
+        let location;
+        //let simbolo
+        let valor: nodoOperacion;
+        let variable;
+        switch (term) {
+            case "ID":
+                nombre = nodo.childNode[0].token;
+                let nodoop = new nodoOperacion(nombre, "", 0, 0);
+                nodoop.setLocation(nodo.childNode[0].location);
+                return nodoop;
+            case "var":
+                variable = this.varParaPunteros(nodo.childNode[0], inicio);
+                return variable;
+        }
+        throw this.analizador.newError("error al intetar recorrer var en operaciones", 0, 0);
+    }
     /**
      * esto se usa cuando se esta declarando un arreglo
      * @param variable es un nodo temporal para evaluar la variable
@@ -448,14 +515,15 @@ export default class Variable {
         this.analizador.log("estoy en la dimension " + dim + " de la variable " + variable.simbolo.getNombre());
 
         //me muevo en la heap a posicion en donde esta el tama;o del arreglo
-        this.analizador.agregarCodigo(this.analizador.genOperacion("+", variable.dir, dim - 1 + "", temp1),
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", variable.dir, dim + "", temp1),
             variable.location.last_column, variable.location.first_line
         );
 
         //aqui obtengo el valor de la posicion dentro de la heap tengo el tama;o que necesito de la dimension
         this.analizador.agregarCodigo(this.analizador.getEnHeap(temp1, temp2),
             variable.location.last_column, variable.location.first_line, );
-        this.analizador.log("se obtuvo el tama;o de la dimension " + (dim - 1) + " de la variable " + variable.simbolo.getNombre() + " en " + temp2);
+        this.analizador.log("se obtuvo el tama;o de la dimension " + (dim) + " de la variable " +
+            variable.simbolo.getNombre() + " en " + temp2);
 
         return temp2;
 
@@ -463,9 +531,10 @@ export default class Variable {
 
     getValorVariable(varibale: Dir) {
         let cuadruplo: string = "";
+        let comentario = this.analizador.genComentario("obteniendo valor de variable para arreglos")
         if (varibale.tam > 0) {
             let temp = this.analizador.newTemporal();
-            cuadruplo = this.analizador.genOperacion('+', varibale.dir, varibale.temporal, temp);
+            cuadruplo = this.analizador.genOperacion('+', varibale.dir, varibale.temporal, temp) + comentario;
             varibale.temporal = temp;
             this.analizador.agregarCodigo(cuadruplo, varibale.location.last_column, varibale.location.first_line);
             let temp1 = this.analizador.newTemporal();
@@ -572,17 +641,20 @@ export default class Variable {
 
             case "Lista":
 
-                let temp = this.analizador.variable.obtenerValorVariable(simbolo.getNombre(), location.first_line, location.last_column);
+                let temp = this.analizador.variable.obtenerValorVariable(simbolo.getNombre(),
+                    location.first_line, location.last_column);
                 if (simbolo.tam > 0) {
                     this.analizador.variable.moverseApossDeArregloInicial(simbolo, temp, location);
                     this.analizador.recorrer(nodo, "");
                     this.analizador.variable.inicializandoLista(nodo.childNode[0], simbolo, location, temp);
 
                 } else {
-                    throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column)
+                    throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas",
+                        location.first_line, location.last_column)
                 }
                 return true;
-            //throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column)
+            //throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", 
+            //location.first_line, location.last_column)
 
         }
         this.analizador.newError("asinganr valor", location.first_line, location.last_column);
@@ -645,7 +717,7 @@ export default class Variable {
             case "e":
                 let resultado: nodoOperacion = this.analizador.exp.analizar(nodo.childNode[0]);
                 let val = this.analizador.exp.getValor(resultado);
-                if (resultado.tipo == simbolo.getTipo()) {
+                if (resultado.tipo == simbolo.getTipo() || resultado.tipo == this.analizador.INT && simbolo.getTipo() == this.analizador.DOUBLE) {
                     this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.val, val),
                         location.last_column, location.first_line);
                     this.analizador.agregarCodigo(
@@ -653,7 +725,7 @@ export default class Variable {
                         location.last_column, location.first_line);
 
                 } else {
-                    this.analizador.newError("error al asignar tipos en arreglos", resultado.fila, resultado.column);
+                    this.analizador.newError("error al asignar tipos en arreglos resultado" + resultado.tipo + " simbolo " + simbolo.getTipo(), resultado.fila, resultado.column);
                 }
                 return true;
             case "Nuevo":
@@ -667,7 +739,7 @@ export default class Variable {
                         location.last_column, location.first_line);
 
                 } else {
-                    this.analizador.newError("error al asignar tipos en arreglos", resultado.fila, resultado.column);
+                    this.analizador.newError("error al asignar tipos en arreglos resultado" + resultado.tipo + " simbolo " + simbolo.getTipo(), resultado.fila, resultado.column);
                 }
 
                 break;
@@ -706,7 +778,7 @@ export default class Variable {
             return true;
 
         } else {
-            throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column)
+            throw this.analizador.newError("error por compatibilidad de tipos resultado " + resultado.tipo + " simbolo " + simbolo.getTipo(), location.first_line, location.last_column)
         }
     }
     /**
@@ -764,6 +836,28 @@ export default class Variable {
         }
         throw this.analizador.newError("no es posible encontrar la variable " + nombre + " ", linea, columna);
     }
+
+    ObtenerDirVariableEstruct(estructura: string, nombre: string, location: Location, inicio: string) {
+        let struct;
+        struct = this.analizador.getCodEstruct().buscarEstructura(estructura, location);
+
+        if (struct != null) {
+            let simbolo = struct.buscarSimbolo(nombre);
+            let temp = this.getDirRelativo(nombre, location.first_line, location.last_column, simbolo, inicio);
+            if (simbolo != null) {
+
+                let dir = new Dir(temp, "heap", simbolo);
+                dir.addLocation(location);
+                return dir;
+            } else {
+                throw this.analizador.newError("no es posible encontrar el simbolo en la estrucutra "
+                    + nombre + " ", location.first_line, location.last_column);
+            }
+        }
+        throw this.analizador.newError("no es posible encontrar la estructura "
+            + nombre + " ", location.first_line, location.last_column);
+    }
+
 
     /**
      * se cambia el valor de cualquier onda
@@ -875,14 +969,14 @@ export default class Variable {
             } else {
 
                 if (simbolo.done == "heap") {
-                    let t = this.validarPossdeArreglo(simbolo, location);
-                    this.analizador.agregarCodigo(this.analizador.saveEnHeap(t, val) + comentario, location.last_column, location.first_line);
+                    //let t = this.validarPossdeArreglo(simbolo, location);
+                    this.analizador.agregarCodigo(this.analizador.saveEnHeap(simbolo.dir, val) + comentario, location.last_column, location.first_line);
                     return true;
                 }
             }
         } else {
-            let t = this.validarPossdeArreglo(simbolo, location);
-            this.analizador.agregarCodigo(this.analizador.saveEnHeap(t, val) + comentario, location.last_column, location.first_line);
+            //let t = this.validarPossdeArreglo(simbolo, location);
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap(simbolo.dir, val) + comentario, location.last_column, location.first_line);
             return true;
         }
         throw this.analizador.newError("error al cambiar variables " + simbolo.simbolo.getNombre() + " ", location.first_line, location.last_column);

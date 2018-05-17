@@ -1,5 +1,6 @@
 import Simbolo from "../../tablaSimbolos/simbolo";
 import Dir from "../../variable/obtenerDireccion"
+import Location from "../../location";
 
 export default class nodoOperacion {
     public tipo: string;
@@ -16,7 +17,8 @@ export default class nodoOperacion {
     private reff: Dir;
     private lugar: string;
     private enDireccion: boolean;
-
+    private location: Location;
+    public xor: string
     constructor(valor: string, tipo: string, column: number | -1, fila: number | -1) {
         this.valor = valor;
         this.tipo = tipo;
@@ -30,9 +32,16 @@ export default class nodoOperacion {
         this.tam = 0;
         this.enDireccion = false;
         this.lugar = "";
+        this.xor = "";
 
     }
+    getlocation() {
+        return this.location;
+    }
 
+    setLocation(location: Location) {
+        this.location = location
+    }
     getenDireccion() {
         return this.enDireccion;
     }

@@ -217,6 +217,14 @@ export default class Metodo {
             case "ID":
                 tipo = nodo.childNode[0].token.toLocaleLowerCase();
                 simbolo = this.var(nodo.childNode[1], tipo, visibilidad, metodo)
+                try {
+                    this.recoleccion.analizador.getCodEstruct().buscarEstructura(tipo, nodo.childNode[0].location);
+                    simbolo.setStruct(true);
+                } catch (error) {
+
+                }
+
+
                 metodo.addParametro(simbolo);
 
                 return true;

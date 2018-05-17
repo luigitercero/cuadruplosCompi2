@@ -5,6 +5,7 @@ import Simbolo from "../tablaSimbolos/simbolo";
 import nodoOperacion from "../exp/operacion/nodoOperacion";
 import Metodo from "../tablaSimbolos/metodo";
 import Location from "../location";
+import Clases from '../tablaSimbolos/clase'
 export default class Clase {
 
     private analizador: Analizador
@@ -44,8 +45,10 @@ export default class Clase {
         switch (nombre) {
             case "CLASE":
                 this.analizador.claseA = this.analizador.buscarClase(nodo.childNode[1].token);
-                this.herencia(nodo.childNode[2]);
-                this.asignarVariablesGlobales();
+
+                let herdaDe = this.herencia(nodo.childNode[2]);
+
+                this.asignarVariablesGlobales(herdaDe);
                 return true;
             case "Clase":
                 this.analizador.log("clase a clase: " +
@@ -78,21 +81,28 @@ export default class Clase {
      *;
      * @param nodo 
      */
-    public herencia(nodo: Nodo): boolean {
+    public herencia(nodo: Nodo): Clases | undefined {
         let nombre: string = nodo.childNode[0].term;
         switch (nombre) {
             case "HEREDADE":
-                this.analizador.logPorCompletar("herencia");
-                this.analizador.log("agregando herencia " + nodo.childNode[1].token);
-                return true;
+                let hereda = this.analizador.buscarClase(nodo.childNode[1].token);
+                if (hereda == undefined) {
+                    throw this.analizador.newError("no existe la herenci con nombre de " + nodo.childNode[1].token,
+                        nodo.childNode[1].location.first_line, nodo.childNode[1].location.last_column
+                    )
+                } else {
+                    return hereda;
+                }
+
+
             case "Herencia":
-                this.herencia(nodo.childNode[0]);
-                return true;
+                return this.herencia(nodo.childNode[0]);
+
             case "'{'":
-                return true;
+                return undefined;
         }
-        this.analizador.newError("no se pudo encontrar la clase con el nombre de " + nombre, 0, 0)
-        return false;
+        throw this.analizador.newError("no se pudo encontrar la clase con el nombre de " + nombre, 0, 0)
+
     }
 
     /**
@@ -127,7 +137,8 @@ export default class Clase {
 
     }
 
-    public asignarVariablesGlobales() {
+    public asignarVariablesGlobales(herdaDe?: Clases) {
+        this.heredar(herdaDe);
         this.analizador.claseA.tabla.ptr = 2;
         let nombreClase = this.analizador.claseA.nombre;
         let poss = this.analizador.claseA.poss;
@@ -171,6 +182,19 @@ export default class Clase {
         coment = this.analizador.genComentario("fin de metodo preconstructor para " + nombreClase);
         this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo" + id) + coment, 0, poss);
         this.analizador.claseA.tabla.ptr = 0;
+    }
+
+    public heredar(hereda?: Clases) {
+        if (hereda != undefined) {
+            for (let index = 0; index < hereda.tabla.esto.ambito.length; index++) {
+                const element: Simbolo = hereda.tabla.esto.ambito[index];
+                this.analizador.claseA.tabla.esto.agregarSimbolo(element);
+            }
+            for (let index = 0; index < hereda.metodo.length; index++) {
+                const element: Metodo = hereda.metodo[index];
+                this.analizador.claseA.agregarMetodo(element);
+            }
+        }
     }
     /**
      * agrega el tama;ano necesario para los arreglos funciona para valores globales

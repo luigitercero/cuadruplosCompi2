@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var util_1 = require("util");
 var Simbolo = /** @class */ (function () {
     function Simbolo(nombre, visibilidad, tipo) {
+        this.struct = false;
         this.visibilidad = visibilidad.toLocaleLowerCase();
         this.tipo = this.filtro(tipo.toLocaleLowerCase());
         this.linea = -1;
@@ -17,6 +18,12 @@ var Simbolo = /** @class */ (function () {
         this.puntero = false;
         this.lugar = "pila";
     }
+    Simbolo.prototype.isStruct = function () {
+        return this.struct;
+    };
+    Simbolo.prototype.setStruct = function (struct) {
+        this.struct = struct;
+    };
     Simbolo.prototype.setLocacion_declaracion = function (location) {
         this.location = location;
     };

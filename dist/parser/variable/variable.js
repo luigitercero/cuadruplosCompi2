@@ -37,10 +37,21 @@ var Variable = /** @class */ (function () {
             case "getMetodo":
                 return this.getmetodo(nodo.childNode[0]);
             case "Identi":
-                var temp = this.analizador.claseA;
-                var identi = this.identi(nodo.childNode[0]);
-                var op = this.identiObjec(nodo.childNode[2], identi, nodo.childNode[1].location);
-                this.analizador.claseA = temp;
+                var op = void 0;
+                if (nodo.childNode[1].term == "'.'") {
+                    var temp = this.analizador.claseA;
+                    var identi = this.identi(nodo.childNode[0]);
+                    op = this.identiObjec(nodo.childNode[2], identi, nodo.childNode[1].location);
+                    this.analizador.claseA = temp;
+                }
+                else {
+                    var identi = this.identi(nodo.childNode[0]);
+                    var nombre = this.analizador.variable.varParaPunteros(nodo.childNode[2], identi.valor);
+                    var simb = this.analizador.variable.ObtenerDirVariableEstruct(identi.tipo, nombre.valor, nombre.getlocation(), identi.valor);
+                    //let valor = this.analizador.variable.getVAlorD(simb);
+                    op = this.gerVal(simb);
+                    // op = this.identiStruct(nodo.childNode[2], identi, nodo.childNode[1].location);
+                }
                 return op;
             case "ESTE":
                 variable = this.analizador.variable.obtenerValorVariable("este", nodo.childNode[0].location.first_line, nodo.childNode[0].location.last_column);
@@ -140,30 +151,49 @@ var Variable = /** @class */ (function () {
         operador.setTam(variable.getTamanio());
         operador.setReff(variable);
         if (variable.simbolo.getPunter()) {
-            variable.dir = val;
-            this.getValorDePuntero(operador);
+            if (!variable.simbolo.isStruct()) {
+                this.getValorDePuntero(operador);
+            }
+            else {
+                var val_1 = this.getValorDepossPuntero(operador);
+                this.getValorDeLugar(operador);
+                operador.valor = val_1;
+            }
         }
         else {
         }
+        if (variable.location != undefined) {
+            operador.setLocation(variable.location);
+        }
         return operador;
+    };
+    Variable.prototype.getValorDepossPuntero = function (operador) {
+        var dir0 = this.analizador.newTemporal();
+        var dir = this.analizador.newTemporal();
+        var comentario = this.analizador.genComentario("valor donde apunta el putero");
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "0", operador.valor, dir0) + comentario, operador.column, operador.fila);
+        this.analizador.agregarCodigo(this.analizador.getEnHeap(dir0, dir) + comentario, operador.column, operador.fila);
+        operador.getReff().dir = dir;
+        return dir;
+    };
+    Variable.prototype.getValorDeLugar = function (operador) {
+        var dirA0 = this.analizador.newTemporal();
+        var dirA = this.analizador.newTemporal();
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "1", operador.valor, dirA0), operador.column, operador.fila);
+        this.analizador.agregarCodigo(this.analizador.getEnHeap(dirA0, dirA), operador.column, operador.fila);
+        operador.getReff().settemporalDeGuardado(dirA);
+        return dirA;
     };
     Variable.prototype.getValorDePuntero = function (operador) {
         var varibale = operador.getReff();
         var cuadruplo = "";
-        var temp = this.analizador.newTemporal();
-        var dir0 = this.analizador.newTemporal();
-        var dir = this.analizador.newTemporal();
-        var dirA0 = this.analizador.newTemporal();
-        var dirA = this.analizador.newTemporal();
         var val = this.analizador.newTemporal();
-        this.analizador.agregarCodigo(this.analizador.getEnHeap(operador.valor, temp), operador.column, operador.fila);
-        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "0", operador.valor, dir0), operador.column, operador.fila);
-        this.analizador.agregarCodigo(this.analizador.getEnHeap(dir0, dir), operador.column, operador.fila);
-        operador.getReff().dir = dir; //direccion donde esta la posicion
-        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "1", operador.valor, dirA0), operador.column, operador.fila);
-        this.analizador.agregarCodigo(this.analizador.getEnHeap(dirA0, dirA), operador.column, operador.fila);
-        operador.getReff().settemporalDeGuardado(dirA);
+        var comentario = this.analizador.genComentario("tomando possiciones de puntero y lugar");
+        var dir = this.getValorDepossPuntero(operador);
+        var dirA = this.getValorDeLugar(operador);
         var si = new sigenerico_1.default(this.analizador, operador.column, operador.fila);
+        comentario = this.analizador.genComentario("estoy apuntando en heap o no");
+        this.analizador.agregarCodigo(comentario, operador.column, operador.fila);
         si.genSi("==", dirA, "0");
         si.genSaltoFalso();
         si.escribirEtiquetaV();
@@ -214,7 +244,8 @@ var Variable = /** @class */ (function () {
         this.analizador.agregarCodigo(this.analizador.genOperacion("+", "heap", "2", "heap") + comentario, location.last_column, location.first_line);
         comentario = this.analizador.genComentario("aqui se gurda la verdadera direccion a donde se va dirigir");
         this.analizador.agregarCodigo(this.analizador.saveEnHeap(valorDeHeap, this.analizador.NULL) + comentario, location.last_column, location.first_line);
-        comentario = this.analizador.genComentario("en eta posicion se encuentra a donde sera dirigido el apuntador 0 pila 1 heap");
+        comentario = this.analizador.genComentario("en eta posicion se encuentra a donde sera dirigido "
+            + "el apuntador 0 pila 1 heap");
         this.analizador.agregarCodigo(this.analizador.genOperacion("+", valorDeHeap, "1", apuntaAdonde) + comentario, location.last_column, location.first_line);
         var dirigirA = 1;
         this.analizador.agregarCodigo(this.analizador.saveEnHeap(apuntaAdonde, dirigirA + "") + comentario, location.last_column, location.first_line);
@@ -292,6 +323,25 @@ var Variable = /** @class */ (function () {
         }
         throw this.analizador.newError("error al intetar recorrer var en operaciones", 0, 0);
     };
+    Variable.prototype.varParaPunteros = function (nodo, inicio) {
+        var term = nodo.childNode[0].term;
+        var nombre;
+        var location;
+        //let simbolo
+        var valor;
+        var variable;
+        switch (term) {
+            case "ID":
+                nombre = nodo.childNode[0].token;
+                var nodoop = new nodoOperacion_1.default(nombre, "", 0, 0);
+                nodoop.setLocation(nodo.childNode[0].location);
+                return nodoop;
+            case "var":
+                variable = this.varParaPunteros(nodo.childNode[0], inicio);
+                return variable;
+        }
+        throw this.analizador.newError("error al intetar recorrer var en operaciones", 0, 0);
+    };
     /**
      * esto se usa cuando se esta declarando un arreglo
      * @param variable es un nodo temporal para evaluar la variable
@@ -336,17 +386,19 @@ var Variable = /** @class */ (function () {
         //me muevo en la heap a posicion en donde esta el tama;o del arreglo
         this.analizador.log("estoy en la dimension " + dim + " de la variable " + variable.simbolo.getNombre());
         //me muevo en la heap a posicion en donde esta el tama;o del arreglo
-        this.analizador.agregarCodigo(this.analizador.genOperacion("+", variable.dir, dim - 1 + "", temp1), variable.location.last_column, variable.location.first_line);
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", variable.dir, dim + "", temp1), variable.location.last_column, variable.location.first_line);
         //aqui obtengo el valor de la posicion dentro de la heap tengo el tama;o que necesito de la dimension
         this.analizador.agregarCodigo(this.analizador.getEnHeap(temp1, temp2), variable.location.last_column, variable.location.first_line);
-        this.analizador.log("se obtuvo el tama;o de la dimension " + (dim - 1) + " de la variable " + variable.simbolo.getNombre() + " en " + temp2);
+        this.analizador.log("se obtuvo el tama;o de la dimension " + (dim) + " de la variable " +
+            variable.simbolo.getNombre() + " en " + temp2);
         return temp2;
     };
     Variable.prototype.getValorVariable = function (varibale) {
         var cuadruplo = "";
+        var comentario = this.analizador.genComentario("obteniendo valor de variable para arreglos");
         if (varibale.tam > 0) {
             var temp = this.analizador.newTemporal();
-            cuadruplo = this.analizador.genOperacion('+', varibale.dir, varibale.temporal, temp);
+            cuadruplo = this.analizador.genOperacion('+', varibale.dir, varibale.temporal, temp) + comentario;
             varibale.temporal = temp;
             this.analizador.agregarCodigo(cuadruplo, varibale.location.last_column, varibale.location.first_line);
             var temp1 = this.analizador.newTemporal();
@@ -495,12 +547,12 @@ var Variable = /** @class */ (function () {
             case "e":
                 var resultado = this.analizador.exp.analizar(nodo.childNode[0]);
                 var val = this.analizador.exp.getValor(resultado);
-                if (resultado.tipo == simbolo.getTipo()) {
+                if (resultado.tipo == simbolo.getTipo() || resultado.tipo == this.analizador.INT && simbolo.getTipo() == this.analizador.DOUBLE) {
                     this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.val, val), location.last_column, location.first_line);
                     this.analizador.agregarCodigo(this.analizador.genOperacion("+", temp.val, "1", temp.val), location.last_column, location.first_line);
                 }
                 else {
-                    this.analizador.newError("error al asignar tipos en arreglos", resultado.fila, resultado.column);
+                    this.analizador.newError("error al asignar tipos en arreglos resultado" + resultado.tipo + " simbolo " + simbolo.getTipo(), resultado.fila, resultado.column);
                 }
                 return true;
             case "Nuevo":
@@ -511,7 +563,7 @@ var Variable = /** @class */ (function () {
                     this.analizador.agregarCodigo(this.analizador.genOperacion("+", temp.val, "1", temp.val), location.last_column, location.first_line);
                 }
                 else {
-                    this.analizador.newError("error al asignar tipos en arreglos", resultado.fila, resultado.column);
+                    this.analizador.newError("error al asignar tipos en arreglos resultado" + resultado.tipo + " simbolo " + simbolo.getTipo(), resultado.fila, resultado.column);
                 }
                 break;
             case "Lista":
@@ -539,7 +591,7 @@ var Variable = /** @class */ (function () {
             return true;
         }
         else {
-            throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column);
+            throw this.analizador.newError("error por compatibilidad de tipos resultado " + resultado.tipo + " simbolo " + simbolo.getTipo(), location.first_line, location.last_column);
         }
     };
     /**
@@ -586,6 +638,25 @@ var Variable = /** @class */ (function () {
             }
         }
         throw this.analizador.newError("no es posible encontrar la variable " + nombre + " ", linea, columna);
+    };
+    Variable.prototype.ObtenerDirVariableEstruct = function (estructura, nombre, location, inicio) {
+        var struct;
+        struct = this.analizador.getCodEstruct().buscarEstructura(estructura, location);
+        if (struct != null) {
+            var simbolo = struct.buscarSimbolo(nombre);
+            var temp = this.getDirRelativo(nombre, location.first_line, location.last_column, simbolo, inicio);
+            if (simbolo != null) {
+                var dir = new obtenerDireccion_1.default(temp, "heap", simbolo);
+                dir.addLocation(location);
+                return dir;
+            }
+            else {
+                throw this.analizador.newError("no es posible encontrar el simbolo en la estrucutra "
+                    + nombre + " ", location.first_line, location.last_column);
+            }
+        }
+        throw this.analizador.newError("no es posible encontrar la estructura "
+            + nombre + " ", location.first_line, location.last_column);
     };
     /**
      * se cambia el valor de cualquier onda
@@ -665,15 +736,15 @@ var Variable = /** @class */ (function () {
             }
             else {
                 if (simbolo.done == "heap") {
-                    var t = this.validarPossdeArreglo(simbolo, location);
-                    this.analizador.agregarCodigo(this.analizador.saveEnHeap(t, val) + comentario, location.last_column, location.first_line);
+                    //let t = this.validarPossdeArreglo(simbolo, location);
+                    this.analizador.agregarCodigo(this.analizador.saveEnHeap(simbolo.dir, val) + comentario, location.last_column, location.first_line);
                     return true;
                 }
             }
         }
         else {
-            var t = this.validarPossdeArreglo(simbolo, location);
-            this.analizador.agregarCodigo(this.analizador.saveEnHeap(t, val) + comentario, location.last_column, location.first_line);
+            //let t = this.validarPossdeArreglo(simbolo, location);
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap(simbolo.dir, val) + comentario, location.last_column, location.first_line);
             return true;
         }
         throw this.analizador.newError("error al cambiar variables " + simbolo.simbolo.getNombre() + " ", location.first_line, location.last_column);

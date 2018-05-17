@@ -47,10 +47,10 @@ var Asignacion = /** @class */ (function () {
                 if (simbolo.tam > 0) {
                     this.analizador.variable.moverseApossDeArregloInicial(simbolo, temp_1, location);
                     this.analizador.recorrer(nodo, "");
-                    this.analizador.variable.inicializandoLista(nodo.childNode[0], simbolo, location, temp_1);
+                    this.analizador.variable.inicializandoLista(nodo, simbolo, location, temp_1);
                 }
                 else {
-                    throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column);
+                    throw this.analizador.newError("error apara asignar un arrego", location.first_line, location.last_column);
                 }
                 return true;
         }
@@ -70,7 +70,8 @@ var Asignacion = /** @class */ (function () {
                 return true;
             }
             else {
-                throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column);
+                throw this.analizador.newError("error por compatibilidad de tipos " +
+                    "resultado " + resultado.tipo + " simbolo " + simbolo.getTipo(), location.first_line, location.last_column);
             }
         }
         else {
@@ -192,16 +193,39 @@ var Asignacion = /** @class */ (function () {
             case "Navegar":
                 var temp = this.analizador.claseA;
                 var navegar = this.analizador.variable.navegar(nodo.childNode[0]);
-                this.analizador.claseA = this.analizador.buscarClase(navegar.tipo, navegar);
-                variable = this.analizador.variable.var(nodo.childNode[1], navegar.valor);
-                this.analizador.claseA = temp;
-                resultado = this.asignar(nodo.childNode[2], variable);
-                location = variable.location;
-                this.analizador.variable.setValVariable(variable, resultado, location, navegar.valor);
-                this.analizador.claseA = temp;
-                return true;
+                if (!navegar.simbolo.getPunter()) {
+                    this.analizador.claseA = this.analizador.buscarClase(navegar.tipo, navegar);
+                    variable = this.analizador.variable.var(nodo.childNode[1], navegar.valor);
+                    this.analizador.claseA = temp;
+                    resultado = this.asignar(nodo.childNode[2], variable);
+                    location = variable.location;
+                    this.analizador.variable.setValVariable(variable, resultado, location, navegar.valor);
+                    this.analizador.claseA = temp;
+                    return true;
+                }
+                else {
+                    //let estructura: Struct = this.analizador.getCodEstruct().buscarEstructura(navegar.tipo, navegar.getlocation());
+                    var nombre = this.analizador.variable.varParaPunteros(nodo.childNode[1]);
+                    var simb = this.analizador.variable.ObtenerDirVariableEstruct(navegar.tipo, nombre.valor, nombre.getlocation(), navegar.valor);
+                    resultado = this.asignar(nodo.childNode[2], simb);
+                    if (!simb.simbolo.getPunter()) {
+                        this.analizador.variable.setValVariable(simb, resultado, nombre.getlocation());
+                    }
+                    else {
+                        this.asignarApuntadores(simb, resultado, nombre.getlocation());
+                    }
+                    return true;
+                    //let Direccion: Dir = new Dir()
+                    // setValorVarible(nodo.childNode[2], estructura.buscarSimbolo)
+                    //this.analizador.variable.setValVariable(variable, resultado, location, navegar.valor);
+                }
         }
-        throw this.analizador.newError("error algo esta mal", nodo.childNode[2].location.first_line, nodo.childNode[2].location.last_column);
+        if (nodo.childNode[2].location != undefined) {
+            throw this.analizador.newError("error algo esta mal", nodo.childNode[2].location.first_line, nodo.childNode[2].location.last_column);
+        }
+        else {
+            throw this.analizador.newError("error algo esta mal", 0, 0);
+        }
     };
     Asignacion.prototype.asignarApuntadores = function (simbolo, resultado, location) {
         this.asignarPunteroAPuntero(simbolo, resultado, location);

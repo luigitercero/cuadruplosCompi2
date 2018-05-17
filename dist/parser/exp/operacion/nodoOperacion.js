@@ -18,7 +18,14 @@ var nodoOperacion = /** @class */ (function () {
         this.tam = 0;
         this.enDireccion = false;
         this.lugar = "";
+        this.xor = "";
     }
+    nodoOperacion.prototype.getlocation = function () {
+        return this.location;
+    };
+    nodoOperacion.prototype.setLocation = function (location) {
+        this.location = location;
+    };
     nodoOperacion.prototype.getenDireccion = function () {
         return this.enDireccion;
     };

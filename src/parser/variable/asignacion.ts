@@ -6,6 +6,8 @@ import Simbolo from '../tablaSimbolos/simbolo';
 import Location from '../location';
 import NodoNavegar from './nodoNavegar';
 import Dir from '../variable/obtenerDireccion'
+import Struct from '../tablaSimbolos/estructura/Estructura';
+import Estructura from '../estrucura/estructura';
 export default class Asignacion {
     protected analizador: Analizador;
 
@@ -61,10 +63,10 @@ export default class Asignacion {
                 if (simbolo.tam > 0) {
                     this.analizador.variable.moverseApossDeArregloInicial(simbolo, temp, location);
                     this.analizador.recorrer(nodo, "");
-                    this.analizador.variable.inicializandoLista(nodo.childNode[0], simbolo, location, temp);
+                    this.analizador.variable.inicializandoLista(nodo, simbolo, location, temp);
 
                 } else {
-                    throw this.analizador.newError("esto se puede si solo es un copilador de multiples pasadas", location.first_line, location.last_column)
+                    throw this.analizador.newError("error apara asignar un arrego", location.first_line, location.last_column)
                 }
                 return true;
         }
@@ -83,15 +85,18 @@ export default class Asignacion {
                 this.asignarValoresAvariables2(simbolo, location, val);
                 return true;
             } else {
-                throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column);
+                throw this.analizador.newError("error por compatibilidad de tipos " +
+                    "resultado " + resultado.tipo + " simbolo " + simbolo.getTipo(), location.first_line, location.last_column);
             }
         } else {
             if (this.analizador.exp.evaluarTipo(resultado.tipo, this.analizador.INT)) {
                 let a = resultado.getReff();
-                let temp: Dir = this.analizador.variable.obtenerValorVariable(simbolo.getNombre(), location.first_line, location.last_column);
+                let temp: Dir = this.analizador.variable.obtenerValorVariable(simbolo.getNombre(),
+                    location.first_line, location.last_column);
 
                 if (a == undefined) {
-                    this.analizador.agregarCodigo(this.analizador.genComentario("mietras no sea variable se asigna la poss de memoria"),
+                    this.analizador.agregarCodigo(this.analizador.genComentario
+                        ("mietras no sea variable se asigna la poss de memoria"),
                         location.last_column, location.first_line);
                     let val = this.analizador.exp.getValor(resultado);
                     this.analizador.agregarCodigo(this.analizador.saveEnHeap(temp.val, val),
@@ -101,7 +106,8 @@ export default class Asignacion {
                 }
 
             } else {
-                throw this.analizador.newError("error por compatibilidad de tipos ", location.first_line, location.last_column);
+                throw this.analizador.newError("error por compatibilidad de tipos ",
+                    location.first_line, location.last_column);
             }
         }
     }
@@ -141,12 +147,11 @@ export default class Asignacion {
                 this.analizador.agregarCodigo(this.analizador.saveEnHeap(t0, lugar + ""),
                     location.last_column, location.first_line);
             }
-
         }
-
     }
     private asignarValoresAvariables2(simbolo: Simbolo, location: Location, val: string) {
-        let temp = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
+        let temp = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(), location.first_line,
+            location.last_column);
         this.analizador.agregarCodigo(this.analizador.saveEnPila(temp.temporal, val),
             location.last_column, location.first_line);
     }
@@ -194,7 +199,6 @@ export default class Asignacion {
     }
 
 
-
     /**
      * Asignacion
      * Asignacion
@@ -217,24 +221,47 @@ export default class Asignacion {
                     this.analizador.variable.setValVariable(variable, resultado, location);
                 } else {
                     this.asignarApuntadores(variable, resultado, location);
-
                 }
-
                 return true;
             case "Navegar":
                 let temp = this.analizador.claseA;
                 let navegar = this.analizador.variable.navegar(nodo.childNode[0]);
-                this.analizador.claseA = this.analizador.buscarClase(navegar.tipo, navegar);
-                variable = this.analizador.variable.var(nodo.childNode[1], navegar.valor);
-                this.analizador.claseA = temp;
-                resultado = this.asignar(nodo.childNode[2], variable);
-                location = variable.location;
-                this.analizador.variable.setValVariable(variable, resultado, location, navegar.valor);
-                this.analizador.claseA = temp;
-                return true;
+                if (!navegar.simbolo.getPunter()) {
+                    this.analizador.claseA = this.analizador.buscarClase(navegar.tipo, navegar);
+                    variable = this.analizador.variable.var(nodo.childNode[1], navegar.valor);
+                    this.analizador.claseA = temp;
+                    resultado = this.asignar(nodo.childNode[2], variable);
+                    location = variable.location;
+                    this.analizador.variable.setValVariable(variable, resultado, location, navegar.valor);
+                    this.analizador.claseA = temp;
+                    return true;
+                } else {
+                    //let estructura: Struct = this.analizador.getCodEstruct().buscarEstructura(navegar.tipo, navegar.getlocation());
+                    let nombre = this.analizador.variable.varParaPunteros(nodo.childNode[1]);
+                    let simb: Dir = this.analizador.variable.ObtenerDirVariableEstruct(navegar.tipo, nombre.valor,
+                        nombre.getlocation(), navegar.valor);
+                    resultado = this.asignar(nodo.childNode[2], simb);
+                    if (!simb.simbolo.getPunter()) {
+                        this.analizador.variable.setValVariable(simb, resultado, nombre.getlocation());
+                    } else {
+                        this.asignarApuntadores(simb, resultado, nombre.getlocation());
+                    }
+                    return true;
+
+                    //let Direccion: Dir = new Dir()
+                    // setValorVarible(nodo.childNode[2], estructura.buscarSimbolo)
+
+                    //this.analizador.variable.setValVariable(variable, resultado, location, navegar.valor);
+                }
         }
-        throw this.analizador.newError("error algo esta mal", nodo.childNode[2].location.first_line, nodo.childNode[2].location.last_column);
+        if (nodo.childNode[2].location != undefined) {
+            throw this.analizador.newError("error algo esta mal", nodo.childNode[2].location.first_line,
+                nodo.childNode[2].location.last_column);
+        } else { throw this.analizador.newError("error algo esta mal", 0, 0, ); }
     }
+
+
+
     asignarApuntadores(simbolo: Dir, resultado: nodoOperacion, location: Location) {
         this.asignarPunteroAPuntero(simbolo, resultado, location);
     }
@@ -259,7 +286,8 @@ export default class Asignacion {
             this.analizador.saveEnHeap(t0, resultado.getReff().dir), location.first_column, location.first_line
         );
         this.analizador.agregarCodigo(
-            this.analizador.saveEnHeap(t1, resultado.getReff().gettemporalDeGuardado()), location.first_column, location.first_line
+            this.analizador.saveEnHeap(t1, resultado.getReff().gettemporalDeGuardado()), location.first_column,
+            location.first_line
         );
         if (simbolo.done == "pila") {
             this.analizador.agregarCodigo(

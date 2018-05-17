@@ -87,7 +87,7 @@ var cuerpo = /** @class */ (function () {
         var op = this.analizador.exp.analizar(nodo);
         var retorno = this.analizador.variable.obtenerDirVariable("retorno", location.first_line, location.last_column);
         if (op.tipo != retorno.simbolo.getTipo()) {
-            throw this.analizador.newError("retorno no coincide con el tipo", location.first_line, location.last_column);
+            throw this.analizador.newError("retorno no coincide con el tipo tipo objeto " + op.tipo + "tipo retorno " + retorno.simbolo.getTipo(), location.first_line, location.last_column);
         }
         this.analizador.agregarCodigo(this.analizador.saveEnPila(retorno.dir, op.valor), location.last_column, location.first_line);
     };
@@ -261,7 +261,8 @@ var cuerpo = /** @class */ (function () {
                 var pra = parametoM[index].getReff();
                 if (pra != undefined) {
                     if (parametoM[index].getReff().simbolo.getPunter()) {
-                        var ap = this.analizador.variable.crearPunteroDefault(parametoM[index].getReff().location);
+                        var ap = this.analizador.variable.crearPunteroDefault(parametoM[index].
+                            getReff().location);
                         var t0 = this.analizador.newTemporal();
                         this.analizador.agregarCodigo(this.analizador.genOperacion("+", ap.valor, "1", t0), parametoM[index].column, parametoM[index].fila);
                         this.analizador.agregarCodigo(this.analizador.saveEnHeap(ap.valor, parametoM[index].getReff().dir), parametoM[index].column, parametoM[index].fila);

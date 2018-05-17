@@ -28,8 +28,6 @@ export default class Estructura {
         switch (term) {
             case "Cuerpo_Estruct":
                 return this.Cuerpo_Estruct(nodo.childNode[0]);
-
-
         }
         throw this.analizador.newError("error a declarar struct", 0, 0);
     }
@@ -49,12 +47,19 @@ export default class Estructura {
     }
     private Declarar_Variable(nodo: Nodo, estructura: Struct) {
         let tipo: string = nodo.childNode[0].term
+        let struct: boolean = false;
+        let punter: boolean = false;
         if (tipo == "Tipo") {
             tipo = nodo.childNode[0].childNode[0].token;
+
         } else {
             tipo = nodo.childNode[0].token;
+            struct = true;
+            punter = true;
         }
         let variable: Simbolo = this._RVariable.var(nodo.childNode[1], tipo, "");
+        variable.setStruct(struct);
+        variable.setPuntero(punter);
         this._RVariable.asignarValor(nodo.childNode[2], variable);
         estructura.agregarSim(variable);
 

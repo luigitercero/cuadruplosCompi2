@@ -14,8 +14,14 @@ export default class Simbolo {
     public location: Location | any;
     private puntero: boolean;
     private lugar: string;
+    private struct: boolean = false;
 
-
+    isStruct() {
+        return this.struct
+    }
+    setStruct(struct: boolean) {
+        this.struct = struct;
+    }
     setLocacion_declaracion(location: Location) {
         this.location = location;
     }

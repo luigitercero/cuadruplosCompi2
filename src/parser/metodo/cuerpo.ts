@@ -95,7 +95,9 @@ export default class cuerpo {
     private agregarRetorno(nodo: Nodo, location: Location) {
         let op = this.analizador.exp.analizar(nodo);
         let retorno = this.analizador.variable.obtenerDirVariable("retorno", location.first_line, location.last_column);
-        if (op.tipo != retorno.simbolo.getTipo()) { throw this.analizador.newError("retorno no coincide con el tipo", location.first_line, location.last_column) }
+        if (op.tipo != retorno.simbolo.getTipo()) {
+            throw this.analizador.newError("retorno no coincide con el tipo tipo objeto " + op.tipo + "tipo retorno " + retorno.simbolo.getTipo(), location.first_line, location.last_column)
+        }
         this.analizador.agregarCodigo(
             this.analizador.saveEnPila(retorno.dir, op.valor), location.last_column, location.first_line
         );
@@ -294,13 +296,17 @@ export default class cuerpo {
                 let pra = parametoM[index].getReff();
                 if (pra != undefined) {
                     if (parametoM[index].getReff().simbolo.getPunter()) {
-                        let ap: nodoOperacion = this.analizador.variable.crearPunteroDefault(parametoM[index].getReff().location);
+                        let ap: nodoOperacion = this.analizador.variable.crearPunteroDefault(parametoM[index].
+                            getReff().location);
                         let t0 = this.analizador.newTemporal();
-                        this.analizador.agregarCodigo(this.analizador.genOperacion("+", ap.valor, "1", t0), parametoM[index].column, parametoM[index].fila);
+                        this.analizador.agregarCodigo(this.analizador.genOperacion("+", ap.valor, "1", t0),
+                            parametoM[index].column, parametoM[index].fila);
                         this.analizador.agregarCodigo(
-                            this.analizador.saveEnHeap(ap.valor, parametoM[index].getReff().dir), parametoM[index].column, parametoM[index].fila);
+                            this.analizador.saveEnHeap(ap.valor, parametoM[index].getReff().dir),
+                            parametoM[index].column, parametoM[index].fila);
                         this.analizador.agregarCodigo(
-                            this.analizador.saveEnHeap(t0, parametoM[index].getReff().gettemporalDeGuardado()), parametoM[index].column, parametoM[index].fila);
+                            this.analizador.saveEnHeap(t0, parametoM[index].getReff().gettemporalDeGuardado()),
+                            parametoM[index].column, parametoM[index].fila);
 
                         agregarValor = this.analizador.saveEnPila(t1, ap.valor);
 

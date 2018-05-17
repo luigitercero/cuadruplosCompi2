@@ -38,13 +38,19 @@ var Estructura = /** @class */ (function () {
     };
     Estructura.prototype.Declarar_Variable = function (nodo, estructura) {
         var tipo = nodo.childNode[0].term;
+        var struct = false;
+        var punter = false;
         if (tipo == "Tipo") {
             tipo = nodo.childNode[0].childNode[0].token;
         }
         else {
             tipo = nodo.childNode[0].token;
+            struct = true;
+            punter = true;
         }
         var variable = this._RVariable.var(nodo.childNode[1], tipo, "");
+        variable.setStruct(struct);
+        variable.setPuntero(punter);
         this._RVariable.asignarValor(nodo.childNode[2], variable);
         estructura.agregarSim(variable);
     };

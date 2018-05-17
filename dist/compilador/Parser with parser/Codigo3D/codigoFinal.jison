@@ -83,7 +83,7 @@ frac                        (?:\.[0-9]+)
 "continuar"                 return 'CONTINUE'
 "retorno"                   return 'RETURN'
 "hacer"                     return 'DO'
-"repetir"                   return 'REAPEATE'
+"repetir"                   return 'REAPEAT'
 "repetir_contando"          return 'FOR'
 "repetir_mientras"          return 'REPETIRMIENTRAS'
 "variable"                  return 'VARIABLE'
@@ -116,7 +116,7 @@ frac                        (?:\.[0-9]+)
 "cola"                      return 'COLA'
 "mientras"                  return 'WHILE'
 "ciclo_doble_condicion"     return 'DOBLECONDICION'
-"repetir"                   return 'REAPEAT'    
+    
 "HASTA_QUE"                 return 'UNTIL'
 "estructura"                return 'ESTRUCTURA'
 "nada"                      return 'NADA'
@@ -704,7 +704,7 @@ Doble_Condicion:DOBLECONDICION '(' e ',' e ')' Cuerpo
       nodo = new Nodo("Doble_Condicion",null,null,[nodo1,nodo2,$3,nodo4,$5,nodo6,$7]);  
       $$ = nodo; }
   ; 
-Repeat_Until:REAPEAT Cuerpo UNTIL Expresion
+Repeat_Until:REAPEAT Cuerpo UNTIL Expresion ';'
      {nodo1= new Nodo ("REAPEAT", @1,$1, [] ); nodo2= new Nodo ("Cuerpo", @2,$2, [] ); nodo3= new Nodo ("UNTIL", @3,$3, [] ); nodo4= new Nodo ("Expresion", @4,$4, [] ); 
       nodo = new Nodo("Repeat_Until",null,null,[nodo1,$2,nodo3,$4]);  
       $$ = nodo; }

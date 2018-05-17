@@ -95,14 +95,16 @@ export default class Declaracion extends Asignacion {
     private declararPuntero(nodo: Nodo) {
         let tipo = "";
         let tam = 0;
+        let struct = false
         if (nodo.childNode[2].term == "Tipo") {
             tipo = nodo.childNode[2].childNode[0].token;
         } else {
             tipo = nodo.childNode[2].token;
+            struct = true;
         }
-        let variable = this.varID(nodo.childNode[4], this.analizador.PUBLICO, tipo);
+        let variable: nodoOperacion = this.varID(nodo.childNode[4], this.analizador.PUBLICO, tipo);
         variable.simbolo.setPuntero(true);
-
+        variable.simbolo.setStruct(struct);
         this.asignarValor(nodo.childNode[6], variable.simbolo);
         return true;
     }

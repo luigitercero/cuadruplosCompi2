@@ -104,14 +104,17 @@ var Declaracion = /** @class */ (function (_super) {
     Declaracion.prototype.declararPuntero = function (nodo) {
         var tipo = "";
         var tam = 0;
+        var struct = false;
         if (nodo.childNode[2].term == "Tipo") {
             tipo = nodo.childNode[2].childNode[0].token;
         }
         else {
             tipo = nodo.childNode[2].token;
+            struct = true;
         }
         var variable = this.varID(nodo.childNode[4], this.analizador.PUBLICO, tipo);
         variable.simbolo.setPuntero(true);
+        variable.simbolo.setStruct(struct);
         this.asignarValor(nodo.childNode[6], variable.simbolo);
         return true;
     };

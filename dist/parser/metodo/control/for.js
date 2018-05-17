@@ -47,6 +47,8 @@ var FOR = /** @class */ (function () {
         var igual = this.igual(arg0, arg1);
         ciclo.addEtiquetaSS(igual.etiquetaV);
         this.escribirEtiqueta(igual.etiquetaF, nodo.childNode[0].location);
+        /**ejecuta el cuerpo */
+        this.control.cuerpo(cuerpo, ciclo);
         /*si es mayor debe disminuir */
         var mayor = this.mayorque(arg0, arg1);
         this.escribirEtiqueta(mayor.etiquetaF, nodo.childNode[0].location);
@@ -70,8 +72,6 @@ var FOR = /** @class */ (function () {
         this.control.analizador.agregarCodigo(this.control.analizador.genSalto(ejecucion[0]), nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
         /**escribe la etiqueta de ejecucion */
         this.escribirEtiqueta(ejecucion, nodo.childNode[0].location);
-        /**ejecuta el cuerpo */
-        this.control.cuerpo(cuerpo, ciclo);
         /**regresa a start */
         this.escribirSaltoStart(ciclo, nodo.childNode[0].location);
         /**sale de start */

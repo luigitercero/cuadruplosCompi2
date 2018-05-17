@@ -27,8 +27,16 @@ export default class Comparacion extends Casteo {
 
         return this.igualString();
     }
+    booleaBolean(): nodoOperacion {
+        return this.igualarBooleano();
+    }
 
-    igualString() {
+    igualarBooleano(): nodoOperacion {
+        this.arg0 = this.analizador.exp.castearBoleano(this.arg0, this.analizador.INT);
+        this.arg1 = this.analizador.exp.castearBoleano(this.arg1, this.analizador.INT);
+        return this.agregaretiqueta();
+    }
+    igualString(): nodoOperacion {
         let c = this.arg0.column;
         let f = this.arg0.fila;
 
@@ -112,7 +120,8 @@ export default class Comparacion extends Casteo {
             this.analizador.genSalto(lf), c, f
         );
         let xor = this.analizador.opBool(this.op) + ", " + this.arg0.valor + ", " + this.arg1.valor
-        let n = new nodoOperacion(xor, this.analizador.BOOLEANO, c, f);
+        let n = new nodoOperacion("", this.analizador.BOOLEANO, c, f);
+        n.xor = xor;
         n.addEtiquetaV(lv);
         n.addEtiquetaF(lf);
         return n;

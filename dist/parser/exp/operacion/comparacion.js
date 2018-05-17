@@ -37,6 +37,14 @@ var Comparacion = /** @class */ (function (_super) {
     Comparacion.prototype.stringString = function () {
         return this.igualString();
     };
+    Comparacion.prototype.booleaBolean = function () {
+        return this.igualarBooleano();
+    };
+    Comparacion.prototype.igualarBooleano = function () {
+        this.arg0 = this.analizador.exp.castearBoleano(this.arg0, this.analizador.INT);
+        this.arg1 = this.analizador.exp.castearBoleano(this.arg1, this.analizador.INT);
+        return this.agregaretiqueta();
+    };
     Comparacion.prototype.igualString = function () {
         var c = this.arg0.column;
         var f = this.arg0.fila;
@@ -99,7 +107,8 @@ var Comparacion = /** @class */ (function (_super) {
         this.analizador.agregarCodigo(this.analizador.genOperacion(this.op, this.arg0.valor, this.arg1.valor, lv), c, f);
         this.analizador.agregarCodigo(this.analizador.genSalto(lf), c, f);
         var xor = this.analizador.opBool(this.op) + ", " + this.arg0.valor + ", " + this.arg1.valor;
-        var n = new nodoOperacion_1.default(xor, this.analizador.BOOLEANO, c, f);
+        var n = new nodoOperacion_1.default("", this.analizador.BOOLEANO, c, f);
+        n.xor = xor;
         n.addEtiquetaV(lv);
         n.addEtiquetaF(lf);
         return n;

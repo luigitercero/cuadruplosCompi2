@@ -39,8 +39,8 @@ var Clase = /** @class */ (function () {
         switch (nombre) {
             case "CLASE":
                 this.analizador.claseA = this.analizador.buscarClase(nodo.childNode[1].token);
-                this.herencia(nodo.childNode[2]);
-                this.asignarVariablesGlobales();
+                var herdaDe = this.herencia(nodo.childNode[2]);
+                this.asignarVariablesGlobales(herdaDe);
                 return true;
             case "Clase":
                 this.analizador.log("clase a clase: " +
@@ -73,17 +73,19 @@ var Clase = /** @class */ (function () {
         var nombre = nodo.childNode[0].term;
         switch (nombre) {
             case "HEREDADE":
-                this.analizador.logPorCompletar("herencia");
-                this.analizador.log("agregando herencia " + nodo.childNode[1].token);
-                return true;
+                var hereda = this.analizador.buscarClase(nodo.childNode[1].token);
+                if (hereda == undefined) {
+                    throw this.analizador.newError("no existe la herenci con nombre de " + nodo.childNode[1].token, nodo.childNode[1].location.first_line, nodo.childNode[1].location.last_column);
+                }
+                else {
+                    return hereda;
+                }
             case "Herencia":
-                this.herencia(nodo.childNode[0]);
-                return true;
+                return this.herencia(nodo.childNode[0]);
             case "'{'":
-                return true;
+                return undefined;
         }
-        this.analizador.newError("no se pudo encontrar la clase con el nombre de " + nombre, 0, 0);
-        return false;
+        throw this.analizador.newError("no se pudo encontrar la clase con el nombre de " + nombre, 0, 0);
     };
     /**
      * este es el metod la produccion cuerpoClaes
@@ -114,7 +116,8 @@ var Clase = /** @class */ (function () {
         this.analizador.newError("no se pudo encontrar la clase con el nombre de " + nombre, 0, 0);
         return false;
     };
-    Clase.prototype.asignarVariablesGlobales = function () {
+    Clase.prototype.asignarVariablesGlobales = function (herdaDe) {
+        this.heredar(herdaDe);
         this.analizador.claseA.tabla.ptr = 2;
         var nombreClase = this.analizador.claseA.nombre;
         var poss = this.analizador.claseA.poss;
@@ -156,6 +159,18 @@ var Clase = /** @class */ (function () {
         coment = this.analizador.genComentario("fin de metodo preconstructor para " + nombreClase);
         this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo" + id) + coment, 0, poss);
         this.analizador.claseA.tabla.ptr = 0;
+    };
+    Clase.prototype.heredar = function (hereda) {
+        if (hereda != undefined) {
+            for (var index = 0; index < hereda.tabla.esto.ambito.length; index++) {
+                var element = hereda.tabla.esto.ambito[index];
+                this.analizador.claseA.tabla.esto.agregarSimbolo(element);
+            }
+            for (var index = 0; index < hereda.metodo.length; index++) {
+                var element = hereda.metodo[index];
+                this.analizador.claseA.agregarMetodo(element);
+            }
+        }
     };
     /**
      * agrega el tama;ano necesario para los arreglos funciona para valores globales

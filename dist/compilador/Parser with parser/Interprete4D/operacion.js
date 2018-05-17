@@ -21,6 +21,9 @@ var Operacion = /** @class */ (function () {
         this.heap = new Array();
         this.metodoAnterior = new Array();
         this.metodoAnterior.push(-1);
+        this.temporal = [];
+        this.pila = new Array();
+        this.pila.push(this.temporal);
     }
     Operacion.prototype.igual = function (arg0, etiqueta, arg1, linea) {
         if (arg0 == arg1) {
@@ -134,7 +137,8 @@ var Operacion = /** @class */ (function () {
     };
     Operacion.prototype.getValtemp = function (temp) {
         var key = this.getPosstemp(temp);
-        return this.es.temporal[key].valor;
+        //return this.es.temporal[key].valor;
+        return this.temporal[key];
     };
     Operacion.prototype.getPosstemp = function (temp) {
         var a = temp.replace("T", "");
@@ -142,8 +146,9 @@ var Operacion = /** @class */ (function () {
     };
     Operacion.prototype.setValTemp = function (temp, val) {
         var key = +this.getPosstemp(temp);
-        var temps = this.es.temporal[key].tempora;
-        this.es.temporal[key] = { "tempora": temps, "valor": val };
+        //let temps = this.es.temporal[key].tempora;
+        //this.es.temporal[key] = { "tempora": temps, "valor": val };
+        this.temporal[key] = val;
     };
     Operacion.prototype.convertiNumero = function (num) {
         return +num;
@@ -180,9 +185,13 @@ var Operacion = /** @class */ (function () {
         return this.es.metodo[+poss].poss - 1;
     };
     Operacion.prototype.begin = function (nombre) {
+        this.pila.push(this.temporal);
+        this.temporal = [];
+        //this.es.temporal = [{ "tempora": "retorno", "valor": 4 }]
     };
     Operacion.prototype.endMetodo = function (nombre) {
         var anterior = this.metodoAnterior.pop();
+        this.temporal = this.pila.pop();
         return anterior;
     };
     return Operacion;

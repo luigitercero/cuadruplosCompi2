@@ -7,6 +7,7 @@ var nodoOperacion_1 = __importDefault(require("./nodoOperacion"));
 var nodoOperacion_2 = __importDefault(require("./nodoOperacion"));
 var suma_1 = __importDefault(require("./suma"));
 var comparacion_1 = __importDefault(require("./comparacion"));
+var eleva_1 = __importDefault(require("./eleva"));
 var Operacion = /** @class */ (function () {
     function Operacion(anlaizador) {
         this.analizador = anlaizador;
@@ -16,7 +17,6 @@ var Operacion = /** @class */ (function () {
         var a1 = this.analizar(arg1);
         var op = new comparacion_1.default(a0, a1, this.analizador, ">=");
         return op.evaluar();
-        ;
     };
     Operacion.prototype.operarMenorIgual = function (arg0, arg1) {
         var a0 = this.analizar(arg0);
@@ -50,16 +50,19 @@ var Operacion = /** @class */ (function () {
     };
     Operacion.prototype.operarXor = function (arg0, arg1) {
         var a0 = this.analizar(arg0);
-        if (a0.tipo == this.analizador.BOOLEANO)
+        if (a0.tipo == this.analizador.BOOLEANO) {
+            this.generarEtiquietas(a0);
             this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaF), a0.column, a0.fila); //agregnaod etiqueta falsa
+        }
         else
             this.analizador.newError("no es un operrador boleano", a0.column, a0.fila);
         var a1 = this.analizar(arg1);
         if (a1.tipo == this.analizador.BOOLEANO) {
+            this.generarEtiquietas(a1);
             this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaV), a0.column, a0.fila); //agregnaod etiqueta verdadera
             var l5 = this.analizador.newEtiqueta();
             var l6 = this.analizador.newEtiqueta();
-            this.analizador.agregarCodigo(a1.valor + "," + l5, a1.column, a1.fila);
+            this.analizador.agregarCodigo(a1.xor + "," + l5, a1.column, a1.fila);
             //this.analizador.agregarCodigo(a0.etiquetaV+","+ l6 +":",a0.column,a0.fila);//agregnaod etiqueta verdadera
             var res = new nodoOperacion_2.default("", this.analizador.BOOLEANO, a0.column, a0.fila);
             res.addEtiquetaVV(a1.etiquetaV);
@@ -73,12 +76,15 @@ var Operacion = /** @class */ (function () {
     };
     Operacion.prototype.operarAnd = function (arg0, arg1) {
         var a0 = this.analizar(arg0);
-        if (a0.tipo == this.analizador.BOOLEANO)
-            this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaV), a0.column, a0.fila); //agregnaod etiqueta verdadera
+        if (a0.tipo == this.analizador.BOOLEANO) {
+            this.generarEtiquietas(a0);
+            this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaV), a0.column, a0.fila);
+        }
         else
             this.analizador.newError("no es un operrador boleano", a0.column, a0.fila);
         var a1 = this.analizar(arg1);
         if (a1.tipo == this.analizador.BOOLEANO) {
+            this.generarEtiquietas(a1);
             var res = new nodoOperacion_2.default("", this.analizador.BOOLEANO, a0.column, a0.fila);
             res.addEtiquetaVV(a1.etiquetaV);
             res.addEtiquetaFV(a0.etiquetaF);
@@ -90,12 +96,17 @@ var Operacion = /** @class */ (function () {
     };
     Operacion.prototype.operarOr = function (arg0, arg1) {
         var a0 = this.analizar(arg0);
-        if (a0.tipo == this.analizador.BOOLEANO)
-            this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaF), a0.column, a0.fila); //agregnaod etiqueta verdadera
-        else
+        if (a0.tipo == this.analizador.BOOLEANO) {
+            this.generarEtiquietas(a0);
+            this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaF), a0.column, a0.fila);
+        }
+        else {
             this.analizador.newError("no es un operrador boleano", a0.column, a0.fila);
+        }
+        //agregnaod etiqueta verdadera
         var a1 = this.analizar(arg1);
         if (a1.tipo == this.analizador.BOOLEANO) {
+            this.generarEtiquietas(a1);
             var res = new nodoOperacion_2.default("", this.analizador.BOOLEANO, a0.column, a0.fila);
             res.addEtiquetaVV(a0.etiquetaV);
             res.addEtiquetaVV(a1.etiquetaV);
@@ -106,7 +117,7 @@ var Operacion = /** @class */ (function () {
             throw this.analizador.newError("no es un operrador boleano", a0.column, a0.fila);
     };
     Operacion.prototype.operarEleva = function (arg0, arg1) {
-        var op = new suma_1.default(this.analizador, "*");
+        var op = new eleva_1.default(this.analizador);
         op.setArg0(this.analizar(arg0));
         op.setArg1(this.analizar(arg1));
         return op.evaluar();
@@ -267,17 +278,13 @@ var Operacion = /** @class */ (function () {
             case "TRUE":
                 col = nodo.childNode[0].location.last_column;
                 fil = nodo.childNode[0].location.first_line;
-                var arg0 = new nodoOperacion_1.default("1", this.analizador.INT, col, fil);
-                var arg1 = new nodoOperacion_1.default("1", this.analizador.INT, col, fil);
-                var t = new comparacion_1.default(arg0, arg1, this.analizador, "==");
-                return t.evaluar();
+                var arg0 = new nodoOperacion_1.default("1", this.analizador.BOOLEANO, col, fil);
+                return arg0;
             case "FALSE":
                 col = nodo.childNode[0].location.last_column;
                 fil = nodo.childNode[0].location.first_line;
-                var arg00 = new nodoOperacion_1.default("0", this.analizador.INT, col, fil);
-                var arg10 = new nodoOperacion_1.default("1", this.analizador.INT, col, fil);
-                var t0 = new comparacion_1.default(arg00, arg10, this.analizador, "==");
-                return t0.evaluar();
+                var arg00 = new nodoOperacion_1.default("0", this.analizador.BOOLEANO, col, fil);
+                return arg00;
             case "Identi":
                 //col = nodo.childNode[0].location.first_line;
                 //fil = nodo.childNode[0].location.last_column;
@@ -333,22 +340,42 @@ var Operacion = /** @class */ (function () {
     };
     Operacion.prototype.getValor = function (arg0) {
         if (arg0.tipo == this.analizador.BOOLEANO) {
+            var s = this.castearBoleano(arg0, this.analizador.INT);
+            return s.valor;
+        }
+        else {
+            return arg0.valor;
+        }
+    };
+    Operacion.prototype.castearBoleano = function (arg0, tipo) {
+        if (arg0.valor == "") {
             var t0 = this.analizador.newTemporal();
             var es = this.analizador.newEtiqueta();
             /*para etiqueta verdadera */
             this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(arg0.etiquetaV), arg0.column, arg0.fila);
             this.analizador.agregarCodigo(this.analizador.asignar("1", t0), arg0.column, arg0.fila);
-            this.analizador.agregarCodigo(this.analizador.genSalto(es), arg0.column, arg0.fila); //salto de salida
+            this.analizador.agregarCodigo(this.analizador.genSalto(es), arg0.column, arg0.fila);
             /*para etiqueta falsa */
             this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(arg0.etiquetaF), arg0.column, arg0.fila);
             this.analizador.agregarCodigo(this.analizador.asignar("0", t0), arg0.column, arg0.fila);
-            var am = new Array();
-            am.push(es);
-            this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(am), arg0.column, arg0.fila);
-            return t0;
+            this.analizador.agregarCodigo(this.analizador.escribirEtiquetaS(es), arg0.column, arg0.fila);
+            return new nodoOperacion_2.default(t0, tipo, arg0.column, arg0.fila);
         }
         else {
-            return arg0.valor;
+            return new nodoOperacion_2.default(arg0.valor, tipo, arg0.column, arg0.fila);
+        }
+    };
+    Operacion.prototype.generarEtiquietas = function (arg0) {
+        if (arg0.valor != "") {
+            var arg00 = new nodoOperacion_1.default(arg0.valor, this.analizador.INT, arg0.column, arg0.fila);
+            var arg10 = new nodoOperacion_1.default("1", this.analizador.INT, arg0.column, arg0.fila);
+            var t = new comparacion_1.default(arg00, arg10, this.analizador, "==");
+            var val = t.evaluar();
+            arg0.etiquetaV = val.etiquetaV;
+            arg0.etiquetaF = val.etiquetaF;
+        }
+        else {
+            arg0 = arg0;
         }
     };
     return Operacion;

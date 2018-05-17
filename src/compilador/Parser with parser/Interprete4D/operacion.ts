@@ -15,6 +15,8 @@ export default class Operacion {
     public metodoAnterior: number[];
     public consola: string[];
     private lineaConsola = 0;
+    private pila: any[];
+    private temporal: any;
     public op = "";
     constructor(lTeporales: any) {
         this.consola = new Array();
@@ -24,6 +26,11 @@ export default class Operacion {
         this.heap = new Array();
         this.metodoAnterior = new Array();
         this.metodoAnterior.push(-1)
+        this.temporal = [];
+        this.pila = new Array()
+        this.pila.push(this.temporal);
+
+
     }
 
     igual(arg0: number, etiqueta: string, arg1: number, linea: number) {
@@ -144,7 +151,8 @@ export default class Operacion {
 
     getValtemp(temp: string) {
         let key: number = this.getPosstemp(temp);
-        return this.es.temporal[key].valor;
+        //return this.es.temporal[key].valor;
+        return this.temporal[key]
     }
 
     getPosstemp(temp: string) {
@@ -154,8 +162,9 @@ export default class Operacion {
 
     setValTemp(temp: string, val: number) {
         let key: number = + this.getPosstemp(temp);
-        let temps = this.es.temporal[key].tempora;
-        this.es.temporal[key] = { "tempora": temps, "valor": val };
+        //let temps = this.es.temporal[key].tempora;
+        //this.es.temporal[key] = { "tempora": temps, "valor": val };
+        this.temporal[key] = val;
     }
     convertiNumero(num: string) {
         return +num;
@@ -191,10 +200,13 @@ export default class Operacion {
         return this.es.metodo[+poss].poss - 1;
     }
     begin(nombre: string) {
-
+        this.pila.push(this.temporal);
+        this.temporal = [];
+        //this.es.temporal = [{ "tempora": "retorno", "valor": 4 }]
     }
     endMetodo(nombre: string) {
         let anterior = this.metodoAnterior.pop()
+        this.temporal = this.pila.pop();
         return anterior;
     }
 }
