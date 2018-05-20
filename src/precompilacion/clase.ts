@@ -34,7 +34,7 @@ export default class Clase {
 
     private exixteContructor(location: Location) {
         try {
-            this.recoleccion.analizador.claseA.buscarMetodo(this.recoleccion.analizador.claseA.nombre)
+            this.recoleccion.analizador.claseA.buscarMetodo(this.recoleccion.analizador.claseA.nombre, location)
         } catch (error) {
             this.escribirContructor(location)
         }
@@ -82,7 +82,8 @@ export default class Clase {
         let nombre: string = nodo.childNode[0].term;
         switch (nombre) {
             case "HEREDADE":
-                this.recoleccion.analizador.logPorCompletar("herencia");
+                this.recoleccion.analizador.claseA.herencia = true
+                this.recoleccion.analizador.claseA.hereda_de = nodo.childNode[1].token;
                 this.recoleccion.analizador.log("agregando herencia " + nodo.childNode[1].token);
                 return true;
         }

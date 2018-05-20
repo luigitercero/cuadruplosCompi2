@@ -7,8 +7,8 @@ var IF2 = /** @class */ (function () {
     IF2.prototype.if2 = function (nodo, ciclo) {
         var exp = this.control.analizador.exp.analizar(nodo.childNode[1].childNode[1]);
         this.errorIf(exp);
-        var cuerpoV = nodo.childNode[4];
-        var CuerpoF = nodo.childNode[6];
+        var cuerpoV = nodo.childNode[3];
+        var CuerpoF = nodo.childNode[5];
         var l = this.control.analizador.newEtiqueta();
         var salida = [];
         salida.push(l);
@@ -29,7 +29,7 @@ var IF2 = /** @class */ (function () {
         if (exp.tipo == this.control.analizador.BOOLEANO) {
         }
         else {
-            this.control.analizador.newError("existe error al intentar operar el IF", exp.fila, exp.column);
+            throw this.control.analizador.newError("existe error al intentar operar el IF", exp.fila, exp.column);
         }
     };
     return IF2;

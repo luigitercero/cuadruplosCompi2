@@ -25,6 +25,7 @@ export default class FOR {
         this.control.analizador.claseA.tabla.aumetarAbmito();
         /*creo etiqueta start */
         let start = this.control.analizador.newEtiqueta();
+        let SS = this.control.analizador.newEtiqueta();
         /*etiqueta incio*/
         ciclo.start.push(start);
         /*saltos al cuerpo */
@@ -48,7 +49,8 @@ export default class FOR {
                 dirID.dir, arg0.valor),
             nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
         /*se escribe la etiqueta start*/
-        this.escribirEtiquetaStart(ciclo, nodo.childNode[0].location);
+        this.escribirEtiquetaSS(SS, nodo.childNode[0].location);
+
         /*se obtiene el valor del contador*/
         arg0 = this.control.analizador.variable.gerVal(dirID);
         /*si es igual debe salir del control */
@@ -58,7 +60,7 @@ export default class FOR {
 
         /**ejecuta el cuerpo */
         this.control.cuerpo(cuerpo, ciclo);
-
+        this.escribirEtiquetaStart(ciclo, nodo.childNode[0].location);
         /*si es mayor debe disminuir */
         let mayor = this.mayorque(arg0, arg1);
         this.escribirEtiqueta(mayor.etiquetaF, nodo.childNode[0].location);
@@ -95,11 +97,13 @@ export default class FOR {
         this.escribirEtiqueta(ejecucion, nodo.childNode[0].location);
 
         /**regresa a start */
-        this.escribirSaltoStart(ciclo, nodo.childNode[0].location);
+        this.escribirSaltoStart(SS, nodo.childNode[0].location);
         /**sale de start */
         this.escribirEtiquetaSalida(ciclo, nodo.childNode[0].location);
         this.control.analizador.claseA.tabla.disminuirAmbito();
     }
+
+
     private escribirEtiqueta(etiqueta: string[], location: Location) {
         if (etiqueta.length > 0) {
             this.control.analizador.agregarCodigo(this.control.analizador.escribirEtiqueta(
@@ -121,12 +125,17 @@ export default class FOR {
             );
         }
     }
-    private escribirSaltoStart(ciclo: Salida, location: Location) {
-        if (ciclo.etiquetaS.length > 0) {
-            this.control.analizador.agregarCodigo(this.control.analizador.genSalto(
-                ciclo.start[0]), location.last_column, location.first_line
-            );
-        }
+    escribirEtiquetaSS(SS: string, location: Location) {
+        this.control.analizador.agregarCodigo(this.control.analizador.escribirEtiquetaS(
+            SS), location.last_column, location.first_line
+        );
+    }
+    private escribirSaltoStart(SS: string, location: Location) {
+
+        this.control.analizador.agregarCodigo(this.control.analizador.genSalto(
+            SS), location.last_column, location.first_line
+        );
+
     }
     private errorIf(exp: nodoOperacion) {
         if (exp.tipo == this.control.analizador.BOOLEANO) {

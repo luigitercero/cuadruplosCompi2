@@ -6,11 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var operacion_1 = __importDefault(require("./operacion"));
 var Interprete = /** @class */ (function () {
     function Interprete(inteprete) {
+        this.salida = false;
         this.p = require('./codigoFinal');
         this.p.parser.struct.codigo = inteprete.C4D;
         this.p.parser.struct.etiqueta = inteprete.etiqueta;
         this.p.parser.struct.metodo = inteprete.metodo;
-        this.p.parser.struct.op = new operacion_1.default(inteprete);
+        this.Op = new operacion_1.default(inteprete);
+        this.p.parser.struct.op = this.Op;
         this.p.parser.struct.leer = this;
         this.p.parser.struct.temporal = inteprete.temporal;
         this.S = inteprete.start;
@@ -34,7 +36,7 @@ var Interprete = /** @class */ (function () {
                 this.p.parse(this.p.parser.struct.codigo[index].codigo);
                 this.index = this.p.parser.indice.valor;
                 this.ambito = this.p.parser.struct.codigo[index].ambito;
-                if (this.index < 0) {
+                if (this.index == -1 || this.salida || this.Op.pedir) {
                     break;
                 }
                 console.log("#" + this.p.parser.struct.codigo[this.index].codigo, this.p.parser.struct.codigo[this.index].linea, this.p.parser.struct.codigo[this.index].columna);
@@ -44,13 +46,25 @@ var Interprete = /** @class */ (function () {
     };
     Interprete.prototype.seguir = function (data) {
         var tam = this.p.parser.struct.codigo.length;
+        var val = 0;
         while (this.index != -1) {
+            val++;
             this.p.parser.indice.valor = this.index;
             this.p.parser.struct.op.linea = this.index;
             this.p.parse(this.p.parser.struct.codigo[this.index].codigo);
             this.ambito = this.p.parser.struct.codigo[this.index].ambito;
             this.index = this.p.parser.indice.valor;
             if (this.index == -1) {
+                this.salida = true;
+                val = 0;
+                break;
+            }
+            if (val > 18120) {
+                val = 0;
+                break;
+            }
+            if (this.Op.pedir) {
+                val = 0;
                 break;
             }
             console.log("#" + this.p.parser.struct.codigo[this.index].codigo, this.p.parser.struct.codigo[this.index].linea, this.p.parser.struct.codigo[this.index].columna);
@@ -63,7 +77,9 @@ var Interprete = /** @class */ (function () {
                     arreglo_1.push(codigo.codigo);
                     arreglo_1.push(codigo.columna);
                     arreglo_1.push(codigo.linea);
+                    arreglo_1.push(this.index);
                     this.index++;
+                    this.salida = true;
                     return arreglo_1;
                 }
             }
@@ -77,6 +93,7 @@ var Interprete = /** @class */ (function () {
         arreglo.push(linea.codigo);
         arreglo.push(linea.columna);
         arreglo.push(linea.linea);
+        arreglo.push(this.index);
         this.index++;
         console.log("felicidades a termindo la lectura de cuadruplo");
         return arreglo;
@@ -86,11 +103,14 @@ var Interprete = /** @class */ (function () {
             this.p.parser.indice.valor = this.index;
             this.p.parser.struct.op.linea = this.index;
             this.p.parse(this.p.parser.struct.codigo[this.index].codigo);
-            console.log(this.p.parser.struct.codigo[this.index].codigo, this.p.parser.struct.codigo[this.index].linea, this.p.parser.struct.codigo[this.index].columna);
+            /*
+                        console.log(this.p.parser.struct.codigo[this.index].codigo,
+                            this.p.parser.struct.codigo[this.index].linea,
+                            this.p.parser.struct.codigo[this.index].columna
+                        )*/
             this.ambito = this.p.parser.struct.codigo[this.index].ambito;
         }
         else {
-            console.log("fin de siguiente");
         }
         var linea = this.p.parser.struct.codigo[this.index];
         this.index = this.p.parser.indice.valor;
@@ -100,6 +120,7 @@ var Interprete = /** @class */ (function () {
         arreglo.push(linea.codigo);
         arreglo.push(linea.columna);
         arreglo.push(linea.linea);
+        arreglo.push(this.index);
         return arreglo;
     };
     return Interprete;

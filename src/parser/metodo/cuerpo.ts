@@ -93,10 +93,30 @@ export default class cuerpo {
         throw this.analizador.newError("no estamos para hacer un ciclo", 0, 0)
     }
     private agregarRetorno(nodo: Nodo, location: Location) {
-        let op = this.analizador.exp.analizar(nodo);
+        let term = nodo.term
+        if (term == "e") {
+            let op = this.analizador.exp.analizar(nodo);
+            this.agregarRetornogg(op, location)
+            return
+        } else if (term == "Nuevo") {
+            let op = this.analizador.variable.getNuevo(nodo);
+            this.agregarRetornogg(op, location)
+            return
+        }
+        throw this.analizador.newError("error en retorno algo anda mal", 0, 0);
+
+    }
+
+    private agregarRetornogg(op: nodoOperacion, location: Location) {
         let retorno = this.analizador.variable.obtenerDirVariable("retorno", location.first_line, location.last_column);
         if (op.tipo != retorno.simbolo.getTipo()) {
-            throw this.analizador.newError("retorno no coincide con el tipo tipo objeto " + op.tipo + "tipo retorno " + retorno.simbolo.getTipo(), location.first_line, location.last_column)
+            if (op.tipo == this.analizador.NULL) {
+
+            } else {
+                throw this.analizador.newError("retorno no coincide con el tipo tipo objeto " + op.tipo
+                    + "tipo retorno " + retorno.simbolo.getTipo(), location.first_line, location.last_column);
+            }
+
         }
         this.analizador.agregarCodigo(
             this.analizador.saveEnPila(retorno.dir, op.valor), location.last_column, location.first_line
@@ -139,10 +159,13 @@ export default class cuerpo {
         switch (term) {
             case "ID":
                 nombre = nodo.childNode[0].token;
-                return this.metodoID2(nombre, this.getParametro(nodo.childNode[2]), nodo.childNode[0].location, esto);
+                this.analizador.recorrerArbol(nodo);
+                let pc = this.getParametro(nodo.childNode[2])
+                return this.metodoID2(nombre, pc, nodo.childNode[0].location, esto);
             case "Primitivas":
                 nombre = nodo.childNode[0].childNode[0].term;
-                this.primitivas.analizar(nombre, this.getParametro(nodo.childNode[2]));
+                let location = nodo.childNode[0].childNode[0].location
+                this.primitivas.analizar(nombre, this.getParametro(nodo.childNode[2]), location);
                 return
             case "Tipo":
                 throw this.analizador.newError("no puedo hacer esto todavia", 0, 0);
@@ -159,6 +182,7 @@ export default class cuerpo {
     private getParametro(nodo: Nodo) {
         let term = nodo.childNode[0].term;
         let parametro: nodoOperacion[] = new Array()
+        this.analizador.recorrerArbol(nodo);
         switch (term) {
             case "ParametroM":
                 this.parametroM(nodo.childNode[0], parametro);
@@ -188,6 +212,10 @@ export default class cuerpo {
             case "e":
                 this.privateParmetroM2(nodo.childNode[0], parametro);
                 return true;
+            case ("Tipo"):
+
+                return true;
+
         }
         throw this.analizador.newError("error parametros", 0, 0);
     }
@@ -201,7 +229,13 @@ export default class cuerpo {
                 throw this.analizador.newError("aun no puedo hacer esto", 0, 0)
             //break
             case "e":
-                parametro.push(this.analizador.exp.analizar(nodo));
+                let valor = this.analizador.exp.analizar(nodo)
+                if (valor.tipo == this.analizador.STRING) {
+                    valor = new nodoOperacion(this.analizador.exp.crearArregloString(valor), "caracter", valor.column, valor.fila)
+                    valor.simbolo.tam = 1;
+                    valor.setTam(1);
+                }
+                parametro.push(valor);
                 return true;
         }
         throw this.analizador.newError("error parametros", 0, 0);
@@ -227,24 +261,27 @@ export default class cuerpo {
         if (esto !== undefined) {
             this.analizador.claseA = this.analizador.buscarClase(esto.tipo);
         }
-        let metodo: Metodo = this.analizador.claseA.buscarMetodo(metodoNombre, location);
+        let metodo: Metodo = this.analizador.claseA.buscarMetodo(metodoNombre, location, nombre);
+        if (metodo.parametro.length == parametoM.length) {
+            this.escribirParametrosApila(temp, parametoM, metodo);
+            this.analizador.agregarCodigo(
+                this.analizador.genOperacion("+", "ptr", tam + "", "ptr") + coment, location.last_column, location.first_line
+            );
+            coment = this.analizador.genComentario("llamando metodo " + metodoNombre);
+            this.analizador.agregarCodigo(
+                this.analizador.llamarMetodo("metodo" + metodo.id) + coment, location.last_column, location.first_line
+            );
+            this.analizador.claseA = ambitotemporal;
+            coment = this.analizador.genComentario("disminyendo de ambito para " + this.analizador.claseA.nombre)
+            this.analizador.agregarCodigo(
+                this.analizador.genOperacion("-", "ptr", tam + "", "ptr") + coment, location.last_column, location.first_line
+            );
+            return metodo;
+        } else {
+            throw this.analizador.newError("error no se puede llamar metodo " + nombre + param, location.last_column, location.first_line);
+        }
 
-        this.escribirParametrosApila(temp, parametoM, metodo);
 
-
-        this.analizador.agregarCodigo(
-            this.analizador.genOperacion("+", "ptr", tam + "", "ptr") + coment, location.last_column, location.first_line
-        );
-        coment = this.analizador.genComentario("llamando metodo " + metodoNombre);
-        this.analizador.agregarCodigo(
-            this.analizador.llamarMetodo("metodo" + metodo.id) + coment, location.last_column, location.first_line
-        );
-        this.analizador.claseA = ambitotemporal;
-        coment = this.analizador.genComentario("disminyendo de ambito para " + this.analizador.claseA.nombre)
-        this.analizador.agregarCodigo(
-            this.analizador.genOperacion("-", "ptr", tam + "", "ptr") + coment, location.last_column, location.first_line
-        );
-        return metodo;
     }
 
     /**
@@ -291,7 +328,23 @@ export default class cuerpo {
             );
             let agregarValor = ""
             if (!metodo.parametro[index].getPunter()) {
-                agregarValor = this.analizador.saveEnPila(t1, parametoM[index].valor);
+                if (parametoM[index].tipo == this.analizador.STRING) {
+
+                    if (metodo.parametro[index].getTipo() == this.analizador.CARACTER) {
+                        if (metodo.parametro[index].tam == 1) {
+
+                            agregarValor = this.analizador.saveEnPila(t1, parametoM[index].valor);
+
+                        } else {
+                            throw this.analizador.newError("errror al querer gregar una cadena ", parametoM[index].column, parametoM[index].fila)
+                        }
+                    } else {
+                        throw this.analizador.newError("errror al querer gregar una cadena ", parametoM[index].column, parametoM[index].fila)
+                    }
+
+                } else {
+                    agregarValor = this.analizador.saveEnPila(t1, parametoM[index].valor);
+                }
             } else {//aqui el parametro de la funcion es puntero
                 let pra = parametoM[index].getReff();
                 if (pra != undefined) {
@@ -332,21 +385,37 @@ export default class cuerpo {
         let param = "";
 
         for (let index = 0; index < parametoM.length; index++) {
-            param = param + "_" + parametoM[index].tipo;
+            if (parametoM[index].tipo == this.analizador.STRING) {
+                param = param + "_" + this.analizador.CARACTER;
+            } else {
+                param = param + "_" + parametoM[index].tipo;
+            }
+
         }
         return param;
     }
     private escribirEstoAnuevoAmbito(esto: string, location: Location, tam: number): number {
         let temp = tam;//en esta posicion se encuentra el retorno
-        temp++; //en esta posicion se guarda this
+        //en esta posicion se guarda this
         let t2 = this.analizador.newTemporal()
+        let comentario = this.analizador.genComentario("guardar en pila nuevo ambito");
+
         this.analizador.agregarCodigo(
             this.analizador.genOperacion("+", "ptr", temp + "", t2), location.last_column, location.first_line
         );
 
         this.analizador.agregarCodigo(
-            this.analizador.saveEnPila(t2, esto), location.last_column, location.first_line
+            this.analizador.saveEnPila(t2, esto) + comentario + " esto en retorno", location.last_column, location.first_line
         );
+        temp++;
+        this.analizador.agregarCodigo(
+            this.analizador.genOperacion("+", "ptr", temp + "", t2), location.last_column, location.first_line
+        );
+
+        this.analizador.agregarCodigo(
+            this.analizador.saveEnPila(t2, esto) + comentario, location.last_column, location.first_line
+        );
+
         temp++;//siguiete posicionlibre
 
         this.analizador.agregarCodigo(

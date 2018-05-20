@@ -11,12 +11,7 @@ var Init = /** @class */ (function () {
         if (archivo == undefined) {
             var fs = require('fs');
             var rut = "/home/luigitercero/Documentos/Compi2/Archivo De entrada/";
-            //let archivo = fs.readFileSync(rut+'arreglo', 'utf-8');
-            //let archivo = fs.readFileSync(rut+'asignaciones', 'utf-8');
-            //let archivo = fs.readFileSync(rut+'operacion', 'utf-8');
-            //let archivo = fs.readFileSync(rut+'test', 'utf-8');
             this.archivo = fs.readFileSync(rut + nombre, 'utf-8');
-            //let archivo = fs.readFileSync(rut+'control', 'utf-8');
         }
         else {
             this.archivo = nombre;
@@ -33,6 +28,9 @@ var Init = /** @class */ (function () {
         this.d4 = result;
         this.inter4D = new interprete_1.default(result);
     };
+    Init.prototype.meter = function (data) {
+        this.inter4D.Op.meterHeap(data);
+    };
     Init.prototype.getSalida = function () {
         if (this.inter4D.getIndex() > 0) {
             return false;
@@ -43,46 +41,54 @@ var Init = /** @class */ (function () {
         return this.inter4D.ambito;
     };
     Init.prototype.getPila = function () {
-        return this.inter4D.p.parser.struct.op.stack;
+        return this.inter4D.Op.stack;
     };
     Init.prototype.consola = function () {
-        return this.inter4D.p.parser.struct.op.consola;
+        return this.inter4D.Op.consola;
     };
     Init.prototype.getHeap = function () {
-        return this.inter4D.p.parser.struct.op.heap;
+        return this.inter4D.Op.heap;
     };
     Init.prototype.getptr = function () {
-        return this.inter4D.p.parser.struct.op.ptr;
+        return this.inter4D.Op.ptr;
     };
     Init.prototype.getpth = function () {
-        return this.inter4D.p.parser.struct.op.pth;
+        return this.inter4D.Op.pth;
     };
     Init.prototype.getOperacion = function () {
-        return this.inter4D.p.parser.struct.op.op;
+        return this.inter4D.Op.op;
+    };
+    Init.prototype.enviarCadena = function () {
+        if (this.inter4D.Op.pedir) {
+            return this.inter4D.Op.message;
+        }
+    };
+    Init.prototype.isPedir = function () {
+        return this.inter4D.Op.pedir;
+    };
+    Init.prototype.reiniciarPedir = function () {
+        this.inter4D.Op.pedir = false;
     };
     Init.prototype.debuguear = function (data) {
         if (this.inter4D != undefined) {
             // console.log(result.temporal[key].tempora+ " esto estoy probando " + key);
             var a = this.inter4D.seguir(data);
-            /**
-            for(let k in this.d4.temporal) {
-               console.log(this.d4.temporal[k].tempora,this.d4.temporal[k].valor);
-            }
-   
-            for(let k in this.d4.etiqueta) {
-               console.log(this.d4.etiqueta[k].poss,this.d4.etiqueta[k].etiqueta);
-            }
-           
-            var persons: { [id: string] : IPerson; } = {};
-            persons["p1"] = { firstName: "F1", lastName: "L1" };
-            persons["p2"] = { firstName: "Fe", lastName: "Le" };
-            console.log(persons["p1"].firstName);
-            console.log(persons["p2"].firstName); */
             return a;
         }
     };
+    Init.prototype.seSalio = function () {
+        return this.inter4D.salida;
+    };
+    Init.prototype.stop = function () {
+        this.inter4D.salida = true;
+    };
+    Init.prototype.start = function () {
+        this.inter4D.salida = false;
+    };
     Init.prototype.siguiente = function () {
         return this.inter4D.siguiente();
+    };
+    Init.prototype.siguienteSimple = function () {
     };
     Init.init = function (nombre, archivo) {
         return new Init(nombre, archivo);

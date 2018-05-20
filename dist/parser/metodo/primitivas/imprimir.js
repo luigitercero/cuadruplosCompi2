@@ -28,6 +28,8 @@ var Imprimir = /** @class */ (function () {
                 case this.analizador.DOUBLE:
                     this.imprimirF(parametro[0]);
                     break;
+                default:
+                    this.imprimirNumero(parametro[0]);
             }
         }
         else {

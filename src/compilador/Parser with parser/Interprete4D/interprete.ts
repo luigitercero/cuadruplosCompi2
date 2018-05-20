@@ -1,11 +1,13 @@
 
 import Operacion from './operacion'
 export default class Interprete {
-
+    public salida: boolean = false;
     public p: any;
     public S: any;
     public end: any
     private index: number;
+    public Op: Operacion;
+
     public getIndex() {
         return this.index;
     }
@@ -17,13 +19,15 @@ export default class Interprete {
         this.p.parser.struct.codigo = inteprete.C4D;
         this.p.parser.struct.etiqueta = inteprete.etiqueta;
         this.p.parser.struct.metodo = inteprete.metodo;
-        this.p.parser.struct.op = new Operacion(inteprete);
+        this.Op = new Operacion(inteprete);
+        this.p.parser.struct.op = this.Op
         this.p.parser.struct.leer = this;
         this.p.parser.struct.temporal = inteprete.temporal;
         this.S = inteprete.start;
         this.end = inteprete.end;
         this.index = this.S;
         this.ambito = [];
+
     }
 
     start() {
@@ -41,9 +45,10 @@ export default class Interprete {
                 this.p.parse(this.p.parser.struct.codigo[index].codigo);
                 this.index = this.p.parser.indice.valor
                 this.ambito = this.p.parser.struct.codigo[index].ambito;
-                if (this.index < 0) {
+                if (this.index == -1 || this.salida || this.Op.pedir) {
                     break;
                 }
+
                 console.log("#" + this.p.parser.struct.codigo[this.index].codigo,
                     this.p.parser.struct.codigo[this.index].linea,
                     this.p.parser.struct.codigo[this.index].columna);
@@ -55,15 +60,29 @@ export default class Interprete {
     seguir(data: any) {
 
         let tam = this.p.parser.struct.codigo.length
+        let val = 0
         while (this.index != -1) {
+            val++
             this.p.parser.indice.valor = this.index;
             this.p.parser.struct.op.linea = this.index;
             this.p.parse(this.p.parser.struct.codigo[this.index].codigo);
             this.ambito = this.p.parser.struct.codigo[this.index].ambito;
             this.index = this.p.parser.indice.valor;
+
             if (this.index == -1) {
+                this.salida = true;
+                val = 0;
                 break;
             }
+            if (val > 18120) {
+                val = 0;
+                break
+            }
+            if (this.Op.pedir) {
+                val = 0;
+                break;
+            }
+
             console.log("#" + this.p.parser.struct.codigo[this.index].codigo,
                 this.p.parser.struct.codigo[this.index].linea,
                 this.p.parser.struct.codigo[this.index].columna
@@ -78,7 +97,9 @@ export default class Interprete {
                     arreglo.push(codigo.codigo);
                     arreglo.push(codigo.columna);
                     arreglo.push(codigo.linea);
+                    arreglo.push(this.index);
                     this.index++;
+                    this.salida = true;
                     return arreglo;
                 }
 
@@ -86,6 +107,8 @@ export default class Interprete {
             this.ambito = this.p.parser.struct.codigo[this.index].ambito;
             this.index = this.p.parser.indice.valor;
             this.index++;
+
+
         }
         let linea = this.p.parser.struct.codigo[this.end];
         let arreglo = []
@@ -93,7 +116,10 @@ export default class Interprete {
         arreglo.push(linea.codigo);
         arreglo.push(linea.columna);
         arreglo.push(linea.linea);
+        arreglo.push(this.index);
+
         this.index++;
+
         console.log("felicidades a termindo la lectura de cuadruplo")
         return arreglo;
 
@@ -104,16 +130,13 @@ export default class Interprete {
             this.p.parser.indice.valor = this.index;
             this.p.parser.struct.op.linea = this.index;
             this.p.parse(this.p.parser.struct.codigo[this.index].codigo);
-
-            console.log(this.p.parser.struct.codigo[this.index].codigo,
-                this.p.parser.struct.codigo[this.index].linea,
-                this.p.parser.struct.codigo[this.index].columna
-            )
+            /*
+                        console.log(this.p.parser.struct.codigo[this.index].codigo,
+                            this.p.parser.struct.codigo[this.index].linea,
+                            this.p.parser.struct.codigo[this.index].columna
+                        )*/
             this.ambito = this.p.parser.struct.codigo[this.index].ambito;
         } else {
-            console.log("fin de siguiente"
-            );
-
         }
         let linea = this.p.parser.struct.codigo[this.index];
         this.index = this.p.parser.indice.valor
@@ -123,6 +146,7 @@ export default class Interprete {
         arreglo.push(linea.codigo);
         arreglo.push(linea.columna);
         arreglo.push(linea.linea);
+        arreglo.push(this.index);
         return arreglo;
 
     }

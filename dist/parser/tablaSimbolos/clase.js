@@ -9,6 +9,8 @@ var simbolo_1 = __importDefault(require("./simbolo"));
 var Estructuras_1 = __importDefault(require("./estructura/Estructuras"));
 var Clase = /** @class */ (function () {
     function Clase(nombre, poss) {
+        this.herencia = false;
+        this.hereda_de = "";
         this.nombre = nombre.toLocaleLowerCase();
         this.poss = poss;
         this.tabla = new tabla_1.default();
@@ -44,11 +46,21 @@ var Clase = /** @class */ (function () {
         this.tabla.verVariables();
         console.log("/*****terminal las variables de la clase " + this.nombre + "*****/");
     };
-    Clase.prototype.buscarMetodo = function (nombre, location) {
+    Clase.prototype.buscarMetodo = function (nombre, location, abstrac) {
         for (var index = 0; index < this.metodo.length; index++) {
             var element = this.metodo[index];
             if (element.nomMetodo == nombre.toLocaleLowerCase()) {
                 return element;
+            }
+        }
+        if (abstrac != undefined) {
+            if (this.nombre.toLocaleLowerCase() == "lista") {
+                for (var index = 0; index < this.metodo.length; index++) {
+                    var element = this.metodo[index];
+                    if (element.getNombre() == abstrac.toLocaleLowerCase()) {
+                        return element;
+                    }
+                }
             }
         }
         if (location == undefined) {

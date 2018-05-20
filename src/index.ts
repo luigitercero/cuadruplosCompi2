@@ -28,6 +28,8 @@ io.on('connection', function (client: any) {
     let salida = true;
     var compilador: Compilador;
     console.log('Client connected...');
+    compilador = Compilador.init("", true);
+
     client.on('join', function (data: any) {
         console.log(data);
         salida = true;
@@ -65,6 +67,206 @@ io.on('connection', function (client: any) {
             client.broadcast.emit('salidaerror', "generando " + error.message);
         }
     });
+
+    client.on('meter', function (data: any) {
+        compilador.meter(data);
+        compilador.reiniciarPedir();
+    });
+
+    client.on('debuguear', function (data: any) {
+        if (salida) {
+            var count = 0;
+            compilador.start();
+            try {
+                salida = false;
+                var intervalObject = setInterval(function () {
+                    if ((compilador.isPedir())) {
+                        if (salida) {
+                            console.log('exiting');
+                            clearInterval(intervalObject);
+                            compilador.reiniciarPedir();
+                        }
+                    } else {
+                        if (!salida) {
+                            try {
+
+                                let arreglo = compilador.debuguear(data);
+                                client.emit('nuevaPoss', arreglo);
+                                client.broadcast.emit('nuevaPoss', arreglo);
+                                EnviarTodo(client);
+                                if (compilador.isPedir()) {
+                                    client.emit('pedir', compilador.enviarCadena());
+                                    client.broadcast.emit('pedir', compilador.enviarCadena());
+
+                                } else {
+                                    if (compilador.seSalio()) {
+                                        salida = true;
+                                        compilador.reiniciarPedir();
+                                        console.log('exiting');
+                                        clearInterval(intervalObject);
+                                        compilador.start()
+                                    } else { }
+
+
+                                }
+
+                            } catch (error) {
+                                salida = true;
+                                client.emit('salidaerror', "debuguear " + error.message);
+                                client.broadcast.emit('salidaerror', "debuguear " + error.message);
+                            }
+
+                        } else {
+                            salida = true;
+                            compilador.reiniciarPedir();
+                            console.log('exiting');
+                            clearInterval(intervalObject);
+                        }
+                    }
+
+                }, 50);
+            } catch (error) {
+                salida = true;
+                client.emit('salidaerror', "automatico " + error.message);
+                client.broadcast.emit('salidaerror', "automatico " + error.message);
+            }
+        }
+
+    });
+
+    client.on('siguiente', function (data: any) {
+        salida = true;
+        sigue(client);
+
+    });
+
+    client.on('alto', function (data: any) {
+        salida = true;
+        compilador.stop();
+    })
+    client.on('auto', function (data: any) {
+        if (salida) {
+            var count = 0;
+            try {
+                salida = false;
+                var intervalObject = setInterval(function () {
+                    count++;
+                    console.log(count, 'seconds passed');
+                    sigue(client);
+                    if (salida) {
+                        console.log('exiting');
+                        clearInterval(intervalObject);
+                    } if (!salida) {
+                        salida = compilador.getSalida();
+                        if (salida) {
+                            console.log('exiting');
+                            clearInterval(intervalObject);
+                        }
+                    }
+                }, 500);
+            } catch (error) {
+                salida = true;
+                client.emit('salidaerror', "automatico " + error.message);
+                client.broadcast.emit('salidaerror', "automatico " + error.message);
+            }
+        }
+    });
+    client.on('probar', function (data: any) {
+        try {
+            compilador = Compilador.init(data, true);
+            siguiente = 0;
+            compilador.analizar(data);
+            let codigo = compilador.analizador.gen3D()
+            console.log(codigo);
+            console.log("fin");
+            salida = true;
+            let arreglo = compilador.debuguear("");
+            let consola = compilador.consola()
+            client.emit('consolaP', consola);
+            client.broadcast.emit('consolaP', consola);
+
+        } catch (error) {
+            client.emit('salidaerror', "generando " + error.message);
+            client.broadcast.emit('salidaerror', "generando " + error.message);
+        }
+    });
+    client.on('calificar', function (data: any) {
+        try {
+            compilador = Compilador.init(data, true);
+            siguiente = 0;
+            compilador.analizar(data);
+            let codigo = compilador.analizador.gen3D();
+            console.log(codigo);
+            console.log("fin");
+            salida = true;
+            compilador.debuguear("");
+            let consola = compilador.consola();
+            client.emit('consolaP', consola);
+            client.broadcast.emit('consolaP', consola);
+
+        } catch (error) {
+            client.emit('salidaerror', "generando " + error.message);
+            client.broadcast.emit('salidaerror', "generando " + error.message);
+        }
+    });
+
+
+    function sigueSimple(client: any, data: any) {
+        try {
+            let arreglo = compilador.siguiente();
+            //client.emit('nuevaPoss', arreglo);
+            //client.broadcast.emit('nuevaPoss', arreglo);
+            if (arreglo[4] == -1) {
+                EnviarTodo(client)
+                salida = true;;
+            }
+            for (let index2 = 0; index2 < data.length; index2++) {
+                const element = data[index2];
+                console.log(arreglo[3], element)
+                if (element == null) continue;
+                if (arreglo[3] == element) {
+                    salida = true;
+                    EnviarTodo(client)
+                    client.emit('nuevaPoss', arreglo);
+                    client.broadcast.emit('nuevaPoss', arreglo);
+                }
+            }
+        } catch (error) {
+            client.emit('salidaerror', "sigue " + error.message);
+            client.broadcast.emit('salidaerror', "sigue  " + error.message);
+        }
+
+    }
+    function sigue(client: any) {
+
+        try {
+            let arreglo = compilador.siguiente();
+            client.emit('nuevaPoss', arreglo);
+            client.broadcast.emit('nuevaPoss', arreglo);
+            EnviarTodo(client);
+            if (arreglo[4] == -1) {
+                salida = true;
+            }
+            if (compilador.isPedir()) {
+                client.emit('pedir', compilador.enviarCadena());
+                client.broadcast.emit('pedir', compilador.enviarCadena());
+            }
+        } catch (error) {
+            client.emit('salidaerror', "sigue " + error.message);
+            client.broadcast.emit('salidaerror', "sigue  " + error.message);
+        }
+    }
+
+    function EnviarTodo(client: any) {
+        sendPila(client);
+        sendHeap(client);
+        sendPtr(client);
+        sendPth(client);
+        sendConsola(client);
+        operacion(client);
+        sendAmbito(client);
+
+    }
     function sendPila(client: any) {
         let pila = compilador.getPila();
         let salida = "";
@@ -176,115 +378,6 @@ io.on('connection', function (client: any) {
         client.emit('ambito', salida);
         client.broadcast.emit('ambito', salida);
     }
-    client.on('debuguear', function (data: any) {
-        try {
-            let arreglo = compilador.debuguear(data);
-            client.emit('nuevaPoss', arreglo);
-            client.broadcast.emit('nuevaPoss', arreglo);
-            sendPila(client);
-            sendHeap(client);
-            sendPtr(client);
-            sendPth(client);
-            sendConsola(client);
-            operacion(client);
-            sendAmbito(client);
-        } catch (error) {
-            client.emit('salidaerror', "debuguear " + error.message);
-            client.broadcast.emit('salidaerror', "debuguear " + error.message);
-        }
-        salida = true;
-    });
-    client.on('siguiente', function (data: any) {
-        salida = true;
-        sigue(client);
-
-    });
-    function sigue(client: any) {
-
-        try {
-            let arreglo = compilador.siguiente();
-            client.emit('nuevaPoss', arreglo);
-            client.broadcast.emit('nuevaPoss', arreglo);
-            sendPila(client);
-            sendHeap(client);
-            sendPtr(client);
-            sendPth(client);
-            sendConsola(client);
-            operacion(client);
-            sendAmbito(client);
-        } catch (error) {
-            client.emit('salidaerror', "sigue " + error.message);
-            client.broadcast.emit('salidaerror', "sigue  " + error.message);
-        }
-    }
-    client.on('alto', function (data: any) {
-        salida = true;
-    })
-    client.on('auto', function (data: any) {
-        if (salida) {
-            var count = 0;
-            try {
-                salida = false;
-                var intervalObject = setInterval(function () {
-                    count++;
-                    console.log(count, 'seconds passed');
-                    sigue(client);
-                    if (salida) {
-                        console.log('exiting');
-                        clearInterval(intervalObject);
-                    } if (!salida) {
-                        salida = compilador.getSalida();
-                        if (salida) {
-                            console.log('exiting');
-                            clearInterval(intervalObject);
-                        }
-                    }
-                }, 500);
-            } catch (error) {
-                salida = true;
-                client.emit('salidaerror', "automatico " + error.message);
-                client.broadcast.emit('salidaerror', "automatico " + error.message);
-            }
-        }
-    });
-    client.on('probar', function (data: any) {
-        try {
-            compilador = Compilador.init(data, true);
-            siguiente = 0;
-            compilador.analizar(data);
-            let codigo = compilador.analizador.gen3D()
-            console.log(codigo);
-            console.log("fin");
-            salida = true;
-            let arreglo = compilador.debuguear("");
-            let consola = compilador.consola()
-            client.emit('consolaP', consola);
-            client.broadcast.emit('consolaP', consola);
-
-        } catch (error) {
-            client.emit('salidaerror', "generando " + error.message);
-            client.broadcast.emit('salidaerror', "generando " + error.message);
-        }
-    });
-    client.on('calificar', function (data: any) {
-        try {
-            compilador = Compilador.init(data, true);
-            siguiente = 0;
-            compilador.analizar(data);
-            let codigo = compilador.analizador.gen3D();
-            console.log(codigo);
-            console.log("fin");
-            salida = true;
-            compilador.debuguear("");
-            let consola = compilador.consola();
-            client.emit('consolaP', consola);
-            client.broadcast.emit('consolaP', consola);
-
-        } catch (error) {
-            client.emit('salidaerror', "generando " + error.message);
-            client.broadcast.emit('salidaerror', "generando " + error.message);
-        }
-    });
 });
 server.listen(8080);
 

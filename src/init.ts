@@ -14,17 +14,10 @@ export default class Init {
         if (archivo == undefined) {
             var fs = require('fs');
             let rut = "/home/luigitercero/Documentos/Compi2/Archivo De entrada/"
-            //let archivo = fs.readFileSync(rut+'arreglo', 'utf-8');
-            //let archivo = fs.readFileSync(rut+'asignaciones', 'utf-8');
-            //let archivo = fs.readFileSync(rut+'operacion', 'utf-8');
-            //let archivo = fs.readFileSync(rut+'test', 'utf-8');
             this.archivo = fs.readFileSync(rut + nombre, 'utf-8');
-            //let archivo = fs.readFileSync(rut+'control', 'utf-8');
-
         } else {
             this.archivo = nombre;
         }
-
     }
 
     public analizar(data: any) {
@@ -38,7 +31,9 @@ export default class Init {
         this.d4 = result;
         this.inter4D = new Interprete(result);
     }
-
+    public meter(data: string) {
+        this.inter4D.Op.meterHeap(data);
+    }
     public getSalida(): boolean {
         if (this.inter4D.getIndex() > 0) {
             return false;
@@ -50,53 +45,61 @@ export default class Init {
     }
 
     public getPila() {
-        return this.inter4D.p.parser.struct.op.stack;
+        return this.inter4D.Op.stack;
     }
 
     public consola() {
-        return this.inter4D.p.parser.struct.op.consola;
+        return this.inter4D.Op.consola;
     }
 
     public getHeap() {
-        return this.inter4D.p.parser.struct.op.heap;
+        return this.inter4D.Op.heap;
     }
 
     public getptr() {
-        return this.inter4D.p.parser.struct.op.ptr;
+        return this.inter4D.Op.ptr;
     }
 
     public getpth() {
-        return this.inter4D.p.parser.struct.op.pth;
+        return this.inter4D.Op.pth;
     }
 
     public getOperacion() {
-        return this.inter4D.p.parser.struct.op.op;
+        return this.inter4D.Op.op;
     }
-
+    public enviarCadena() {
+        if (this.inter4D.Op.pedir) {
+            return this.inter4D.Op.message;
+        }
+    }
+    public isPedir() {
+        return this.inter4D.Op.pedir
+    }
+    public reiniciarPedir() {
+        this.inter4D.Op.pedir = false;
+    }
     public debuguear(data: any) {
         if (this.inter4D != undefined) {
             // console.log(result.temporal[key].tempora+ " esto estoy probando " + key);
             let a = this.inter4D.seguir(data);
-            /**
-            for(let k in this.d4.temporal) {
-               console.log(this.d4.temporal[k].tempora,this.d4.temporal[k].valor);
-            }
-   
-            for(let k in this.d4.etiqueta) {
-               console.log(this.d4.etiqueta[k].poss,this.d4.etiqueta[k].etiqueta);
-            }
-           
-            var persons: { [id: string] : IPerson; } = {};
-            persons["p1"] = { firstName: "F1", lastName: "L1" };
-            persons["p2"] = { firstName: "Fe", lastName: "Le" };
-            console.log(persons["p1"].firstName);
-            console.log(persons["p2"].firstName); */
             return a;
         }
     }
+    public seSalio() {
+        return this.inter4D.salida;
+    }
+    public stop() {
+        this.inter4D.salida = true;
 
+    }
+    public start() {
+        this.inter4D.salida = false;
+    }
     public siguiente() {
         return this.inter4D.siguiente();
+    }
+    public siguienteSimple() {
+
     }
 
     static init(nombre: string, archivo?: boolean): Init {

@@ -32,7 +32,7 @@ var Clase = /** @class */ (function () {
     };
     Clase.prototype.exixteContructor = function (location) {
         try {
-            this.recoleccion.analizador.claseA.buscarMetodo(this.recoleccion.analizador.claseA.nombre);
+            this.recoleccion.analizador.claseA.buscarMetodo(this.recoleccion.analizador.claseA.nombre, location);
         }
         catch (error) {
             this.escribirContructor(location);
@@ -80,7 +80,8 @@ var Clase = /** @class */ (function () {
         var nombre = nodo.childNode[0].term;
         switch (nombre) {
             case "HEREDADE":
-                this.recoleccion.analizador.logPorCompletar("herencia");
+                this.recoleccion.analizador.claseA.herencia = true;
+                this.recoleccion.analizador.claseA.hereda_de = nodo.childNode[1].token;
                 this.recoleccion.analizador.log("agregando herencia " + nodo.childNode[1].token);
                 return true;
         }

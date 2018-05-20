@@ -30,8 +30,9 @@ export default class Imprimir {
                 case this.analizador.DOUBLE:
                     this.imprimirF(parametro[0]);
                     break;
+                default:
+                    this.imprimirNumero(parametro[0]);
             }
-
         } else {
             this.analizador.newError("error elegir parametros", parametro[1].fila, parametro[1].column, );
         }

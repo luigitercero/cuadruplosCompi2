@@ -146,7 +146,7 @@ Print
     | PRINT '('FLOAT ',' Dato ')' ';' {parser.struct.op.printD ($5);}
     ;
 Lectura
-    : CALL ',' ',' ',' INVALUE
+    : CALL ',' ',' ',' INVALUE{parser.struct.op.leer ($5);}
     ;
 
 Dato

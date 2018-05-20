@@ -117,7 +117,7 @@ var metodo = /** @class */ (function () {
                     return metodo;
                 }
                 else {
-                    this.analizador.newError("error esto no es un contructor", nodo.childNode[0].childNode[0].location.first_line, nodo.childNode[0].childNode[0].location.last_column);
+                    this.analizador.newError("error esto no es un contructor " + cons, nodo.childNode[0].childNode[0].location.first_line, nodo.childNode[0].childNode[0].location.last_column);
                 }
                 break;
             case "Principal":
@@ -187,7 +187,7 @@ var metodo = /** @class */ (function () {
         this.analizador.claseA.tabla.disminuirAmbito();
     };
     metodo.prototype.callPreconstructor = function (location) {
-        var _Preconstructor = this.analizador.claseA.buscarMetodo("preconstructor");
+        var _Preconstructor = this.analizador.claseA.buscarMetodo("preconstructor", location);
         this.analizador.agregarCodigo(this.analizador.llamarMetodo("metodo" + _Preconstructor.id), location.last_column, location.first_line);
     };
     //solo se agrega una posicion ppara poder apuntar al this
@@ -204,7 +204,7 @@ var metodo = /** @class */ (function () {
         return new nodoOperacion_1.default("heap", objeto, location.last_column, location.first_line);
     };
     metodo.prototype.metodoImp = function (name, location) {
-        var metodo = this.analizador.claseA.buscarMetodo(name);
+        var metodo = this.analizador.claseA.buscarMetodo(name, location);
         this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre, metodo.getTipo());
         this.analizador.claseA.tabla.aumetarAbmito();
         metodo.preFijo = this.analizador.claseA.nombre;

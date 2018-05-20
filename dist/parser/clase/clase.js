@@ -52,7 +52,7 @@ var Clase = /** @class */ (function () {
         return false;
     };
     Clase.prototype.exixteContructor = function (location) {
-        var metodo = this.analizador.claseA.buscarMetodo(this.analizador.claseA.nombre);
+        var metodo = this.analizador.claseA.buscarMetodo(this.analizador.claseA.nombre, location);
         if (metodo.escrito === false) {
             this.escribirContructor(location);
         }
@@ -117,7 +117,7 @@ var Clase = /** @class */ (function () {
         return false;
     };
     Clase.prototype.asignarVariablesGlobales = function (herdaDe) {
-        this.heredar(herdaDe);
+        //this.heredar(herdaDe);
         this.analizador.claseA.tabla.ptr = 2;
         var nombreClase = this.analizador.claseA.nombre;
         var poss = this.analizador.claseA.poss;
@@ -159,17 +159,23 @@ var Clase = /** @class */ (function () {
         coment = this.analizador.genComentario("fin de metodo preconstructor para " + nombreClase);
         this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo" + id) + coment, 0, poss);
         this.analizador.claseA.tabla.ptr = 0;
+        this.agregarPrimitrivas();
     };
-    Clase.prototype.heredar = function (hereda) {
-        if (hereda != undefined) {
-            for (var index = 0; index < hereda.tabla.esto.ambito.length; index++) {
-                var element = hereda.tabla.esto.ambito[index];
-                this.analizador.claseA.tabla.esto.agregarSimbolo(element);
+    Clase.prototype.agregarPrimitrivas = function () {
+        try {
+            var hereda = this.analizador.buscarClase("casteos58592714DeLuisAzurdia");
+            if (hereda == undefined) {
             }
-            for (var index = 0; index < hereda.metodo.length; index++) {
-                var element = hereda.metodo[index];
-                this.analizador.claseA.agregarMetodo(element);
+            else {
+                if (this.analizador.claseA.nombre != "casteos58592714deluisazurdia") {
+                    for (var index = 0; index < hereda.metodo.length; index++) {
+                        var element = hereda.metodo[index];
+                        this.analizador.claseA.agregarMetodo(element);
+                    }
+                }
             }
+        }
+        catch (_a) {
         }
     };
     /**

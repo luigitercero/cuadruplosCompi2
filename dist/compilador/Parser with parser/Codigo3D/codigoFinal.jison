@@ -99,7 +99,7 @@ frac                        (?:\.[0-9]+)
 "caracter"                  return 'CHAR'
 
 "imprimir"                  return 'IMPRIMIR'
-"concatenar"                return 'CONCATENAR'
+
 "puntero"                   return 'PUNTERO'
 "crearpuntero"              return 'CREARPUNTERO'
 "obtenerdireccion"          return 'OBTERNERDIRECCION'
@@ -111,26 +111,21 @@ frac                        (?:\.[0-9]+)
 "nuevo"                     return 'NUEVO'
 "este"                      return 'ESTE'
 "funcion"                   return 'FUNCION'
-"lista"                     return 'LISTA'
-"pila"                      return 'PILA'
-"cola"                      return 'COLA'
 "mientras"                  return 'WHILE'
 "ciclo_doble_condicion"     return 'DOBLECONDICION'
     
 "HASTA_QUE"                 return 'UNTIL'
 "estructura"                return 'ESTRUCTURA'
-"nada"                      return 'NADA'
-
-                                                     
-\"(?:{esc}["bfnrt/{esc}]|{esc}"u"[a-fA-F0-9]{4}|[^"{esc}])*\"  yytext = yytext.substr(1,yyleng-2); return 'STRINGLIST';
+"nada"                      return 'NADA'                                           
+"\""[^\"]*"\""  yytext = yytext.substr(1,yyleng-2);             return 'STRINGLIST';
 {int}{frac}{exp}?\b                                         return 'NUMBERLIST2';
-{int}{exp}?\b                                              return 'NUMBERLIST';
-[A-Za-z_0-9_]+                                               return 'ID';
+{int}{exp}?\b                                               return 'NUMBERLIST';
+[A-Za-z_0-9_]+                                              return 'ID';
 ['][^\n][']                                                 return 'CARACTER'
 ['][\\][0][']                                               return 'NULO'
 "."                                                         return '.'
-"="                                                          return '='
-\/(?:[^\/]|"\\/")*\/                                         return 'REGEX'
+"="                                                         return '='
+\/(?:[^\/]|"\\/")*\/                                        return 'REGEX'
 <<EOF>>                                                      return 'EOF'
 
 
@@ -164,6 +159,7 @@ inicio:Encabezado EOF
       $$ = nodo; 
       
       }
+      | EOF
   ; 
 Encabezado:Import
      {nodo1= new Nodo ("Import", @1,$1, [] ); 
@@ -565,6 +561,10 @@ Control:If1
      {nodo1= new Nodo ("If2", @1,$1, [] );
       nodo = new Nodo("Control",null,null,[$1]); 
       $$ = nodo; }
+  |If3
+        {nodo1= new Nodo ("If2", @1,$1, [] );
+      nodo = new Nodo("Control",null,null,[$1]); 
+      $$ = nodo; }
   | Switch
      {nodo1= new Nodo ("Switch", @1,$1, [] );
       nodo = new Nodo("Control",null,null,[$1]); 
@@ -604,18 +604,24 @@ Control:If1
   ; 
 
 
-If1:IF Expresion '{' ESVERDADERO Cuerpo ESFALSO Cuerpo Finsi
-     {nodo1= new Nodo ("IF", @1,$1, [] ); nodo2= new Nodo ("Expresion", @2,$2, [] ); nodo3= new Nodo ("'{'", @3,$3, [] ); nodo4= new Nodo ("ESVERDADERO", @4,$4, [] ); nodo5= new Nodo ("Cuerpo", @5,$5, [] ); nodo6= new Nodo ("ESFALSO", @6,$6, [] ); nodo7= new Nodo ("Cuerpo", @7,$7, [] ); nodo8= new Nodo ("FINSI", @8,$8, [] ); 
-      nodo = new Nodo("If1",null,null,[nodo1,$2,nodo3,nodo4,$5,nodo6,$7,nodo8]);  
+If1:IF Expresion  ESVERDADERO Cuerpo ESFALSO Cuerpo Finsi
+     {nodo1= new Nodo ("IF", @1,$1, [] ); nodo2= new Nodo ("Expresion", @2,$2, [] );  nodo4= new Nodo ("ESVERDADERO", @3,$3, [] ); nodo5= new Nodo ("Cuerpo", @4,$4, [] ); nodo6= new Nodo ("ESFALSO", @5,$5, [] ); nodo7= new Nodo ("Cuerpo", @6,$6, [] ); nodo8= new Nodo ("FINSI", @7,$7, [] ); 
+      nodo = new Nodo("If1",null,null,[nodo1,$2,nodo4,$4,nodo6,$6,nodo8]);  
       $$ = nodo; }
   ;
 Finsi:
     FINSI {$$=$1}
-    | '}'{$$=$1}
+    
 ;
-If2:IF Expresion '{' ESFALSO Cuerpo ESVERDADERO Cuerpo Finsi
-     {nodo1= new Nodo ("IF", @1,$1, [] ); nodo2= new Nodo ("Expresion", @2,$2, [] ); nodo3= new Nodo ("'{'", @3,$3, [] ); nodo4= new Nodo ("ESFALSO", @4,$4, [] ); nodo5= new Nodo ("Cuerpo", @5,$5, [] ); nodo6= new Nodo ("ESVERDADERO", @6,$6, [] ); nodo7= new Nodo ("Cuerpo", @7,$7, [] ); nodo8= new Nodo ("FINSI", @8,$8, [] ); 
-      nodo = new Nodo("If2",null,null,[nodo1,$2,nodo3,nodo4,$5,nodo6,$7,nodo8]);  
+If2:IF Expresion  ESFALSO Cuerpo ESVERDADERO Cuerpo Finsi
+     {nodo1= new Nodo ("IF", @1,$1, [] ); nodo2= new Nodo ("Expresion", @2,$2, [] );  nodo4= new Nodo ("ESFALSO", @3,$3, [] ); nodo5= new Nodo ("Cuerpo", @4,$4, [] ); nodo6= new Nodo ("ESVERDADERO", @5,$5, [] ); nodo7= new Nodo ("Cuerpo", @6,$6, [] ); nodo8= new Nodo ("FINSI", @7,$7, [] ); 
+      nodo = new Nodo("If2",null,null,[nodo1,$2,nodo4,$4,nodo6,$6,nodo8]);  
+      $$ = nodo; }
+  ;
+
+  If3:IF Expresion  ESVERDADERO Cuerpo Finsi
+     {nodo1= new Nodo ("IF", @1,$1, [] ); nodo2= new Nodo ("Expresion", @2,$2, [] );  nodo4= new Nodo ("ESVERDADERO", @3,$3, [] ); nodo5= new Nodo ("Cuerpo", @4,$4, [] ); nodo8= new Nodo ("FINSI", @5,$5, [] ); 
+      nodo = new Nodo("If3",null,null,[nodo1,$2,nodo4,$4,nodo8]);  
       $$ = nodo; }
   ; 
 Switch:SWITCH Expresion '{' CuerpoSwitch Default
@@ -687,6 +693,11 @@ Branching:BREAK
   | RETURN e
      {nodo1= new Nodo ("RETURN", @1,$1, [] ); nodo2= new Nodo ("e", @2,$2, [] );
       nodo = new Nodo("Branching",null,null,[nodo1,$2]); 
+      $$ = nodo; }
+  | RETURN Nuevo 
+     {nodo1= new Nodo ("RETURN", @1,$1, [] );
+     nodo2= new Nodo ("Nuevo", @2,$2, [] ); ``
+      nodo = new Nodo("Branching",null,null,[nodo1,$2]);
       $$ = nodo; }
   ; 
 Expresion:'(' e ')'

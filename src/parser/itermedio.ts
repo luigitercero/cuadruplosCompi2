@@ -10,8 +10,9 @@ export default class FormatoItermedio {
     private etiqueta: number;
     private poss: number;//cuenta por que linea voy escribiendo 
     private contador: number//cuenta los mentodos
+    public puntero: boolean;
     public codigo4D = {
-        'C4D': [{ 'poss': -1, 'codigo': "", 'columna': -1, 'linea': -1, 'ambito': "" }],
+        'C4D': [{ 'poss': -1, 'codigo': "", 'columna': -1, 'linea': -1, 'ambito': "", 'tipo': "", 'value': "" }],
         'state': true,
         'etiqueta': [{ 'etiqueta': "", 'poss': -1 }],
         'metodo': [{ 'metodo': "", 'poss': -1 }],
@@ -41,13 +42,28 @@ export default class FormatoItermedio {
         this.codigo4D.metodo.push({ 'metodo': "metodo" + this.contador, 'poss': this.poss });
         return this.contador;
     }
-    public agregarCodigo(codigo: string, column: number | -1, linea: number | -1) {
+    public agregarCodigo(codigo: string, column: number, linea: number, tipo?: string, value?: string) {
         this.codigoIntermedio = this.codigoIntermedio + codigo + "\n";
         let a = this.getAmbito();
-        this.codigo4D.C4D.push({
-            'poss': this.poss, 'codigo': codigo, 'columna': column, 'linea': linea,
-            'ambito': a
-        });
+
+        let p = "";
+        let v = "";
+        if (tipo != undefined) {
+
+
+        }
+        if (this.puntero) {
+            this.codigo4D.C4D.push({
+                'poss': this.poss, 'codigo': codigo, 'columna': column, 'linea': linea,
+                'ambito': a, 'tipo': p, 'value': v
+            });
+        } else {
+            this.codigo4D.C4D.push({
+                'poss': this.poss, 'codigo': codigo, 'columna': -1, 'linea': linea,
+                'ambito': a, 'tipo': p, 'value': v
+            });
+
+        }
         this.poss++;
         console.log("#" + codigo, ' columna: ' + column + ' linea: ' + linea);
     }
@@ -67,6 +83,7 @@ export default class FormatoItermedio {
         this.etiqueta = 1;
         this.poss = 1;
         this.contador = 0;
+        this.puntero = true;
     }
     private pila(n: number): string {
         return "Pila [ " + n + " ]";

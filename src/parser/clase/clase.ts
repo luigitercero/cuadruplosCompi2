@@ -63,7 +63,7 @@ export default class Clase {
     }
     private exixteContructor(location: Location) {
 
-        let metodo = this.analizador.claseA.buscarMetodo(this.analizador.claseA.nombre)
+        let metodo = this.analizador.claseA.buscarMetodo(this.analizador.claseA.nombre, location)
         if (metodo.escrito === false) {
             this.escribirContructor(location)
         } else {
@@ -138,7 +138,8 @@ export default class Clase {
     }
 
     public asignarVariablesGlobales(herdaDe?: Clases) {
-        this.heredar(herdaDe);
+
+        //this.heredar(herdaDe);
         this.analizador.claseA.tabla.ptr = 2;
         let nombreClase = this.analizador.claseA.nombre;
         let poss = this.analizador.claseA.poss;
@@ -182,20 +183,29 @@ export default class Clase {
         coment = this.analizador.genComentario("fin de metodo preconstructor para " + nombreClase);
         this.analizador.agregarCodigo(this.analizador.metodoEnd("metodo" + id) + coment, 0, poss);
         this.analizador.claseA.tabla.ptr = 0;
+        this.agregarPrimitrivas();
     }
 
-    public heredar(hereda?: Clases) {
-        if (hereda != undefined) {
-            for (let index = 0; index < hereda.tabla.esto.ambito.length; index++) {
-                const element: Simbolo = hereda.tabla.esto.ambito[index];
-                this.analizador.claseA.tabla.esto.agregarSimbolo(element);
+
+    agregarPrimitrivas() {
+        try {
+            let hereda = this.analizador.buscarClase("casteos58592714DeLuisAzurdia");
+            if (hereda == undefined) {
+
+            } else {
+                if (this.analizador.claseA.nombre != "casteos58592714deluisazurdia") {
+                    for (let index = 0; index < hereda.metodo.length; index++) {
+                        const element: Metodo = hereda.metodo[index];
+                        this.analizador.claseA.agregarMetodo(element);
+                    }
+                }
             }
-            for (let index = 0; index < hereda.metodo.length; index++) {
-                const element: Metodo = hereda.metodo[index];
-                this.analizador.claseA.agregarMetodo(element);
-            }
+        } catch{
+
         }
+
     }
+
     /**
      * agrega el tama;ano necesario para los arreglos funciona para valores globales
      * @param simbolo 

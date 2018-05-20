@@ -7,6 +7,7 @@ var asignacion_1 = __importDefault(require("../variable/asignacion"));
 var declaracion_1 = __importDefault(require("../variable/declaracion"));
 var control_1 = __importDefault(require("./control/control"));
 var nodoSalida_1 = __importDefault(require("./control/nodoSalida"));
+var nodoOperacion_1 = __importDefault(require("../exp/operacion/nodoOperacion"));
 var primitivas_1 = __importDefault(require("./primitivas/primitivas"));
 var cuerpo = /** @class */ (function () {
     function cuerpo(analizador) {
@@ -84,10 +85,28 @@ var cuerpo = /** @class */ (function () {
         throw this.analizador.newError("no estamos para hacer un ciclo", 0, 0);
     };
     cuerpo.prototype.agregarRetorno = function (nodo, location) {
-        var op = this.analizador.exp.analizar(nodo);
+        var term = nodo.term;
+        if (term == "e") {
+            var op = this.analizador.exp.analizar(nodo);
+            this.agregarRetornogg(op, location);
+            return;
+        }
+        else if (term == "Nuevo") {
+            var op = this.analizador.variable.getNuevo(nodo);
+            this.agregarRetornogg(op, location);
+            return;
+        }
+        throw this.analizador.newError("error en retorno algo anda mal", 0, 0);
+    };
+    cuerpo.prototype.agregarRetornogg = function (op, location) {
         var retorno = this.analizador.variable.obtenerDirVariable("retorno", location.first_line, location.last_column);
         if (op.tipo != retorno.simbolo.getTipo()) {
-            throw this.analizador.newError("retorno no coincide con el tipo tipo objeto " + op.tipo + "tipo retorno " + retorno.simbolo.getTipo(), location.first_line, location.last_column);
+            if (op.tipo == this.analizador.NULL) {
+            }
+            else {
+                throw this.analizador.newError("retorno no coincide con el tipo tipo objeto " + op.tipo
+                    + "tipo retorno " + retorno.simbolo.getTipo(), location.first_line, location.last_column);
+            }
         }
         this.analizador.agregarCodigo(this.analizador.saveEnPila(retorno.dir, op.valor), location.last_column, location.first_line);
     };
@@ -127,10 +146,13 @@ var cuerpo = /** @class */ (function () {
         switch (term) {
             case "ID":
                 nombre = nodo.childNode[0].token;
-                return this.metodoID2(nombre, this.getParametro(nodo.childNode[2]), nodo.childNode[0].location, esto);
+                this.analizador.recorrerArbol(nodo);
+                var pc = this.getParametro(nodo.childNode[2]);
+                return this.metodoID2(nombre, pc, nodo.childNode[0].location, esto);
             case "Primitivas":
                 nombre = nodo.childNode[0].childNode[0].term;
-                this.primitivas.analizar(nombre, this.getParametro(nodo.childNode[2]));
+                var location_1 = nodo.childNode[0].childNode[0].location;
+                this.primitivas.analizar(nombre, this.getParametro(nodo.childNode[2]), location_1);
                 return;
             case "Tipo":
                 throw this.analizador.newError("no puedo hacer esto todavia", 0, 0);
@@ -145,6 +167,7 @@ var cuerpo = /** @class */ (function () {
     cuerpo.prototype.getParametro = function (nodo) {
         var term = nodo.childNode[0].term;
         var parametro = new Array();
+        this.analizador.recorrerArbol(nodo);
         switch (term) {
             case "ParametroM":
                 this.parametroM(nodo.childNode[0], parametro);
@@ -172,6 +195,8 @@ var cuerpo = /** @class */ (function () {
             case "e":
                 this.privateParmetroM2(nodo.childNode[0], parametro);
                 return true;
+            case ("Tipo"):
+                return true;
         }
         throw this.analizador.newError("error parametros", 0, 0);
     };
@@ -185,7 +210,13 @@ var cuerpo = /** @class */ (function () {
                 throw this.analizador.newError("aun no puedo hacer esto", 0, 0);
             //break
             case "e":
-                parametro.push(this.analizador.exp.analizar(nodo));
+                var valor = this.analizador.exp.analizar(nodo);
+                if (valor.tipo == this.analizador.STRING) {
+                    valor = new nodoOperacion_1.default(this.analizador.exp.crearArregloString(valor), "caracter", valor.column, valor.fila);
+                    valor.simbolo.tam = 1;
+                    valor.setTam(1);
+                }
+                parametro.push(valor);
                 return true;
         }
         throw this.analizador.newError("error parametros", 0, 0);
@@ -208,15 +239,20 @@ var cuerpo = /** @class */ (function () {
         if (esto !== undefined) {
             this.analizador.claseA = this.analizador.buscarClase(esto.tipo);
         }
-        var metodo = this.analizador.claseA.buscarMetodo(metodoNombre, location);
-        this.escribirParametrosApila(temp, parametoM, metodo);
-        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", tam + "", "ptr") + coment, location.last_column, location.first_line);
-        coment = this.analizador.genComentario("llamando metodo " + metodoNombre);
-        this.analizador.agregarCodigo(this.analizador.llamarMetodo("metodo" + metodo.id) + coment, location.last_column, location.first_line);
-        this.analizador.claseA = ambitotemporal;
-        coment = this.analizador.genComentario("disminyendo de ambito para " + this.analizador.claseA.nombre);
-        this.analizador.agregarCodigo(this.analizador.genOperacion("-", "ptr", tam + "", "ptr") + coment, location.last_column, location.first_line);
-        return metodo;
+        var metodo = this.analizador.claseA.buscarMetodo(metodoNombre, location, nombre);
+        if (metodo.parametro.length == parametoM.length) {
+            this.escribirParametrosApila(temp, parametoM, metodo);
+            this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", tam + "", "ptr") + coment, location.last_column, location.first_line);
+            coment = this.analizador.genComentario("llamando metodo " + metodoNombre);
+            this.analizador.agregarCodigo(this.analizador.llamarMetodo("metodo" + metodo.id) + coment, location.last_column, location.first_line);
+            this.analizador.claseA = ambitotemporal;
+            coment = this.analizador.genComentario("disminyendo de ambito para " + this.analizador.claseA.nombre);
+            this.analizador.agregarCodigo(this.analizador.genOperacion("-", "ptr", tam + "", "ptr") + coment, location.last_column, location.first_line);
+            return metodo;
+        }
+        else {
+            throw this.analizador.newError("error no se puede llamar metodo " + nombre + param, location.last_column, location.first_line);
+        }
     };
     /**
      * escribir metodo antes de variables
@@ -255,7 +291,22 @@ var cuerpo = /** @class */ (function () {
             this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", temp + "", t1), parametoM[index].column, parametoM[index].fila);
             var agregarValor = "";
             if (!metodo.parametro[index].getPunter()) {
-                agregarValor = this.analizador.saveEnPila(t1, parametoM[index].valor);
+                if (parametoM[index].tipo == this.analizador.STRING) {
+                    if (metodo.parametro[index].getTipo() == this.analizador.CARACTER) {
+                        if (metodo.parametro[index].tam == 1) {
+                            agregarValor = this.analizador.saveEnPila(t1, parametoM[index].valor);
+                        }
+                        else {
+                            throw this.analizador.newError("errror al querer gregar una cadena ", parametoM[index].column, parametoM[index].fila);
+                        }
+                    }
+                    else {
+                        throw this.analizador.newError("errror al querer gregar una cadena ", parametoM[index].column, parametoM[index].fila);
+                    }
+                }
+                else {
+                    agregarValor = this.analizador.saveEnPila(t1, parametoM[index].valor);
+                }
             }
             else {
                 var pra = parametoM[index].getReff();
@@ -288,16 +339,25 @@ var cuerpo = /** @class */ (function () {
     cuerpo.prototype.tiposDeParametros = function (parametoM) {
         var param = "";
         for (var index = 0; index < parametoM.length; index++) {
-            param = param + "_" + parametoM[index].tipo;
+            if (parametoM[index].tipo == this.analizador.STRING) {
+                param = param + "_" + this.analizador.CARACTER;
+            }
+            else {
+                param = param + "_" + parametoM[index].tipo;
+            }
         }
         return param;
     };
     cuerpo.prototype.escribirEstoAnuevoAmbito = function (esto, location, tam) {
         var temp = tam; //en esta posicion se encuentra el retorno
-        temp++; //en esta posicion se guarda this
+        //en esta posicion se guarda this
         var t2 = this.analizador.newTemporal();
+        var comentario = this.analizador.genComentario("guardar en pila nuevo ambito");
         this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", temp + "", t2), location.last_column, location.first_line);
-        this.analizador.agregarCodigo(this.analizador.saveEnPila(t2, esto), location.last_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.saveEnPila(t2, esto) + comentario + " esto en retorno", location.last_column, location.first_line);
+        temp++;
+        this.analizador.agregarCodigo(this.analizador.genOperacion("+", "ptr", temp + "", t2), location.last_column, location.first_line);
+        this.analizador.agregarCodigo(this.analizador.saveEnPila(t2, esto) + comentario, location.last_column, location.first_line);
         temp++; //siguiete posicionlibre
         this.analizador.agregarCodigo(this.analizador.genComentario("agregando parametros"), location.last_column, location.first_line);
         return temp;

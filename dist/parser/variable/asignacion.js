@@ -69,6 +69,16 @@ var Asignacion = /** @class */ (function () {
                 this.asignarValoresAvariables2(simbolo, location, val);
                 return true;
             }
+            else if (resultado.tipo == this.analizador.STRING) {
+                if (simbolo.tam > 0 && simbolo.getTipo() == this.analizador.CARACTER) {
+                    var val = this.analizador.variable.obtenerDirVariable(simbolo.getNombre(), location.first_line, location.last_column);
+                    this.analizador.variable.asignarCadenaAArreglo(val, resultado, location);
+                }
+            }
+            else if (resultado.tipo.toLocaleLowerCase() == "luigitercero") {
+                var val = this.analizador.exp.getValor(resultado); //el temporal del resulttod
+                this.asignarValoresAvariables2(simbolo, location, val);
+            }
             else {
                 throw this.analizador.newError("error por compatibilidad de tipos " +
                     "resultado " + resultado.tipo + " simbolo " + simbolo.getTipo(), location.first_line, location.last_column);
@@ -181,6 +191,9 @@ var Asignacion = /** @class */ (function () {
         switch (term) {
             case "var":
                 variable = this.analizador.variable.var(nodo.childNode[0]);
+                if (variable.tam > 0) {
+                    this.analizador.variable.validarResultado(variable);
+                }
                 resultado = this.asignar(nodo.childNode[1], variable);
                 location = variable.location;
                 if (!variable.simbolo.getPunter()) {

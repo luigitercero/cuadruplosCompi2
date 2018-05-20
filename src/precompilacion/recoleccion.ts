@@ -17,9 +17,45 @@ export default class Recoleccion {
     }
     analizar(nodo: Nodo) {
         this.inicio(nodo);
+        this.aplicarHerencia();
+    }
+    aplicarHerencia() {
+
+        for (let index = 0; index < this.analizador.clases.length; index++) {
+            const element = this.analizador.clases[index];
+            if (element.herencia) {
+                this.buscarHerencia(element);
+                element.herencia = false;
+            }
+        }
     }
 
+    buscarHerencia(clase: Clase) {
+        let clas = this.analizador.buscarClase(clase.hereda_de);
+        if (clas.herencia == false) {
+            this.heredar(clase, clas);
 
+        } else {
+            let temp = this.analizador.claseA;
+            this.analizador.claseA = clas;
+            this.buscarHerencia(clas);
+            this.analizador.claseA = temp;
+            clas.herencia = false;
+            this.heredar(clase, clas);
+        }
+    }
+    public heredar(clase: Clase, hereda: Clase) {
+        if (hereda != undefined) {
+            for (let index = 0; index < hereda.tabla.esto.ambito.length; index++) {
+                const element = hereda.tabla.esto.ambito[index];
+                clase.tabla.esto.agregarSimbolo(element);
+            }
+            for (let index = 0; index < hereda.metodo.length; index++) {
+                const element = hereda.metodo[index];
+                clase.agregarMetodo(element);
+            }
+        }
+    }
     public inicio(nodo: Nodo): boolean {
 
         let nombre: string = nodo.childNode[0].term;

@@ -20,6 +20,7 @@ var FOR = /** @class */ (function () {
         this.control.analizador.claseA.tabla.aumetarAbmito();
         /*creo etiqueta start */
         var start = this.control.analizador.newEtiqueta();
+        var SS = this.control.analizador.newEtiqueta();
         /*etiqueta incio*/
         ciclo.start.push(start);
         /*saltos al cuerpo */
@@ -40,7 +41,7 @@ var FOR = /** @class */ (function () {
         /**agrego el argumento 0 a la variable contador ahi inicia */
         this.control.analizador.agregarCodigo(this.control.analizador.saveEnPila(dirID.dir, arg0.valor), nodo.childNode[0].location.last_column, nodo.childNode[0].location.first_line);
         /*se escribe la etiqueta start*/
-        this.escribirEtiquetaStart(ciclo, nodo.childNode[0].location);
+        this.escribirEtiquetaSS(SS, nodo.childNode[0].location);
         /*se obtiene el valor del contador*/
         arg0 = this.control.analizador.variable.gerVal(dirID);
         /*si es igual debe salir del control */
@@ -49,6 +50,7 @@ var FOR = /** @class */ (function () {
         this.escribirEtiqueta(igual.etiquetaF, nodo.childNode[0].location);
         /**ejecuta el cuerpo */
         this.control.cuerpo(cuerpo, ciclo);
+        this.escribirEtiquetaStart(ciclo, nodo.childNode[0].location);
         /*si es mayor debe disminuir */
         var mayor = this.mayorque(arg0, arg1);
         this.escribirEtiqueta(mayor.etiquetaF, nodo.childNode[0].location);
@@ -73,7 +75,7 @@ var FOR = /** @class */ (function () {
         /**escribe la etiqueta de ejecucion */
         this.escribirEtiqueta(ejecucion, nodo.childNode[0].location);
         /**regresa a start */
-        this.escribirSaltoStart(ciclo, nodo.childNode[0].location);
+        this.escribirSaltoStart(SS, nodo.childNode[0].location);
         /**sale de start */
         this.escribirEtiquetaSalida(ciclo, nodo.childNode[0].location);
         this.control.analizador.claseA.tabla.disminuirAmbito();
@@ -93,10 +95,11 @@ var FOR = /** @class */ (function () {
             this.control.analizador.agregarCodigo(this.control.analizador.escribirEtiqueta(ciclo.start), location.last_column, location.first_line);
         }
     };
-    FOR.prototype.escribirSaltoStart = function (ciclo, location) {
-        if (ciclo.etiquetaS.length > 0) {
-            this.control.analizador.agregarCodigo(this.control.analizador.genSalto(ciclo.start[0]), location.last_column, location.first_line);
-        }
+    FOR.prototype.escribirEtiquetaSS = function (SS, location) {
+        this.control.analizador.agregarCodigo(this.control.analizador.escribirEtiquetaS(SS), location.last_column, location.first_line);
+    };
+    FOR.prototype.escribirSaltoStart = function (SS, location) {
+        this.control.analizador.agregarCodigo(this.control.analizador.genSalto(SS), location.last_column, location.first_line);
     };
     FOR.prototype.errorIf = function (exp) {
         if (exp.tipo == this.control.analizador.BOOLEANO) {

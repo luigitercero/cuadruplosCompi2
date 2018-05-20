@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var FormatoItermedio = /** @class */ (function () {
     function FormatoItermedio() {
         this.codigo4D = {
-            'C4D': [{ 'poss': -1, 'codigo': "", 'columna': -1, 'linea': -1, 'ambito': "" }],
+            'C4D': [{ 'poss': -1, 'codigo': "", 'columna': -1, 'linea': -1, 'ambito': "", 'tipo': "", 'value': "" }],
             'state': true,
             'etiqueta': [{ 'etiqueta': "", 'poss': -1 }],
             'metodo': [{ 'metodo': "", 'poss': -1 }],
@@ -29,6 +29,7 @@ var FormatoItermedio = /** @class */ (function () {
         this.etiqueta = 1;
         this.poss = 1;
         this.contador = 0;
+        this.puntero = true;
     }
     FormatoItermedio.prototype.get3D = function () {
         return this.codigo4D;
@@ -50,13 +51,25 @@ var FormatoItermedio = /** @class */ (function () {
         this.codigo4D.metodo.push({ 'metodo': "metodo" + this.contador, 'poss': this.poss });
         return this.contador;
     };
-    FormatoItermedio.prototype.agregarCodigo = function (codigo, column, linea) {
+    FormatoItermedio.prototype.agregarCodigo = function (codigo, column, linea, tipo, value) {
         this.codigoIntermedio = this.codigoIntermedio + codigo + "\n";
         var a = this.getAmbito();
-        this.codigo4D.C4D.push({
-            'poss': this.poss, 'codigo': codigo, 'columna': column, 'linea': linea,
-            'ambito': a
-        });
+        var p = "";
+        var v = "";
+        if (tipo != undefined) {
+        }
+        if (this.puntero) {
+            this.codigo4D.C4D.push({
+                'poss': this.poss, 'codigo': codigo, 'columna': column, 'linea': linea,
+                'ambito': a, 'tipo': p, 'value': v
+            });
+        }
+        else {
+            this.codigo4D.C4D.push({
+                'poss': this.poss, 'codigo': codigo, 'columna': -1, 'linea': linea,
+                'ambito': a, 'tipo': p, 'value': v
+            });
+        }
         this.poss++;
         console.log("#" + codigo, ' columna: ' + column + ' linea: ' + linea);
     };

@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 }
 Object.defineProperty(exports, "__esModule", { value: true });
+var nodo_1 = __importDefault(require("./nodo"));
 var itermedio_1 = __importDefault(require("./itermedio"));
 var Exp_1 = __importDefault(require("./exp/operacion/Exp"));
 var variable_1 = __importDefault(require("./variable/variable"));
@@ -36,6 +37,8 @@ var Analizador = /** @class */ (function (_super) {
         _this.Estructuras = new Estructuras_1.default();
         _this.clas = new clase_2.default(_this);
         _this.estructura = new estructura_1.default(_this);
+        var n = new casteos();
+        _this.preAnalisis(n.casteo);
         return _this;
     }
     Analizador.prototype.getCodEstruct = function () {
@@ -76,13 +79,20 @@ var Analizador = /** @class */ (function (_super) {
     };
     Analizador.prototype.recorrer = function (nodo, espacio) {
         var _this = this;
-        console.log(espacio + nodo.term);
-        nodo.childNode.forEach(function (element) {
-            _this.recorrer(element, espacio + " ");
-        });
+        if (nodo.term == "Datos") {
+            console.log(espacio + nodo.term);
+            console.log(espacio + " " + nodo.childNode[0].token);
+        }
+        else {
+            console.log(espacio + nodo.term);
+            nodo.childNode.forEach(function (element) {
+                _this.recorrer(element, espacio + " ");
+            });
+        }
     };
     Analizador.prototype.recorrerArbol = function (nodo) {
         var _this = this;
+        console.log(this.claseA.nombre);
         console.log(nodo.term);
         nodo.childNode.forEach(function (element) {
             _this.recorrer(element, " ");
@@ -124,6 +134,15 @@ var Analizador = /** @class */ (function (_super) {
      *;
      * @param nodo
      */
+    Analizador.prototype.preAnalisis = function (data) {
+        var archivo = data;
+        this.puntero = false;
+        var p = require('../compilador/Parser with parser/Codigo3D/codigoFinal');
+        var hola = p.parse(/*prueba7 + prueba8*/ archivo);
+        var nodo = new nodo_1.default(p.parser.treeparser.raiz);
+        this.inicio(nodo);
+        this.puntero = true;
+    };
     Analizador.prototype.inicio = function (nodo) {
         var recoleccion = new recoleccion_1.default(this);
         recoleccion.analizar(nodo);
@@ -225,4 +244,214 @@ var Analizador = /** @class */ (function (_super) {
     return Analizador;
 }(itermedio_1.default));
 exports.default = Analizador;
+var casteos = /** @class */ (function () {
+    function casteos() {
+        this.casteo =
+            "clase casteos58592714deluisazurdia {\n" +
+                "\n" +
+                "    publico  caracter [] convertirAcadena (decimal a) {\n" +
+                "        entero divisor = 0;\n" +
+                "        entero residuo = 0;\n" +
+                "        entero primero = 1;\n" +
+                "        entero residuo2 = 0;\n" +
+                "        caracter numero[16];\n" +
+                "        entero poss = 0;\n" +
+                "       \n" +
+                "        repetir_mientras (a >= 10) {\n" +
+                "            repetir_mientras (a > 10) {\n" +
+                "                divisor++;\n" +
+                "                a = a - 10;\n" +
+                "            }\n" +
+                "            si (primero == 1) \n" +
+                "                es_verdadero {\n" +
+                "                    repetir_mientras (a >= 1) {\n" +
+                "                        a--;\n" +
+                "                        residuo++;\n" +
+                "                    }\n" +
+                "                    si (a != 0) \n" +
+                "                        es_verdadero {\n" +
+                "                        a = a * 10;\n" +
+                "                        repetir_mientras (a >= 1) {\n" +
+                "                            repetir_mientras (a >= 1) {\n" +
+                "                                residuo2++;\n" +
+                "                                a--;\n" +
+                "                            }\n" +
+                "                            numero[poss] = residuo2+48;\n" +
+                "                            poss++;\n" +
+                "                            a = a * 10;\n" +
+                "                            residuo2 = 0;\n" +
+                "                        }\n" +
+                "                         numero[poss] = '.';\n" +
+                "                         poss++;\n" +
+                "                        } es_falso {\n" +
+                "\n" +
+                "                        }\n" +
+                "                    fin-si\n" +
+                "                    primero = 0;\n" +
+                "                    a = residuo;\n" +
+                "                }es_falso {\n" +
+                "\n" +
+                "                }\n" +
+                "            fin-si\n" +
+                "             numero[poss] = a + 48;\n" +
+                "             poss++;\n" +
+                "            a = divisor;\n" +
+                "            divisor = 0;\n" +
+                "        }\n" +
+                "        numero[poss] = a + 48;\n" +
+                "        poss++;\n" +
+                "        entero countCarac = poss;\n" +
+                "        entero c = 0;\n" +
+                "        entero temp = countCarac;\n" +
+                "        caracter salida[16];\n" +
+                "        repetir_mientras (c < countCarac) {\n" +
+                "         salida[c] = numero[temp - 1];\n" +
+                "         temp--;\n" +
+                "         c++;\n" +
+                "        }\n" +
+                "        retorno salida;\n" +
+                "    }\n" +
+                "    publico caracter  [] convertirAcadena (entero a) {\n" +
+                "        entero divisor = 0;\n" +
+                "        entero residuo = 0;\n" +
+                "        entero primero = 1;\n" +
+                "        caracter numero[16];\n" +
+                "        entero poss = 0;\n" +
+                "        entero dividendo = 1 ;\n" +
+                "        \n" +
+                "        repetir_mientras (a > dividendo) {\n" +
+                "            dividendo = dividendo *10;\n" +
+                "        }\n" +
+                "        si (dividendo>a) \n" +
+                "            es_verdadero {\n" +
+                "             dividendo = dividendo /10;\n" +
+                "             }\n" +
+                "            es_falso {\n" +
+                "            }\n" +
+                "        fin-si\n" +
+                "        \n" +
+                "       repetir_mientras (1<dividendo) {\n" +
+                "            repetir_mientras (a >=dividendo) {\n" +
+                "               divisor++;\n" +
+                "                a = a - dividendo;\n" +
+                "            }\n" +
+                "            \n" +
+                "            si( divisor > 10 ) \n" +
+                "                es_verdadero {\n" +
+                "                  dividendo = dividendo /10;\n" +
+                "                } \n" +
+                "                es_falso {\n" +
+                "                	dividendo = dividendo /10;\n" +
+                "                    numero[poss] = divisor + 48;\n" +
+                "                    poss++;\n" +
+                "                    divisor = 0;\n" +
+                "                }\n" +
+                "            \n" +
+                "            fin-si\n" +
+                "        }\n" +
+                "       \n" +
+                "        numero[poss] = a +48;\n" +
+                "        poss++;\n" +
+                "        retorno numero;\n" +
+                "    }\n" +
+                "    \n" +
+                "    \n" +
+                "    publico entero convertirAEntero (caracter a[16]) {\n" +
+                "        entero conta = 0; \n" +
+                "        entero decena = 1;\n" +
+                "        entero char = 0;\n" +
+                "        entero numero = 0 ;\n" +
+                "        repetir_Mientras(a[conta] != nada) {\n" +
+                "            char = a[conta]; \n" +
+                "            si (char > 47 && char < 58 ) \n" +
+                "                es_verdadero {\n" +
+                "                    numero = numero* decena + (char - 48) ;\n" +
+                "                    decena = 10;\n" +
+                "                }\n" +
+                "                es_falso {\n" +
+                "                    si (a[conta] == '.') \n" +
+                "                        es_verdadero {\n" +
+                "                            romper;\n" +
+                "                        }\n" +
+                "                        es_falso {\n" +
+                "                           numero = numero + char;\n" +
+                "                        }\n" +
+                "                    fin-si\n" +
+                "                }\n" +
+                "            fin-si\n" +
+                "            conta++;\n" +
+                "        }\n" +
+                "        retorno numero;\n" +
+                "    }\n" +
+                "    \n" +
+                "publico vacio concatenar (caracter destino[25],caracter valor[25]) {\n" +
+                "        entero n0 = 0;\n" +
+                "        entero n1 = 0;\n" +
+                "        Repetir_Mientras (destino[n0] != nada){\n" +
+                "            n0++;\n" +
+                "        \n" +
+                "        }\n" +
+                "        \n" +
+                "        \n" +
+                "        Repetir_Mientras (valor[n1] != nada){\n" +
+                "        si (destino.tamanio> n0+1) \n" +
+                "               es_verdadero {\n" +
+                "                           \n" +
+                "               }\n" +
+                "               es_falso {\n" +
+                "      	            imprimir (\"se ha pasado del tamanio del arreglo\");\n" +
+                "                   destino[n0] = nada;\n" +
+                "               }\n" +
+                "         fin-si\n" +
+                "            destino[n0] = valor[n1];\n" +
+                "            n0++;\n" +
+                "            n1++;\n" +
+                "        }\n" +
+                "      destino[n0+1] = nada;\n" +
+                "        si (destino.tamanio> n0+1) \n" +
+                "      es_verdadero {\n" +
+                "      \n" +
+                "      }\n" +
+                "      es_falso {\n" +
+                "      	imprimir (\"se ha pasado del tamanio del arreglo\");\n" +
+                "      }\n" +
+                "      fin-si\n" +
+                "\n" +
+                "}\n" +
+                "\n" +
+                "publico vacio concatenar (caracter destino[25],caracter valor[25],entero numero) {\n" +
+                "       \n" +
+                "     concatenar(destino,valor);\n" +
+                "     concatenar(destino,convertirAcadena(numero));\n" +
+                "    \n" +
+                "}\n" +
+                "\n" +
+                "publico vacio concatenar (caracter destino[25],caracter valor[25],decimal numero) {\n" +
+                "       \n" +
+                "     concatenar(destino,valor);\n" +
+                "     concatenar(destino,convertirAcadena(numero));\n" +
+                "    \n" +
+                "}\n" +
+                "\n" +
+                "publico vacio concatenar (caracter destino[25],caracter valor[25],booleano numero) {\n" +
+                "    concatenar(destino,valor);\n" +
+                "    si (numero)\n" +
+                "        es_verdadero {\n" +
+                "        concatenar(destino,\"verdadero\");\n" +
+                "        }\n" +
+                "        es_falso {\n" +
+                "        concatenar(destino,\"falso\");\n" +
+                "        }\n" +
+                "    fin-si\n" +
+                "     \n" +
+                "     \n" +
+                "    \n" +
+                "}" +
+                "publico vacio concatenar (caracter destino[25],entero valor) {\n" +
+                "    concatenar(destino,convertirAcadena(valor));\n" +
+                "}" +
+                "}";
+    }
+    return casteos;
+}());
 //# sourceMappingURL=analizador.js.map

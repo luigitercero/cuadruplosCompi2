@@ -3,9 +3,10 @@ import Nodo from "../../nodo";
 import Dir from '../../variable/obtenerDireccion'
 import nodoOperacion from "./nodoOperacion";
 import Suma from "./suma";
+import Location from "../../location";
 
 export default class Exp extends Operacion {
-    
+
     evaluarTipo(valorTipo: string, simboloTipo: string): boolean {
         if (simboloTipo == this.analizador.DOUBLE) {
             return this.evaluarDouble(valorTipo);
@@ -80,4 +81,30 @@ export default class Exp extends Operacion {
         return op.evaluar();
     }
 
+    crearArregloString(arreglo: nodoOperacion): string {
+        let valor = this.analizador.newTemporal();
+        let inicia = this.analizador.newTemporal();
+        this.escribir(this.analizador.genComentario("creando un arreglo apartir de un string"), arreglo.column, arreglo.fila);
+        this.escribir(this.analizador.genComentario("en " + valor + " es la posicion donde apunta el arreglo"), arreglo.column, arreglo.fila);
+        this.escribir(this.analizador.asignar("heap", valor), arreglo.column, arreglo.fila);
+        this.escribir(this.analizador.genOperacion("+", valor, "2", inicia), arreglo.column, arreglo.fila);
+        let contador = this.analizador.variable.asignarCadenaAArreglo2daPArte(inicia, arreglo);
+        this.escribir(this.analizador.saveEnHeap(valor, contador), arreglo.column, arreglo.fila);
+        let tam = this.analizador.newTemporal();
+        this.escribir(this.analizador.genOperacion("+", valor, "1", tam), arreglo.column, arreglo.fila);
+        this.escribir(this.analizador.saveEnHeap(tam, contador), arreglo.column, arreglo.fila);
+        let posNueva = this.analizador.newTemporal();
+        this.escribir(this.analizador.genComentario("desplazando lo necesario"), arreglo.column, arreglo.fila);
+        this.escribir(this.analizador.genOperacion("+", contador, "2", posNueva), arreglo.column, arreglo.fila);
+        this.escribir(this.analizador.genOperacion("+", "heap", posNueva, "heap"), arreglo.column, arreglo.fila);
+        return valor;
+    }
+
+    private escribir(salida: string, last_column: number, first_line: number) {
+        this.analizador.agregarCodigo(
+            salida, last_column, first_line
+        );
+    }
+
 }
+

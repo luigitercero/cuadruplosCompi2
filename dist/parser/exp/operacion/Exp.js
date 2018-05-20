@@ -102,6 +102,27 @@ var Exp = /** @class */ (function (_super) {
         op.setArg1(arg1);
         return op.evaluar();
     };
+    Exp.prototype.crearArregloString = function (arreglo) {
+        var valor = this.analizador.newTemporal();
+        var inicia = this.analizador.newTemporal();
+        this.escribir(this.analizador.genComentario("creando un arreglo apartir de un string"), arreglo.column, arreglo.fila);
+        this.escribir(this.analizador.genComentario("en " + valor + " es la posicion donde apunta el arreglo"), arreglo.column, arreglo.fila);
+        this.escribir(this.analizador.asignar("heap", valor), arreglo.column, arreglo.fila);
+        this.escribir(this.analizador.genOperacion("+", valor, "2", inicia), arreglo.column, arreglo.fila);
+        var contador = this.analizador.variable.asignarCadenaAArreglo2daPArte(inicia, arreglo);
+        this.escribir(this.analizador.saveEnHeap(valor, contador), arreglo.column, arreglo.fila);
+        var tam = this.analizador.newTemporal();
+        this.escribir(this.analizador.genOperacion("+", valor, "1", tam), arreglo.column, arreglo.fila);
+        this.escribir(this.analizador.saveEnHeap(tam, contador), arreglo.column, arreglo.fila);
+        var posNueva = this.analizador.newTemporal();
+        this.escribir(this.analizador.genComentario("desplazando lo necesario"), arreglo.column, arreglo.fila);
+        this.escribir(this.analizador.genOperacion("+", contador, "2", posNueva), arreglo.column, arreglo.fila);
+        this.escribir(this.analizador.genOperacion("+", "heap", posNueva, "heap"), arreglo.column, arreglo.fila);
+        return valor;
+    };
+    Exp.prototype.escribir = function (salida, last_column, first_line) {
+        this.analizador.agregarCodigo(salida, last_column, first_line);
+    };
     return Exp;
 }(operacion_1.default));
 exports.default = Exp;

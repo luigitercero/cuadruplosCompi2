@@ -15,8 +15,8 @@ export default class IF2 {
     if2(nodo: Nodo, ciclo: Salida) {
         let exp: nodoOperacion = this.control.analizador.exp.analizar(nodo.childNode[1].childNode[1]);
         this.errorIf(exp);
-        let cuerpoV = nodo.childNode[4];
-        let CuerpoF = nodo.childNode[6];
+        let cuerpoV = nodo.childNode[3];
+        let CuerpoF = nodo.childNode[5];
         let l = this.control.analizador.newEtiqueta();
         let salida = [];
         salida.push(l);
@@ -40,7 +40,7 @@ export default class IF2 {
         if (exp.tipo == this.control.analizador.BOOLEANO) {
 
         } else {
-            this.control.analizador.newError("existe error al intentar operar el IF", exp.fila, exp.column);
+            throw this.control.analizador.newError("existe error al intentar operar el IF", exp.fila, exp.column);
         }
     }
 }

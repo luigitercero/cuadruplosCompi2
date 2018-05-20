@@ -15,7 +15,8 @@ export default class Clase {
     public metodo: Metodo[];
     public importar: Clase[];
     public estructura: Estructuras
-
+    public herencia: boolean = false;
+    public hereda_de: string = "";
     constructor(nombre: string, poss: number) {
         this.nombre = nombre.toLocaleLowerCase();
         this.poss = poss;
@@ -58,13 +59,25 @@ export default class Clase {
         console.log("/*****terminal las variables de la clase " + this.nombre + "*****/");
     }
 
-    public buscarMetodo(nombre: string, location?: Location): Metodo {
+    public buscarMetodo(nombre: string, location: Location, abstrac?: string): Metodo {
         for (let index = 0; index < this.metodo.length; index++) {
             const element = this.metodo[index];
             if (element.nomMetodo == nombre.toLocaleLowerCase()) {
                 return element;
             }
         }
+        if (abstrac != undefined) {
+            if (this.nombre.toLocaleLowerCase() == "lista") {
+                for (let index = 0; index < this.metodo.length; index++) {
+                    const element = this.metodo[index];
+                    if (element.getNombre() == abstrac.toLocaleLowerCase()) {
+                        return element;
+                    }
+                }
+
+            }
+        }
+
         if (location == undefined) {
             throw new Error("error al querer obterner el metodo " + nombre);
         } else {

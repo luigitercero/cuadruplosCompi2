@@ -9,7 +9,7 @@ export default class Concatenear {
     }
 
     ejecutar(parametro: nodoOperacion[]) {
-        let imprimir = "imprimir ( ";
+
         if (parametro.length < 3) {
             switch (parametro[0].tipo) {
                 case this.analizador.INT:
@@ -33,7 +33,15 @@ export default class Concatenear {
             }
 
         } else {
-            this.analizador.newError("error elegir parametros", parametro[1].fila, parametro[1].column, );
+            if (parametro.length == 3) {
+                if (parametro[0].simbolo.tam == 1) {
+                    this.concatenar(parametro[0], parametro[1]);
+                }
+            } else {
+                throw this.analizador.newError("error elegir parametros", parametro[1].fila, parametro[1].column, );
+            }
+
+
         }
     }
 

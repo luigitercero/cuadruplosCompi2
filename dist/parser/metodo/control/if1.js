@@ -7,8 +7,8 @@ var IF1 = /** @class */ (function () {
     IF1.prototype.if1 = function (nodo, ciclo) {
         var exp = this.control.analizador.exp.analizar(nodo.childNode[1].childNode[1]);
         this.errorIf(exp);
-        var cuerpoV = nodo.childNode[4];
-        var CuerpoF = nodo.childNode[6];
+        var cuerpoV = nodo.childNode[3];
+        var CuerpoF = nodo.childNode[5];
         var l = this.control.analizador.newEtiqueta();
         var salida = [];
         salida.push(l);

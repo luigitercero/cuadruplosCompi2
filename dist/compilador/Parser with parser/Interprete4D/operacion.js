@@ -14,6 +14,8 @@ var Operacion = /** @class */ (function () {
         this.linea = 0;
         this.lineaConsola = 0;
         this.op = "";
+        this.pedir = false;
+        this.message = "";
         this.consola = new Array();
         this.consola.push(" ");
         this.es = lTeporales;
@@ -44,6 +46,50 @@ var Operacion = /** @class */ (function () {
             this.op = arg0 + "!=" + arg1;
             return linea;
         }
+    };
+    Operacion.prototype.meterHeap = function (data) {
+        var aux = this.stack[this.ptr + 3];
+        switch (aux) {
+            case 3:
+                if (aux == 3) {
+                    var index = 0;
+                    for (index = 0; index < data.length; index++) {
+                        var element = data.charCodeAt(index);
+                        this.heap[this.pth] = element;
+                        this.pth++;
+                    }
+                    this.heap[this.pth] = 35174492;
+                    this.pth++;
+                }
+                break;
+            case 2:
+                this.heap[this.pth] = parseInt(data);
+                this.pth++;
+            case 1:
+                this.heap[this.pth] = parseFloat(data);
+                this.pth++;
+            case 0:
+                this.heap[this.pth] = parseInt(data);
+                this.pth++;
+            case 5:
+                this.heap[this.pth] = parseInt(data);
+                this.pth++;
+        }
+    };
+    Operacion.prototype.leer = function (arg1) {
+        var valor = this.stack[this.ptr + 2];
+        var poss = valor + 2;
+        var salida = "";
+        for (var index = poss; index < this.heap.length; index++) {
+            if (this.heap[index] != 35174492 && this.heap[index] != undefined && this.heap[index] != null) {
+                salida = salida + String.fromCharCode(this.heap[index]);
+            }
+            else {
+                break;
+            }
+        }
+        this.pedir = true;
+        this.message = salida;
     };
     Operacion.prototype.getSTACK = function (arg0, temp) {
         this.op = temp + " = stack[" + arg0 + "] | ";

@@ -6,13 +6,13 @@ import Salida from './nodoSalida';
 import Control from './control';
 
 
-export default class IF1 {
+export default class IF3 {
     private control: Control
     constructor(control: Control) {
         this.control = control;
     }
 
-    if1(nodo: Nodo, ciclo: Salida) {
+    if3(nodo: Nodo, ciclo: Salida) {
         let exp: nodoOperacion = this.control.analizador.exp.analizar(nodo.childNode[1].childNode[1]);
         this.errorIf(exp);
         let cuerpoV = nodo.childNode[3];
@@ -27,12 +27,9 @@ export default class IF1 {
         this.control.analizador.agregarCodigo(this.control.analizador.genSalto(l), exp.column, exp.fila);
         this.control.analizador.claseA.tabla.disminuirAmbito();
         //sentencias falsas
-        this.control.analizador.claseA.tabla.aumetarAbmito();
         this.control.analizador.agregarCodigo(
             this.control.analizador.escribirEtiqueta(exp.etiquetaF),
             exp.column, exp.fila);
-        this.control.cuerpo(CuerpoF, ciclo);
-        this.control.analizador.claseA.tabla.disminuirAmbito();
 
         this.control.analizador.agregarCodigo(this.control.analizador.escribirEtiqueta(salida), exp.column, exp.fila);
     }
@@ -56,7 +53,7 @@ export default class IF1 {
         if (exp.tipo == this.control.analizador.BOOLEANO) {
 
         } else {
-            this.control.analizador.newError("existe error al intentar querer hacer el IF ", exp.fila, exp.column);
+            throw this.control.analizador.newError("existe error al intentar querer hacer el IF ", exp.fila, exp.column);
         }
     }
 }

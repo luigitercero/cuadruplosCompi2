@@ -5,6 +5,7 @@ import Variable from "./variable";
 import Asignacion from "./asignacion";
 import Simbolo from '../tablaSimbolos/simbolo';
 import SIGENERICO from '../sigenerico';
+import Location from "../location";
 export default class Declaracion extends Asignacion {
 
     constructor(analizador: Analizador) {
@@ -187,7 +188,7 @@ export default class Declaracion extends Asignacion {
         let nombre = nodo.token;
         if (
             this.analizador.claseA.tabla.buscarEnPila(nombre)
-        ) this.analizador.newError("la variable existe"
+        ) this.analizador.newError("la variable " + nombre + " ya +existe "
             , nodo.location.first_line
             , nodo.location.last_column);
         else {
@@ -205,7 +206,7 @@ export default class Declaracion extends Asignacion {
             , nodo.location.first_line)
     }
 
-    protected agregarDimAHeap(variable: nodoOperacion, val: nodoOperacion, location: any) {
+    public agregarDimAHeap(variable: nodoOperacion, val: nodoOperacion, location: any): nodoOperacion {
         if (variable.simbolo.tam == 0) {
             this.analizador.agregarCodigo(this.analizador.genComentario(
                 "primera posicion")
@@ -247,7 +248,7 @@ export default class Declaracion extends Asignacion {
                 variable.simbolo.addTam(1);
                 return variable;
             } else {
-                this.analizador.newError("no se pudo evaluar el tipo", location.first_line, location.last_column);
+                throw this.analizador.newError("no se pudo evaluar el tipo", location.first_line, location.last_column);
             }
         }
     }

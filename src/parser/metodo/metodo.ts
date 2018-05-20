@@ -129,7 +129,7 @@ export default class metodo {
                     metodo.escrito = true;
                     return metodo;
                 } else {
-                    this.analizador.newError("error esto no es un contructor",
+                    this.analizador.newError("error esto no es un contructor " + cons,
                         nodo.childNode[0].childNode[0].location.first_line,
                         nodo.childNode[0].childNode[0].location.last_column
                     );
@@ -210,7 +210,7 @@ export default class metodo {
         this.analizador.claseA.tabla.disminuirAmbito();
     }
     private callPreconstructor(location: Location) {
-        let _Preconstructor = this.analizador.claseA.buscarMetodo("preconstructor");
+        let _Preconstructor = this.analizador.claseA.buscarMetodo("preconstructor", location);
         this.analizador.agregarCodigo(this.analizador.llamarMetodo("metodo" + _Preconstructor.id), location.last_column, location.first_line);
     }
     //solo se agrega una posicion ppara poder apuntar al this
@@ -235,7 +235,7 @@ export default class metodo {
         return new nodoOperacion("heap", objeto, location.last_column, location.first_line)
     }
     private metodoImp(name: string, location: Location) {
-        let metodo: Metodo = this.analizador.claseA.buscarMetodo(name);
+        let metodo: Metodo = this.analizador.claseA.buscarMetodo(name, location);
         this.analizador.claseA.tabla.addReturnAndThis(this.analizador.claseA.nombre, metodo.getTipo());
         this.analizador.claseA.tabla.aumetarAbmito();
         metodo.preFijo = this.analizador.claseA.nombre;

@@ -182,7 +182,7 @@ var Declaracion = /** @class */ (function (_super) {
     Declaracion.prototype.varID = function (nodo, visibilidad, tipo) {
         var nombre = nodo.token;
         if (this.analizador.claseA.tabla.buscarEnPila(nombre))
-            this.analizador.newError("la variable existe", nodo.location.first_line, nodo.location.last_column);
+            this.analizador.newError("la variable " + nombre + " ya +existe ", nodo.location.first_line, nodo.location.last_column);
         else {
             var s = new simbolo_1.default(nombre, visibilidad, tipo);
             s.linea = nodo.location.first_line;
@@ -223,7 +223,7 @@ var Declaracion = /** @class */ (function (_super) {
                 return variable;
             }
             else {
-                this.analizador.newError("no se pudo evaluar el tipo", location.first_line, location.last_column);
+                throw this.analizador.newError("no se pudo evaluar el tipo", location.first_line, location.last_column);
             }
         }
     };

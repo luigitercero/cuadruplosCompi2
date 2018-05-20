@@ -353,10 +353,13 @@ export default class Operacion {
         this.analizador.agregarCodigo(
             this.analizador.asignar("heap", t1), location.last_column, location.first_line
         );
+        let comentario = ""
         for (let index = 0; index < cadena.length; index++) {
+
             const element = cadena.charCodeAt(index);
+            comentario = this.analizador.genComentario("valor = " + cadena[index]);
             this.analizador.agregarCodigo(
-                this.analizador.saveEnHeap("heap", element + ""), location.last_column, location.first_line
+                this.analizador.saveEnHeap("heap", element + "") + comentario, location.last_column, location.first_line
             );
             this.analizador.agregarCodigo(
                 this.analizador.siguiLibreHeap(), location.last_column, location.first_line

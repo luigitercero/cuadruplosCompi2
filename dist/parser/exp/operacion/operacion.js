@@ -327,9 +327,11 @@ var Operacion = /** @class */ (function () {
     Operacion.prototype.cadena = function (cadena, location) {
         var t1 = this.analizador.newTemporal();
         this.analizador.agregarCodigo(this.analizador.asignar("heap", t1), location.last_column, location.first_line);
+        var comentario = "";
         for (var index = 0; index < cadena.length; index++) {
             var element = cadena.charCodeAt(index);
-            this.analizador.agregarCodigo(this.analizador.saveEnHeap("heap", element + ""), location.last_column, location.first_line);
+            comentario = this.analizador.genComentario("valor = " + cadena[index]);
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap("heap", element + "") + comentario, location.last_column, location.first_line);
             this.analizador.agregarCodigo(this.analizador.siguiLibreHeap(), location.last_column, location.first_line);
         }
         this.analizador.agregarCodigo(this.analizador.saveEnHeap("heap", this.analizador.NULL), location.last_column, location.first_line);

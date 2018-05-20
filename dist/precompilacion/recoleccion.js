@@ -15,6 +15,42 @@ var Recoleccion = /** @class */ (function () {
     }
     Recoleccion.prototype.analizar = function (nodo) {
         this.inicio(nodo);
+        this.aplicarHerencia();
+    };
+    Recoleccion.prototype.aplicarHerencia = function () {
+        for (var index = 0; index < this.analizador.clases.length; index++) {
+            var element = this.analizador.clases[index];
+            if (element.herencia) {
+                this.buscarHerencia(element);
+                element.herencia = false;
+            }
+        }
+    };
+    Recoleccion.prototype.buscarHerencia = function (clase) {
+        var clas = this.analizador.buscarClase(clase.hereda_de);
+        if (clas.herencia == false) {
+            this.heredar(clase, clas);
+        }
+        else {
+            var temp = this.analizador.claseA;
+            this.analizador.claseA = clas;
+            this.buscarHerencia(clas);
+            this.analizador.claseA = temp;
+            clas.herencia = false;
+            this.heredar(clase, clas);
+        }
+    };
+    Recoleccion.prototype.heredar = function (clase, hereda) {
+        if (hereda != undefined) {
+            for (var index = 0; index < hereda.tabla.esto.ambito.length; index++) {
+                var element = hereda.tabla.esto.ambito[index];
+                clase.tabla.esto.agregarSimbolo(element);
+            }
+            for (var index = 0; index < hereda.metodo.length; index++) {
+                var element = hereda.metodo[index];
+                clase.agregarMetodo(element);
+            }
+        }
     };
     Recoleccion.prototype.inicio = function (nodo) {
         var nombre = nodo.childNode[0].term;

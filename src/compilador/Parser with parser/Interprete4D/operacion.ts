@@ -18,6 +18,8 @@ export default class Operacion {
     private pila: any[];
     private temporal: any;
     public op = "";
+    public pedir = false;
+    public message = ""
     constructor(lTeporales: any) {
         this.consola = new Array();
         this.consola.push(" ");
@@ -29,8 +31,6 @@ export default class Operacion {
         this.temporal = [];
         this.pila = new Array()
         this.pila.push(this.temporal);
-
-
     }
 
     igual(arg0: number, etiqueta: string, arg1: number, linea: number) {
@@ -41,7 +41,6 @@ export default class Operacion {
             this.op = arg0 + " == " + arg1;
             return linea
         }
-
     }
 
     noigual(arg0: number, etiqueta: string, arg1: number, linea: number) {
@@ -54,7 +53,52 @@ export default class Operacion {
         }
 
     }
+    meterHeap(data: string) {
+        let aux = this.stack[this.ptr + 3];
+        switch (aux) {
+            case 3:
+                if (aux == 3) {
+                    let index = 0;
+                    for (index = 0; index < data.length; index++) {
+                        const element = data.charCodeAt(index);
+                        this.heap[this.pth] = element;
+                        this.pth++;
+                    }
+                    this.heap[this.pth] = 35174492;
+                    this.pth++;
+                }
+                break
+            case 2:
+                this.heap[this.pth] = parseInt(data);
+                this.pth++;
+            case 1:
+                this.heap[this.pth] = parseFloat(data);
+                this.pth++;
+            case 0:
+                this.heap[this.pth] = parseInt(data);
+                this.pth++;
+            case 5:
+                this.heap[this.pth] = parseInt(data);
+                this.pth++;
+        }
 
+
+
+    }
+    leer(arg1: string) {
+        let valor = this.stack[this.ptr + 2];
+        let poss = valor + 2;
+        let salida = "";
+        for (let index = poss; index < this.heap.length; index++) {
+            if (this.heap[index] != 35174492 && this.heap[index] != undefined && this.heap[index] != null) {
+                salida = salida + String.fromCharCode(this.heap[index]);
+            } else {
+                break;
+            }
+        }
+        this.pedir = true;
+        this.message = salida;
+    }
     getSTACK(arg0: number, temp: string) {
         this.op = temp + " = stack[" + arg0 + "] | ";
         this.op = this.op + temp + " = " + this.stack[arg0];
@@ -96,6 +140,7 @@ export default class Operacion {
         }
 
     }
+
     menorque(arg0: number, etiqueta: string, arg1: number, linea: number) {
         if (arg0 < arg1) {
             this.op = arg0 + " < " + arg1;

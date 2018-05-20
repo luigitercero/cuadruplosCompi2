@@ -155,6 +155,9 @@ break;
 case 38: case 39:
 parser.struct.op.printD ($$[$0-2]);
 break;
+case 40:
+parser.struct.op.leer ($$[$0]);
+break;
 case 41:
 this.$ = parser.struct.op.getValtemp($$[$0]);
 break;
