@@ -251,8 +251,14 @@ var Asignacion = /** @class */ (function () {
         var t1 = this.analizador.newTemporal();
         this.analizador.agregarCodigo(this.analizador.genOperacion("+", ap.valor, "0", t0), location.first_column, location.first_line);
         this.analizador.agregarCodigo(this.analizador.genOperacion("+", ap.valor, "1", t1), location.first_column, location.first_line);
-        this.analizador.agregarCodigo(this.analizador.saveEnHeap(t0, resultado.getReff().dir), location.first_column, location.first_line);
-        this.analizador.agregarCodigo(this.analizador.saveEnHeap(t1, resultado.getReff().gettemporalDeGuardado()), location.first_column, location.first_line);
+        if (resultado.getReff() != undefined) {
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap(t0, resultado.getReff().dir), location.first_column, location.first_line);
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap(t1, resultado.getReff().gettemporalDeGuardado()), location.first_column, location.first_line);
+        }
+        else {
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap(t0, resultado.valor), location.first_column, location.first_line);
+            this.analizador.agregarCodigo(this.analizador.saveEnHeap(t1, "1"), location.first_column, location.first_line);
+        }
         if (simbolo.done == "pila") {
             this.analizador.agregarCodigo(this.analizador.saveEnPila(simbolo.dir, ap.valor), location.first_column, location.first_line);
         }

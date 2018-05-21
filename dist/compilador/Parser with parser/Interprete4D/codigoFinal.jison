@@ -152,7 +152,6 @@ Lectura
 Dato
     : TEMPORAL {$$ = parser.struct.op.getValtemp($1);}
     | NUMBERLIST{$$ = parser.struct.op.convertiNumero($1);}
-    | STRINGLIST
     | STACK {$$ = parser.struct.op.ptr; }
     | HEAP  {$$ = parser.struct.op.pth; }
     | PTR   {$$ = parser.struct.op.ptr; }
