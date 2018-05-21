@@ -76,6 +76,24 @@ export default class Clase {
                 }
 
             }
+
+            if (this.nombre.toLocaleLowerCase() == "pila") {
+                for (let index = 0; index < this.metodo.length; index++) {
+                    const element = this.metodo[index];
+                    if (element.getNombre() == abstrac.toLocaleLowerCase()) {
+                        return element;
+                    }
+                }
+            }
+
+            if (this.nombre.toLocaleLowerCase() == "cola") {
+                for (let index = 0; index < this.metodo.length; index++) {
+                    const element = this.metodo[index];
+                    if (element.getNombre() == abstrac.toLocaleLowerCase()) {
+                        return element;
+                    }
+                }
+            }
         }
 
         if (location == undefined) {

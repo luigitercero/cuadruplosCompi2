@@ -866,6 +866,7 @@ export default class Variable {
             }
 
         }
+
         throw this.analizador.newError("no es posible encontrar la variable " + nombre + " ", linea, columna);
     }
 

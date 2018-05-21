@@ -260,6 +260,7 @@ export default class Asignacion {
                     if (!simb.simbolo.getPunter()) {
                         this.analizador.variable.setValVariable(simb, resultado, nombre.getlocation());
                     } else {
+
                         this.asignarApuntadores(simb, resultado, nombre.getlocation());
                     }
                     return true;

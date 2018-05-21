@@ -1022,7 +1022,7 @@ function Nodo ( term, location, token , childNode) {
   this.childNode = childNode;
 } 
 
- parser.treeparser  = {
+parser.treeparser  = {
  raiz : null
 };
 

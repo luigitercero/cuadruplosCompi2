@@ -62,6 +62,22 @@ var Clase = /** @class */ (function () {
                     }
                 }
             }
+            if (this.nombre.toLocaleLowerCase() == "pila") {
+                for (var index = 0; index < this.metodo.length; index++) {
+                    var element = this.metodo[index];
+                    if (element.getNombre() == abstrac.toLocaleLowerCase()) {
+                        return element;
+                    }
+                }
+            }
+            if (this.nombre.toLocaleLowerCase() == "cola") {
+                for (var index = 0; index < this.metodo.length; index++) {
+                    var element = this.metodo[index];
+                    if (element.getNombre() == abstrac.toLocaleLowerCase()) {
+                        return element;
+                    }
+                }
+            }
         }
         if (location == undefined) {
             throw new Error("error al querer obterner el metodo " + nombre);

@@ -50,13 +50,13 @@ var Operacion = /** @class */ (function () {
     };
     Operacion.prototype.operarXor = function (arg0, arg1) {
         var a0 = this.analizar(arg0);
+        var a1 = this.analizar(arg1);
         if (a0.tipo == this.analizador.BOOLEANO) {
             this.generarEtiquietas(a0);
             this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaF), a0.column, a0.fila); //agregnaod etiqueta falsa
         }
         else
             this.analizador.newError("no es un operrador boleano", a0.column, a0.fila);
-        var a1 = this.analizar(arg1);
         if (a1.tipo == this.analizador.BOOLEANO) {
             this.generarEtiquietas(a1);
             this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaV), a0.column, a0.fila); //agregnaod etiqueta verdadera
@@ -372,9 +372,11 @@ var Operacion = /** @class */ (function () {
             var arg00 = new nodoOperacion_1.default(arg0.valor, this.analizador.INT, arg0.column, arg0.fila);
             var arg10 = new nodoOperacion_1.default("1", this.analizador.INT, arg0.column, arg0.fila);
             var t = new comparacion_1.default(arg00, arg10, this.analizador, "==");
+            var xor = this.analizador.opBool("==") + ", " + arg0.valor + ", " + "1";
             var val = t.evaluar();
             arg0.etiquetaV = val.etiquetaV;
             arg0.etiquetaF = val.etiquetaF;
+            arg0.xor = xor;
         }
         else {
             arg0 = arg0;

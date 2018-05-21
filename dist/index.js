@@ -46,15 +46,15 @@ io.on('connection', function (client) {
         }
     });
     client.on('generar', function (data) {
-        siguiente = 0;
-        compilador = init_1.default.init(data, true);
-        compilador.analizar(data);
-        var codigo = compilador.analizador.gen3D();
-        console.log(codigo);
-        console.log("fin");
-        client.emit('generar', codigo);
-        salida = true;
         try {
+            siguiente = 0;
+            compilador = init_1.default.init(data, true);
+            compilador.analizar(data);
+            var codigo = compilador.analizador.gen3D();
+            console.log(codigo);
+            console.log("fin");
+            client.emit('generar', codigo);
+            salida = true;
         }
         catch (error) {
             client.emit('salidaerror', "generando " + error.message);

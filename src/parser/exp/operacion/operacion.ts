@@ -53,6 +53,7 @@ export default class Operacion {
     }
     private operarXor(arg0: Nodo, arg1: Nodo): nodoOperacion {
         let a0 = this.analizar(arg0);
+        let a1 = this.analizar(arg1);
         if (a0.tipo == this.analizador.BOOLEANO) {
             this.generarEtiquietas(a0);
             this.analizador.agregarCodigo(this.analizador.escribirEtiqueta(a0.etiquetaF),
@@ -60,7 +61,8 @@ export default class Operacion {
         }
 
         else this.analizador.newError("no es un operrador boleano", a0.column, a0.fila);
-        let a1 = this.analizar(arg1);
+
+
         if (a1.tipo == this.analizador.BOOLEANO) {
 
             this.generarEtiquietas(a1);
@@ -407,9 +409,11 @@ export default class Operacion {
             let arg00 = new NodoOperacion(arg0.valor, this.analizador.INT, arg0.column, arg0.fila);
             let arg10 = new NodoOperacion("1", this.analizador.INT, arg0.column, arg0.fila);
             let t: Comparacion = new Comparacion(arg00, arg10, this.analizador, "==");
+            let xor = this.analizador.opBool("==") + ", " + arg0.valor + ", " + "1";
             let val = t.evaluar();
             arg0.etiquetaV = val.etiquetaV
             arg0.etiquetaF = val.etiquetaF
+            arg0.xor = xor;
         } else {
             arg0 = arg0
         }

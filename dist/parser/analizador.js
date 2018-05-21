@@ -38,6 +38,7 @@ var Analizador = /** @class */ (function (_super) {
         _this.clas = new clase_2.default(_this);
         _this.estructura = new estructura_1.default(_this);
         var n = new casteos();
+        _this.preAnalisis(n.estrucutra);
         _this.preAnalisis(n.casteo);
         return _this;
     }
@@ -246,6 +247,304 @@ var Analizador = /** @class */ (function (_super) {
 exports.default = Analizador;
 var casteos = /** @class */ (function () {
     function casteos() {
+        this.estrucutra = "clase  nodo35174492 {\n" +
+            "    luigiTercero valor;\n" +
+            "    entero index ;\n" +
+            "    nodo35174492 siguiente;\n" +
+            "    \n" +
+            "    nodo35174492 (luigiTercero valor,entero index) {\n" +
+            "        este.valor = valor;\n" +
+            "        este.index = index;\n" +
+            "        este.siguiente = nada;\n" +
+            "    }\n" +
+            "    \n" +
+            "}\n" +
+            "\n" +
+            "clase lista {\n" +
+            "    \n" +
+            "    nodo35174492 raiz;\n" +
+            "    entero cont;\n" +
+            "    \n" +
+            "    lista () {\n" +
+            "        este.raiz = nada;\n" +
+            "        este.cont = 0;\n" +
+            "    }\n" +
+            "    \n" +
+            "    publico vacio insertar (luigiTercero elemento) {\n" +
+            "        este.cont ++;\n" +
+            "        nodo35174492 valor = nuevo nodo35174492(elemento,este.cont);\n" +
+            "            \n" +
+            "        si (este.raiz == nada ) \n" +
+            "            es_verdadero {\n" +
+            "                este.raiz = valor;\n" +
+            "            }\n" +
+            "            es_falso {\n" +
+            "                nodo35174492 actual = raiz;\n" +
+            "                repetir_mientras (actual.siguiente != nada) {\n" +
+            "                actual = actual.siguiente;\n" +
+            "                }\n" +
+            "                actual.siguiente = valor;\n" +
+            "            }\n" +
+            "        fin-si\n" +
+            "    }\n" +
+            "    \n" +
+            "    publico luigiTercero obtener (entero indice) {\n" +
+            "        nodo35174492 actual ;\n" +
+            "        actual  = raiz;\n" +
+            "        si (actual == nada ) \n" +
+            "            es_verdadero {\n" +
+            "                retorno nada;\n" +
+            "            }\n" +
+            "            es_falso {\n" +
+            "               repetir_mientras (actual.siguiente != nada) {\n" +
+            "                    si (actual.index == indice)\n" +
+            "                        es_verdadero {\n" +
+            "                            retorno actual.valor;\n" +
+            "                        }\n" +
+            "                        es_falso {\n" +
+            "                \n" +
+            "                        }\n" +
+            "                    fin-si\n" +
+            "                  actual = actual.siguiente;\n" +
+            "                }\n" +
+            "            }\n" +
+            "        fin-si\n" +
+            "        retorno nada;\n" +
+            "    }\n" +
+            "    \n" +
+            "    \n" +
+            "    publico luigiTercero buscar (luigiTercero valor) {\n" +
+            "        nodo35174492 actual ;\n" +
+            "        actual  = raiz;\n" +
+            "        si (actual == nada ) \n" +
+            "            es_verdadero {\n" +
+            "                retorno nada;\n" +
+            "            }\n" +
+            "            es_falso {\n" +
+            "               repetir_mientras (actual.siguiente != nada) {\n" +
+            "                    si (actual.valor == valor)\n" +
+            "                        es_verdadero {\n" +
+            "                            retorno actual.valor;\n" +
+            "                        }\n" +
+            "                        es_falso {\n" +
+            "                \n" +
+            "                        }\n" +
+            "                    fin-si\n" +
+            "                  actual = actual.siguiente;\n" +
+            "                }\n" +
+            "            }\n" +
+            "        fin-si\n" +
+            "        retorno nada;\n" +
+            "    }\n" +
+            "    \n" +
+            "    \n" +
+            "    publico vacio recorrer () {\n" +
+            "     nodo35174492 actual ;\n" +
+            "        actual  = raiz;\n" +
+            "        \n" +
+            "        si (actual == nada ) \n" +
+            "            es_verdadero {\n" +
+            "                imprimir(\"no hay nada en la lista\");\n" +
+            "            }\n" +
+            "            es_falso {\n" +
+            "                \n" +
+            "                imprimir(actual.valor);\n" +
+            "                repetir_mientras (actual.siguiente != nada) {\n" +
+            "                    actual = actual.siguiente;\n" +
+            "                   imprimir(actual.valor);\n" +
+            "                }\n" +
+            "            }\n" +
+            "        fin-si\n" +
+            "    }\n" +
+            "    \n" +
+            "}\n" +
+            "\n" +
+            "clase Pila {\n" +
+            "  nodo35174492 raiz;\n" +
+            "    entero cont;\n" +
+            "    \n" +
+            "    pila () {\n" +
+            "        este.raiz = nada;\n" +
+            "        este.cont = 0;\n" +
+            "    }\n" +
+            "    \n" +
+            "    publico vacio apilar (luigiTercero elemento) {\n" +
+            "        este.cont ++;\n" +
+            "        nodo35174492 valor = nuevo nodo35174492(elemento,este.cont);\n" +
+            "            \n" +
+            "        si (este.raiz == nada ) \n" +
+            "            es_verdadero {\n" +
+            "                este.raiz = valor;\n" +
+            "            }\n" +
+            "            es_falso {\n" +
+            "                valor.siguiente = raiz;\n" +
+            "                raiz = valor;\n" +
+            "            }\n" +
+            "        fin-si\n" +
+            "    }\n" +
+            "    \n" +
+            "    publico luigiTercero obtener (entero indice) {\n" +
+            "        nodo35174492 actual ;\n" +
+            "        actual  = raiz;\n" +
+            "        si (actual == nada ) \n" +
+            "            es_verdadero {\n" +
+            "                retorno nada;\n" +
+            "            }\n" +
+            "            es_falso {\n" +
+            "               repetir_mientras (actual.siguiente != nada) {\n" +
+            "                    si (actual.index == indice)\n" +
+            "                        es_verdadero {\n" +
+            "                            \n" +
+            "                            retorno actual.valor;\n" +
+            "                        }\n" +
+            "                        es_falso {\n" +
+            "                \n" +
+            "                        }\n" +
+            "                    fin-si\n" +
+            "                  actual = actual.siguiente;\n" +
+            "                }\n" +
+            "            }\n" +
+            "        fin-si\n" +
+            "        retorno nada;\n" +
+            "    }\n" +
+            "    \n" +
+            "    \n" +
+            "    publico luigiTercero desapilar () {\n" +
+            "        nodo35174492 actual ;\n" +
+            "        actual  = raiz;\n" +
+            "        si (actual == nada ) \n" +
+            "            es_verdadero {\n" +
+            "                retorno nada;\n" +
+            "            }\n" +
+            "            es_falso {\n" +
+            "                cont--;\n" +
+            "                raiz = actual.siguiente;\n" +
+            "                retorno actual.valor;\n" +
+            "            }\n" +
+            "        fin-si\n" +
+            "        retorno nada;\n" +
+            "    }\n" +
+            "    \n" +
+            "    \n" +
+            "    publico vacio recorrer () {\n" +
+            "     nodo35174492 actual ;\n" +
+            "        actual  = raiz;\n" +
+            "        \n" +
+            "        si (actual == nada ) \n" +
+            "            es_verdadero {\n" +
+            "                imprimir(\"no hay nada en la lista\");\n" +
+            "            }\n" +
+            "            es_falso {\n" +
+            "                \n" +
+            "                imprimir(actual.valor);\n" +
+            "                repetir_mientras (actual.siguiente != nada) {\n" +
+            "                    actual = actual.siguiente;\n" +
+            "                   imprimir(actual.valor);\n" +
+            "                }\n" +
+            "            }\n" +
+            "        fin-si\n" +
+            "    }\n" +
+            "\n" +
+            "}\n" +
+            "\n" +
+            "\n" +
+            "\n" +
+            "clase cola {\n" +
+            "  nodo35174492 raiz;\n" +
+            "    entero cont;\n" +
+            "    \n" +
+            "    cola () {\n" +
+            "        este.raiz = nada;\n" +
+            "        este.cont = 0;\n" +
+            "    }\n" +
+            "    \n" +
+            "    publico vacio encolar (luigiTercero elemento) {\n" +
+            "        este.cont ++;\n" +
+            "        nodo35174492 valor = nuevo nodo35174492(elemento,este.cont);\n" +
+            "            \n" +
+            "        si (este.raiz == nada ) \n" +
+            "            es_verdadero {\n" +
+            "                este.raiz = valor;\n" +
+            "            }\n" +
+            "            es_falso {\n" +
+            "                nodo35174492 actual = raiz;\n" +
+            "                repetir_mientras (actual.siguiente != nada) {\n" +
+            "                actual = actual.siguiente;\n" +
+            "                }\n" +
+            "                actual.siguiente = valor;\n" +
+            "            }\n" +
+            "        fin-si\n" +
+            "    }\n" +
+            "    \n" +
+            "    publico luigiTercero obtener (entero indice) {\n" +
+            "        nodo35174492 actual ;\n" +
+            "        actual  = raiz;\n" +
+            "        si (actual == nada ) \n" +
+            "            es_verdadero {\n" +
+            "                retorno nada;\n" +
+            "            }\n" +
+            "            es_falso {\n" +
+            "               repetir_mientras (actual.siguiente != nada) {\n" +
+            "                    si (actual.index == indice)\n" +
+            "                        es_verdadero {\n" +
+            "                            \n" +
+            "                            retorno actual.valor;\n" +
+            "                        }\n" +
+            "                        es_falso {\n" +
+            "                \n" +
+            "                        }\n" +
+            "                    fin-si\n" +
+            "                  actual = actual.siguiente;\n" +
+            "                }\n" +
+            "            }\n" +
+            "        fin-si\n" +
+            "        retorno nada;\n" +
+            "    }\n" +
+            "    \n" +
+            "    \n" +
+            "    publico luigiTercero desencolar () {\n" +
+            "        nodo35174492 actual ;\n" +
+            "        actual  = raiz;\n" +
+            "        si (actual == nada ) \n" +
+            "            es_verdadero {\n" +
+            "                retorno nada;\n" +
+            "            }\n" +
+            "            es_falso {\n" +
+            "                cont--;\n" +
+            "                raiz = actual.siguiente;\n" +
+            "                retorno actual.valor;\n" +
+            "            }\n" +
+            "        fin-si\n" +
+            "        retorno nada;\n" +
+            "    }\n" +
+            "    \n" +
+            "    \n" +
+            "    publico vacio recorrer () {\n" +
+            "     nodo35174492 actual ;\n" +
+            "        actual  = raiz;\n" +
+            "        \n" +
+            "        si (actual == nada ) \n" +
+            "            es_verdadero {\n" +
+            "                imprimir(\"no hay nada en la lista\");\n" +
+            "            }\n" +
+            "            es_falso {\n" +
+            "                \n" +
+            "                imprimir(actual.valor);\n" +
+            "                repetir_mientras (actual.siguiente != nada) {\n" +
+            "                    actual = actual.siguiente;\n" +
+            "                   imprimir(actual.valor);\n" +
+            "                }\n" +
+            "            }\n" +
+            "        fin-si\n" +
+            "    }\n" +
+            "\n" +
+            "}\n" +
+            "\n" +
+            "\n" +
+            "\n" +
+            "\n" +
+            "\n" +
+            "\n";
         this.casteo =
             "clase casteos58592714deluisazurdia {\n" +
                 "\n" +
