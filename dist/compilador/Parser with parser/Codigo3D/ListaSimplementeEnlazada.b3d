@@ -1,0 +1,74 @@
+%% Definición del elemento Nodo
+element : Nodo { 
+    num valor : 0;
+    Nodo siguiente : NULL;
+}
+
+%% Variables globales
+num max : 5;
+Nodo inicio : NULL;
+Nodo final : NULL;
+
+%% Programa
+void : InsertarAlInicio (num valor) {
+	Nodo nuevo : CrearNodo(valor);
+	if (inicio == NULL) then {
+		inicio = nuevo;
+		final = nuevo;
+	} else {
+		nuevo.siguiente = inicio;
+		inicio = nuevo;
+	}
+	show("Al inicio: " + valor);
+}
+
+void : InsertarAlFinal (num valor) {
+	Nodo nuevo : CrearNodo(valor);
+	if (final == NULL) then {
+		inicio = nuevo;
+		final = nuevo;
+	} else {
+		final.siguiente = nuevo;
+		final = nuevo;
+	}
+	show("Al final: " + valor);
+}
+
+Nodo : CrearNodo(num valor) {
+	Nodo nuevo : create(Nodo);
+	nuevo.valor = valor;
+	return nuevo;
+}
+
+void : RecorrerLista() {
+	if (inicio == NULL) then {
+		show("La lista está vacía");
+		return;
+	}
+	Nodo actual : inicio;
+ 	while (actual != NULL) {
+ 		outStr(actual.valor + " -> ");
+ 		actual = actual.siguiente;
+ 	}
+ 	show("El recorrido terminó!!!");
+}
+
+void : VaciarLista() {
+	inicio = NULL;
+	final = NULL;
+}
+
+Principal() {
+	RecorrerLista();
+	InsertarAlFinal(50.34);
+	Nodo inutil : create(Nodo);
+	InsertarAlInicio(20);
+	InsertarAlInicio(90.33);
+	InsertarAlInicio(5.245);
+	InsertarAlFinal(14.502);
+	RecorrerLista();
+	VaciarLista();
+	RecorrerLista();
+}
+
+%% Salida en consola : 5.245 -> 90.33 -> 20 -> 50.34 -> 14.502 ->

@@ -1,0 +1,73 @@
+clase miClase{
+	Publico entero atributo1;
+	protegido entero atributo3;
+	privado entero atributo2;
+	publico caracter atributoCadena = "cadenaInicio";
+
+	publico entero ss(entero parametro){
+	
+
+	}
+
+}
+
+
+clase curso hereda_de miClase{
+	publico entero atributo1;
+	protegido entero atributo3;
+	privado entero atributo2;
+	publico caracter atributoCadena = "cadenaInicio";
+
+	publico vacio metodo(entero parametro){
+		este.atributo1 = parametro;
+		entero prueba = entero(1,2);
+
+	}
+	
+	privado vacio metodo(entero parametro,entero parametro,entero parametro){
+		este.atributo1 = parametro;
+		retornar;
+
+	}
+	publico entero suma(entero nu1, entero num2){
+
+		retornar operador1+operad2;
+	}
+
+
+}
+
+
+clase perosna hereda_de miClase{
+	publico entero atributo1;
+	protegido entero atributo3;
+	privado entero atributo2;
+	publico caracter atributoCadena = "cadenaInicio";
+	publico curso cur;
+
+
+	publico vacio metodo(entero parametro){
+		este.atributo1 = parametro;
+		entero prueba = entero(1,2);
+		cur =  a;
+		cur = nuevo cur(15);
+		Caracter perosna [20] =nada;
+		Decimal arreglo[4][3 ] = {{1.5,1.56,15.5},{1.5,1.56,15.5},{1.5,1.56,15.5},{1.5,1.56,15.5}};
+		arreglo[4][3] = 1;
+		crearPuntero(int,id);
+		usuario->edad = 25;
+		Lista identifi = nuevo Lista(entero);
+	}
+	@sobreescribir
+	privado vacio metodo(entero parametro,entero parametro,entero parametro){
+		este.atributo1 = parametro;
+		retornar;
+
+	}
+	publico entero suma(entero nu1, entero num2){
+
+		retornar operador1+operad2;
+	}
+
+
+}

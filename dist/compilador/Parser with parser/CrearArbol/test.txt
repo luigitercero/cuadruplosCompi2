@@ -1,0 +1,5 @@
+Declaracion:Tipo var AsignarValor
+  | ID var AsignarValor
+  | CREARPUNTERO '(' Tipo ',' ID ')' AsignarValor
+  | CREARPUNTERO '(' ID ',' ID ')' AsignarValor
+  ;

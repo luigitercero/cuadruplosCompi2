@@ -1,0 +1,468 @@
+/* description: Parses end executes mathematical expressions. */
+
+/* lexical grammar */
+
+
+
+
+%lex
+%options case-insensitive
+digit                       [0-9]
+esc                         "\\"
+int                         "-"?(?:[0-9]|[1-9][0-9]+)
+exp                         (?:[eE][-+]?[0-9]+)
+frac                        (?:\.[0-9]+)
+
+%{
+
+
+  %}
+
+%%
+
+
+\s+                   /* skip whitespace */
+
+\/\/[^\n]*                                                   /* skip comment */
+\%\%[^\n]*
+                                                     /* skip comment */
+"->"                                                        return '->'
+"*"                                                         return '*'
+"/"                                                         return '/'
+"-"                                                         return '-'
+"+"                                                         return '+'
+"^"                                                         return '^'
+"("                                                         return '('
+")"                                                         return ')'
+"%"                                                         return '%'
+
+"<="                                                        return '<='
+">="                                                        return '>='
+"=="                                                        return '=='
+"!="                                                        return '!='
+
+"<"                                                         return '<'
+">"                                                         return '>'
+"??"                                                        return '??'     
+"."                                                         return '.'
+
+"&&"                                                        return '&&'
+"||"                                                        return '||'
+"|&"                                                        return '|&'
+"&?"                                                        return '&?'
+"|?"                                                        return '|?'
+"!"                                                         return '!'             
+
+";"                                                          return ';'
+","                                                          return ','
+"{"                                                          return '{'
+"}"                                                          return '}'
+"["                                                          return '['
+"]"                                                          return ']'                                                         
+":"                                                          return ':'
+"@sobreescribir"            return 'SOBREESCRIBIR'
+"importar"                  return 'IMPORTAR'
+"hereda_de"                 return 'HEREDADE'
+"clase"                     return 'CLASE'
+"publico"                   return 'PUBLICO'
+"privado"                   return 'PRIVADO'
+"protegido"                 return 'PROTEGIDO'
+"vacio"                     return 'VACIO'
+"entero"                    return 'INTEGER'
+"fin-si"                    return 'FINSI'
+"si"                        return 'SI'
+"es_verdadero"              return 'ESVERDADERO'
+"es_falso"                  return 'ESFALSO' 
+"evaluar_si"                return 'SWITCH'
+"defecto"                   return 'DEFAULT'
+"es_igual_a"                return 'CASE'
+"romper"                    return 'BREAK'
+"continuar"                 return 'CONTINUE'
+"retorno"                  return 'RETURN'
+"hacer"                     return 'DO'
+"repetir"                   return 'REAPEATE'
+"repetir_contando"          return 'FOR'
+"repetir_mientras"          return 'REPETIRMIENTRAS'
+"variable"                  return 'VARIABLE'
+"desde"                     return 'DESDE'
+"hasta"                     return 'HASTA'
+"enciclar"                  return 'LOOP'
+"contador"                  return 'COUNT'
+
+"true"                      return 'TRUE'
+"false"                     return 'FALSE'
+"booleno"                   return 'BOOLEAN'
+"decimal"                   return 'DOUBLE'
+"caracter"                  return 'CHAR'
+"principal"                 return 'PRINCIPAL'
+"imprimir"                  return 'IMPRIMIR'
+"concatenar"                return 'CONCATENAR'
+"convertiracadena"          return 'CONVERTIRCADENA'
+"convertiraenetero"         return 'CONVERTIRENTERO'
+"crearpuntero"              return 'CREARPUNTERO'
+"obtenerdireccion"          return 'OBTERNERDIRECCION'
+"reservarmemoria"           return 'RESERVAMEMORIA'
+"consultartamanio"          return 'CONSULTARTAMANIO'
+"leer_teclado"              return 'TECLADO'
+
+
+"nuevo"                     return 'NUEVO'
+"este"                      return 'ESTE'
+"funcion"                   return 'FUNCION'
+"lista"                     return 'LISTA'
+"pila"                      return 'PILA'
+"cola"                      return 'COLA'
+"miestras"                  return 'WHILE'
+"ciclo_doble_condicion"     return 'DOBLECONDICION'
+"repetir"                   return 'REAPEAT'    
+"HASTA_QUE"                 return 'UNTIL'
+"estructura"                return 'ESTRUCTURA'
+
+                                                     
+\"(?:{esc}["bfnrt/{esc}]|{esc}"u"[a-fA-F0-9]{4}|[^"{esc}])*\"  yytext = yytext.substr(1,yyleng-2); return 'STRINGLIST';
+
+{int}{frac}?{exp}?\b                                         return 'NUMBERLIST';
+[A-Za-z_0-9_]+                                               return 'ID';
+
+"="                                                          return '='
+\/(?:[^\/]|"\\/")*\/                                         return 'REGEX'
+<<EOF>>                                                      return 'EOF'
+
+
+
+/lex
+
+/* operator associations and precedence */
+
+
+%left '||' 
+%left '??'
+%left '&&' 
+%left '!' 
+%left '==' '!=' '>' '<' '>=' '<='
+
+%left '+' '-'
+%left '*' '/' '%'
+%left '^'
+%left UMINUS
+
+
+%start inicio
+%error-verbose
+%% /* language grammar */
+inicio
+    : Encabezado EOF
+    ;
+Encabezado
+    : Import
+    | CrearClase
+    | Estruct
+    | Encabezado CrearClase
+    | Encabezado Estruct
+    ;
+Import
+    : Importar 
+    | Import Importar
+    ;
+Importar
+    : IMPORTAR '(' STRING_LIT ')' ';'
+    ;
+CrearClase
+    : Clase '}'
+    ;
+Herencia
+    :'{'
+    | HEREDADE ID '{'
+    ;
+Clase
+    : CLASE ID Herencia
+    | Clase CuerpoClase
+    ;
+CuerpoClase
+    : DeclaracionClase 
+    | SobreEscribir
+    | Estruct
+    ;
+DeclaracionClase
+    : Visibilidad Declaracion
+    | Declaracion
+    ;
+Estruct
+    : Cuerpo_Estruct ']' ';'
+    ;
+Cuerpo_Estruct
+    : ESTRUCTURA '['
+    | Cuerpo_Estruct Declaracion
+    ;
+Declaracion
+    : Tipo var AsignarValor 
+    | ID var AsignarValor 
+    ;
+var  
+    : ID
+    | var '[' e ']' 
+    
+    ;
+AsignarValor
+    :';'
+    |'=' e ';'
+    |'=' Nuevo ';'
+    |'=' Lista ';'
+    ;
+Nuevo
+    : NUEVO getMetodo
+    ;
+
+Visibilidad
+    : PUBLICO
+    | PRIVADO
+    | PROTEGIDO
+    ;
+Tipo
+    :INTEGER
+    |BOOLEAN
+    |CHAR
+    |DOUBLE
+   /* |ID */
+    |VACIO 
+    |FUNCION
+    |LISTA
+    |PILA
+    |COLA
+    ;
+  
+CrearMetodo
+    : Visibilidad Metodo '}'
+    | Metodo '}'
+    ;
+SobreEscribir
+    : SOBREESCRIBIR CrearMetodo
+    |CrearMetodo
+    ;
+Metodo
+    : Tipo ID '(' Parametros '{'
+    | ID ID '(' Parametros '{'
+    | Metodo  CuerpoMetodo
+    | Constructor
+    | Principal
+    ;
+Constructor
+    : ID '(' Parametros '{'
+    ;
+Parametros
+    : Parametro ')' 
+    |  ')'
+    ;
+Parametro
+    : Tipo var 
+    | ID var 
+    | Parametro ',' Tipo var
+    | Parametro ',' ID var 
+    ;
+CuerpoMetodo
+    : Declaracion
+    | Asignacion
+    | getMetodoZ ';'
+    | Control
+    | Branching ';'
+    ;
+   
+Asignacion
+    : var '=' e ';'
+    | Navegar var '=' e ';'
+    |'+=' e ';'
+    |'*=' e ';'
+    |'/=' e ';'
+    | '++' ';' 
+    | '--' ';'
+    | var '=' Nuevo ';'
+    | Navegar var '=' Nuevo ';'
+   ;
+Navegar
+    : var '.'
+    | var '->'
+    | getMetodo '.'
+    | getMetodo '->'
+    | Navegar var '.'
+    | Navegar  getMetodo '.'
+    | Navegar var '->'
+    | Navegar  getMetodo '->'
+    | ESTE '.'
+    ;
+Control
+    : If1
+    | If2
+    | Switch
+    | While
+    | Do_While
+    | Repeat_Until
+    | For
+    | Loop
+    | Count
+    | Doble_Condicion
+    | Repetir
+    ;
+
+If1
+    :IF Expresion ESVERDADERO  Cuerpo  ESFALSO Cuerpo FINSI
+    ;
+If2 
+    :IF Expresion ESFALSO  Cuerpo  ESVERDADERO Cuerpo FINSI
+    ;
+Switch 
+    : SWITCH   Expresion '{' CuerpoSwitch Default 
+    ;
+Default
+    : DEFAULT ':' Cuerpo1 '}'
+    | '}'
+    ;
+Cuerpo: '{' Cuerpo1 '}'
+    | '{' '}'
+    ;
+Cuerpo1
+    :Cuerpo1 CuerpoMetodo
+    |CuerpoMetodo
+    ;
+
+CuerpoSwitch
+    : CuerpoSwitch Caso
+    | Caso
+    ;
+Caso
+    : CASE e ':' Cuerpo1
+    | CASE e ':'
+    ;
+Branching
+    : BREAK
+    | BREAK ID
+    | CONTINUE
+    | RETURN
+    | RETURN e
+    ;
+Expresion
+    : '(' e ')'
+    ;
+Do_While
+    : DO Cuerpo WHILE Expresion
+    ;
+Doble_Condicion: DOBLECONDICION '(' e ',' e ')'Cuerpo
+    ;
+Repeat_Until
+    : REAPEAT Cuerpo UNTIL Expresion
+    ; 
+For
+    : FOR '('VARIABLE':' ID ';' DESDE':' e ';' HASTA ':' e ')' Cuerpo
+    ;
+Loop
+    : LOOP ID Cuerpo
+    ;
+Count
+    : COUNT Expresion Cuerpo
+    ;
+Repetir
+    :REPETIR_MIENTRAS Expresion  Cuerpo
+    ;
+Principal
+    : PRINCIPAL '(' ')' Cuerpo
+    ;
+getMetodoZ 
+    : Navegar  getMetodo  
+    | getMetodo 
+    ;
+getMetodo
+    : ID '(' getParametro
+    | Primitivas '(' getParametro
+    | Tipo '(' getParametro
+    ;
+getParametro 
+    : ParametroM ')'
+    | ')'
+    ;
+ParametroM 
+    : ParametroM ',' e
+    | ParametroM ',' Tipo
+    | ParametroM ',' Nuevo
+    | e
+    | Tipo
+    | Nuevo
+    ;
+Primitivas
+    :IMPRIMIR
+    |CONCATENAR
+    |CONVERTIRCADENA
+    |CONVERTIRENTERO
+    |CREARPUNTERO
+    |OBTERNERDIRECCION
+    |RESERVAMEMORIA
+    |CONSULTARTAMANIO
+    |TECLADO
+    ;
+e
+    : e '+' e
+    | e '-' e
+    | e '*' e
+    | e '/' e
+    | e '%' e
+    | e '^' e
+    | '-' e /*prec UMINUS*/
+    | '(' e ')'
+    | e '<' e
+    | e '>' e
+    | e '<=' e
+    | e '>=' e
+    | e '==' e
+    | e '!=' e
+    | e '&&' e
+    | e '||' e
+    | e '??' e
+    | '!' e
+    | Datos
+    | NULL 
+    ;
+Lista
+    : List '}'
+    ;
+List
+    : '{' DefList
+    | List ',' DefList
+    ;
+DefList
+    : e
+    | Lista
+    |Nuevo
+    ;
+
+Datos 
+    : NUMBERLIST
+    | Identi
+    | STRINGLIST  
+    | TRUE
+    | FALSE
+    ;
+Identi
+    :var
+    |getMetodo
+    |Identi '->' var
+    |Identi '->' getMetodo
+    |Identi '.' var
+    |Identi '.' getMetodo
+    |ESTE '.'  var
+    ;   
+%%
+
+
+function Nodo ( term, location, token , childNode) {
+  this.term =term;
+  this.location = location;
+  this.token = token;
+  this.childNode = childNode;
+}
+
+parser.treeparser  = {
+ raiz : null
+};
+
+parser.error ={
+  error:[]
+
+};
